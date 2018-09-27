@@ -1,0 +1,15 @@
+<!-- Allows user(s) to create comments -->
+
+<%= form_with(model: [ @task, @task.comments.build ]) do |form| %>
+  <p>
+    <%= form.label :commenter %><br>
+    <%= form.text_field :commenter %>
+  </p>
+  <p>
+    <%= form.label :body %><br>
+    <%= form.text_area :body %>
+  </p>
+  <p>
+    <%= form.submit %>
+  </p>
+<% end %>
