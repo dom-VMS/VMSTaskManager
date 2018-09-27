@@ -17,18 +17,29 @@
     </div>
   <% end %>
  
-  <p>
-    <%= form.label :title %><br>
-    <%= form.text_field :title %>
-  </p>
+  <!-- Input for Title, Description, Priority -->
+    <p>
+        <%= form.label :title %><br>
+        <%= form.text_field :title %>
+    </p>
  
-  <p>
-    <%= form.label :description %><br>
-    <%= form.text_area :description %>
-  </p>
+    <p>
+        <%= form.label :description %><br>
+        <%= form.text_area :description %>
+    </p>
+
+    <p>
+        <%= form.label :priority %><br>
+        <%= form.select(:priority, options_for_select([['Low', 1],['Normal', 2],['High', 3],['Urgent', 4]])) %>
+    </p>
+
+    <p>
+        <%= form.label :status %><br>
+        <%= form.select(:status, options_for_select([['Incomplete', 1],['In-progress', 2],['Complete', 3]])) %>
+    </p>
  
-  <p>
-    <%= form.submit %>
-  </p>
+    <p>
+        <%= form.submit %>
+    </p>
  
 <% end %>

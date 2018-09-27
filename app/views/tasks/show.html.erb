@@ -1,13 +1,37 @@
 <h2>VMS Task #<%= @task.id %></h2>
 
 <p>
-  <strong>Title:</strong>
-  <%= @task.title %>
+    <strong>Title:</strong>
+    <%= @task.title %>
 </p>
- 
+
 <p>
-  <strong>Description:</strong>
-  <%= @task.description %>
+    <strong>Description:</strong>
+    <%= @task.description %>
+</p>
+
+<p>
+    <strong>Priority:</strong>
+    <% if @task.priority == 1 %>
+        Low
+    <% elsif @task.priority == 2 %>
+        Normal
+    <% elsif @task.priority == 3 %>
+        High
+    <% elsif @task.priority == 4 %>
+        Urgent
+    <% end %>
+</p>
+
+<p>
+    <strong>Status:</strong>
+    <% if @task.status == 1 %>
+        Incomplete
+    <% elsif @task.status == 2 %>
+        In-Progress
+    <% elsif @task.status == 3 %>
+        Complete
+    <% end %>
 </p>
 
 <h2>Comments</h2>
