@@ -1,0 +1,13 @@
+<!-- Converts numeric value of 'priority' into human-readable meaning. -->
+<% if @task.priority != nil %>
+    <% if @task.priority == 1 %>
+            Low
+    <% elsif @task.priority == 2 %>
+            Normal
+    <% elsif @task.priority == 3 %>
+            High
+    <% elsif @task.priority == 4 %>
+            Urgent
+    <% end %>
+<% else %>
+<% end%>

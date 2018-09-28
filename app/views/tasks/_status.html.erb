@@ -1,0 +1,11 @@
+<!-- Converts 'status' numeric value into human-readable meaning -->
+<% if @task.status != nil %>
+    <% if @task.status == 1 %>
+        Incomplete
+    <% elsif @task.status == 2 %>
+        In-Progress
+    <% elsif @task.status == 3 %>
+        Complete
+    <% end %>
+<%else%>
+<%end%>

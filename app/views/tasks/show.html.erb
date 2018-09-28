@@ -12,26 +12,17 @@
 
 <p>
     <strong>Priority:</strong>
-    <% if @task.priority == 1 %>
-        Low
-    <% elsif @task.priority == 2 %>
-        Normal
-    <% elsif @task.priority == 3 %>
-        High
-    <% elsif @task.priority == 4 %>
-        Urgent
-    <% end %>
+    <%= render 'priority'%> 
 </p>
 
 <p>
-    <strong>Status:</strong>
-    <% if @task.status == 1 %>
-        Incomplete
-    <% elsif @task.status == 2 %>
-        In-Progress
-    <% elsif @task.status == 3 %>
-        Complete
-    <% end %>
+    <strong>Status:</strong> 
+    <%= render 'status'%> 
+</p>
+
+<p>
+    <strong>Percent Complete:</strong>
+    <%= @task.percentComplete %>%
 </p>
 
 <h2>Comments</h2>

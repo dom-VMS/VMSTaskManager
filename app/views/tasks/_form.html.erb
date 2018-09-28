@@ -37,6 +37,11 @@
         <%= form.label :status %><br>
         <%= form.select(:status, options_for_select([['Incomplete', 1],['In-progress', 2],['Complete', 3]])) %>
     </p>
+
+    <p>
+        <%= form.label :percentComplete %><br>
+        <%= form.range_field :percentComplete, :in => 0..100, :step => '5'%>
+    </p>
  
     <p>
         <%= form.submit %>
