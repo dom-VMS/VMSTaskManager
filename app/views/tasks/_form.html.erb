@@ -29,18 +29,23 @@
     </p>
 
     <p>
+        <%= form.label :task_types_id %><br>
+        <%= form.select(:task_types_id, options_from_collection_for_select(TaskType.all, :id, :name), include_blank: "Select Task") %>
+    </p>
+
+    <p>
         <%= form.label :priority %><br>
-        <%= form.select(:priority, options_for_select([['Low', 1],['Normal', 2],['High', 3],['Urgent', 4]])) %>
+        <%= form.select(:priority, options_for_select([['Low', 1],['Normal', 2],['High', 3],['Urgent', 4]]), include_blank: "Select Priority") %>
     </p>
 
     <p>
         <%= form.label :status %><br>
-        <%= form.select(:status, options_for_select([['Incomplete', 1],['In-progress', 2],['Complete', 3]])) %>
+        <%= form.select(:status, options_for_select([['Incomplete', 1],['In-progress', 2],['Complete', 3]]), include_blank: "Select Status") %>
     </p>
 
     <p>
         <%= form.label :percentComplete %><br>
-        <%= form.range_field :percentComplete, :in => 0..100, :step => '5'%>
+        <%= form.range_field :percentComplete, :in => 0..100, :step => '10'%>
     </p>
  
     <p>

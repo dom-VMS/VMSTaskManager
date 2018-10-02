@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180927153313) do
+ActiveRecord::Schema.define(version: 20181001134145) do
 
   create_table "comments", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string "commenter"
@@ -21,6 +21,13 @@ ActiveRecord::Schema.define(version: 20180927153313) do
     t.index ["task_id"], name: "index_comments_on_task_id"
   end
 
+  create_table "task_types", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.string "name"
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "tasks", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string "title"
     t.text "description"
@@ -29,6 +36,8 @@ ActiveRecord::Schema.define(version: 20180927153313) do
     t.integer "percentComplete"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "task_types_id"
+    t.index ["task_types_id"], name: "index_tasks_on_task_types_id"
   end
 
   add_foreign_key "comments", "tasks"

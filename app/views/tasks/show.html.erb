@@ -1,5 +1,10 @@
 <h2>VMS Task #<%= @task.id %></h2>
 
+</p>
+    <strong>Task Type:</strong>
+    <%= TaskType.find(@task.task_types_id).name unless @task.task_types_id.blank?%>
+<p>
+
 <p>
     <strong>Title:</strong>
     <%= @task.title %>

@@ -11,7 +11,7 @@
   <%= comment.body %>
 </p>
 
-<!-- TODO: IF commenterID == currentUserID || currentUserID.isAdmin == True, then display. Else, hide. -->
+<!-- #TODO: IF commenterID == currentUserID || currentUserID.isAdmin == True, then display. Else, hide. -->
 <p>
   <%= link_to 'Delete Comment', [comment.task, comment],
                method: :delete,
