@@ -1,11 +1,13 @@
 <h1>Current Tasks</h1>
 
+<%= link_to 'Create New User', new_user_path %><br><br>
 
 <%= link_to 'Create New Task', new_task_path %><br>
 <%= link_to 'Create New Task Type', new_task_type_path %><br>
 
+
 <%(TaskType.all).each do |type|%>
-  <h2><%=type.name%></h2>
+  <h2><%=link_to "#{type.name}", task_type_path(type) %></h2>
   <table>
     <tr>
       <th>Title</th>

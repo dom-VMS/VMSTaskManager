@@ -1,0 +1,41 @@
+ <%= form_with model: @user, local: true do |form| %>
+    <!-- Error Messages -->
+    <% if @user.errors.any? %>
+        <div id="error_explanation">
+        <h2>
+            <%= pluralize(@user.errors.count, "error") %> prohibited
+            this task from being saved:
+        </h2>
+        <ul>
+            <% @user.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+            <% end %>
+        </ul>
+        </div>
+    <% end %>
+    
+    <!-- Input for Employee Number, First Name, Last Name -->
+        <p>
+            <%= form.label :employee_number, 'VMS Employee #' %><br>
+            <%= form.number_field :employee_number %>
+        </p>
+    
+        <p>
+            <%= form.label :f_name, 'First Name' %><br>
+            <%= form.text_field :f_name %>
+        </p>
+
+        <p>
+            <%= form.label :l_name, 'Last Name' %><br>
+            <%= form.text_field :l_name %>
+        </p>
+
+        <p>
+            <%= form.label :email, 'Email' %><br>
+            <%= form.text_field :email %>
+        </p>
+    
+        <p>
+            <%= form.submit %>
+        </p>
+<% end %>

@@ -29,7 +29,7 @@
     </p>
 
     <p>
-        <%= form.label :task_types_id %><br>
+        <%= form.label :task_types_id, 'Task Type' %><br>
         <%= form.select(:task_types_id, options_from_collection_for_select(TaskType.all, :id, :name), include_blank: "Select Task") %>
     </p>
 
@@ -44,7 +44,7 @@
     </p>
 
     <p>
-        <%= form.label :percentComplete %><br>
+        <%= form.label :percentComplete, 'Percent Complete' %><br>
         <%= form.range_field :percentComplete, :in => 0..100, :step => '10'%>
     </p>
  

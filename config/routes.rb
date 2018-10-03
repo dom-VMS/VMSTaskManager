@@ -8,6 +8,8 @@ Rails.application.routes.draw do
   resources :task_types do
     resources :tasks
   end
+
+  resources :users
   
   root 'home#index'
 

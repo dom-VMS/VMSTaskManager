@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181001134145) do
+ActiveRecord::Schema.define(version: 20181003123851) do
 
   create_table "comments", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string "commenter"
@@ -38,6 +38,16 @@ ActiveRecord::Schema.define(version: 20181001134145) do
     t.datetime "updated_at", null: false
     t.bigint "task_types_id"
     t.index ["task_types_id"], name: "index_tasks_on_task_types_id"
+  end
+
+  create_table "users", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.integer "employee_number"
+    t.string "f_name"
+    t.string "l_name"
+    t.string "email"
+    t.integer "hourly_rate"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   add_foreign_key "comments", "tasks"
