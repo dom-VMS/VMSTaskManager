@@ -7,6 +7,7 @@ Rails.application.routes.draw do
 
   resources :task_types do
     resources :tasks
+    resources :task_type_options
   end
 
   resources :users

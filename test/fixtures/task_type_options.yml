@@ -1,0 +1,27 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: MyString
+  can_view: false
+  can_create: false
+  can_update: false
+  can_delete: false
+  can_approve: false
+  can_verify: false
+  can_comment: false
+  can_log_labor: false
+  can_view_cost: false
+  task_type: one
+
+two:
+  name: MyString
+  can_view: false
+  can_create: false
+  can_update: false
+  can_delete: false
+  can_approve: false
+  can_verify: false
+  can_comment: false
+  can_log_labor: false
+  can_view_cost: false
+  task_type: two

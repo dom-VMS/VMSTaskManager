@@ -1,16 +1,18 @@
+ 
+ 
  <%= form_with model: @user, local: true do |form| %>
     <!-- Error Messages -->
     <% if @user.errors.any? %>
         <div id="error_explanation">
-        <h2>
-            <%= pluralize(@user.errors.count, "error") %> prohibited
-            this task from being saved:
-        </h2>
-        <ul>
-            <% @user.errors.full_messages.each do |msg| %>
-            <li><%= msg %></li>
-            <% end %>
-        </ul>
+            <h2>
+                <%= pluralize(@user.errors.count, "error") %> prohibited
+                this user from being created:
+            </h2>
+            <ul>
+                <% @user.errors.full_messages.each do |msg| %>
+                <li><%= msg %></li>
+                <% end %>
+            </ul>
         </div>
     <% end %>
     
@@ -33,6 +35,16 @@
         <p>
             <%= form.label :email, 'Email' %><br>
             <%= form.text_field :email %>
+        </p>
+
+        <p>
+            <%= form.label :password_digest, 'Password' %><br>
+            <%= form.password_field :password_digest %>
+        </p>
+
+        <p>
+            <%= form.label :password_confirmation, 'Password Confirmation' %><br>
+            <%= form.password_field :password_confirmation %>
         </p>
     
         <p>
