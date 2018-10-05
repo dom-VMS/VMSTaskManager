@@ -1,3 +1,6 @@
+<h1>Users</h1>
+<%= link_to 'Create New User', new_user_path %><br><br>
+
 <table>
     <tr>
       <th>Employee Number</th>
@@ -10,8 +13,7 @@
             <td><%= user.f_name + " " + user.l_name %></td>
             <td><%= user.email %></td>
             <td><%= link_to 'Edit', edit_user_path(user)%></td>
-
         </tr>
     <% end %>
 </table>
-<%= link_to 'Back', tasks_path %>
+<%= link_to 'Back', admin_path %>

@@ -53,7 +53,5 @@
       <%end%>
   <% end %>
   </table>
-
-    <h2>Employee Assignment Options</h2>
-    <%= link_to "View All #{@task_type.name} Employee Configuration", task_type_task_type_options_path(@task_type.id)%><br>
-<%= link_to 'Back', tasks_path %>
+  <%= link_to "View All #{@task_type.name} Employee Configuration", task_type_task_type_options_path(@task_type.id)%><br>
+  <%= link_to 'Back', tasks_path %>

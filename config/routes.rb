@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   get 'home/index'
+  get '/admin' => 'admin#index'
 
   resources :tasks do
     resources :comments
@@ -11,7 +12,9 @@ Rails.application.routes.draw do
   end
 
   resources :users
+  resources :user_groups
   
   root 'home#index'
+
 
 end
