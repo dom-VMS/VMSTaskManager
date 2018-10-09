@@ -1,12 +1,12 @@
 class TaskTypeOptionsController < ApplicationController
     def index
-        @task_type = TaskType.find(params[:task_type_id])
+        @task_type = TaskType.all
         @task_type_options = @task_type.task_type_options.all
     end
 
     def show
         @task_type = TaskType.find(params[:task_type_id])
-        @task_type_option = @task_type.task_type_options.find(params[:id])
+        @task_type_option = @task_type.task_type_options.find_by_id(params[:task_type_id])
     end
 
     def new

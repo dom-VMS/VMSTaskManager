@@ -13,6 +13,7 @@
             <td><%= user.f_name + " " + user.l_name %></td>
             <td><%= user.email %></td>
             <td><%= link_to 'Edit', edit_user_path(user)%></td>
+            <td><%= link_to 'Permissions', edit_user_path(user)%></td>
         </tr>
     <% end %>
 </table>

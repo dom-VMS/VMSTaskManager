@@ -16,19 +16,20 @@ class TasksController < ApplicationController
     end
 
     def create
-        @task = Task.new(task_params)
+        @task = Task.new(new_task_params)
  
         if @task.save!
             redirect_to @task
         else
             render 'new'
         end
+
     end
 
     def update
         @task = Task.find(params[:id])
        
-        if @task.update(task_params)
+        if @task.update(edit_task_params)
             
           redirect_to @task
         else
@@ -44,7 +45,11 @@ class TasksController < ApplicationController
     end
 
     private
-      def task_params
+      def new_task_params
         params.require(:task).permit(:title, :description, :priority, :status, :percentComplete, :task_types_id)
+      end
+
+      def edit_task_params
+        params.require(:task).permit(:title, :description, :priority, :status, :percentComplete)
       end
 end

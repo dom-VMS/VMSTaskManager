@@ -29,11 +29,6 @@
     </p>
 
     <p>
-        <%= form.label :task_types_id, 'Task Type' %><br>
-        <%= form.select(:task_types_id, options_from_collection_for_select(TaskType.all, :id, :name), include_blank: "Select Task") %>
-    </p>
-
-    <p>
         <%= form.label :priority %><br>
         <%= form.select(:priority, options_for_select([['Low', 1],['Normal', 2],['High', 3],['Urgent', 4]]), include_blank: "Select Priority") %>
     </p>
@@ -47,6 +42,8 @@
         <%= form.label :percentComplete, 'Percent Complete' %><br>
         <%= form.range_field :percentComplete, :in => 0..100, :step => '10'%>
     </p>
+
+    <%=form.hidden_field 'task_types_id', :value => params[:task_types_id] %>
  
     <p>
         <%= form.submit %>
