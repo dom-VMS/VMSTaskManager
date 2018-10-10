@@ -1,26 +1,13 @@
-# README
+# VMS Task Management
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+An web application for Varland Metal Service employees to Create, View, and Updates tasks.
 
-Things you may want to cover:
+Technical Details
 
 * Ruby version - 2.3.7
 * Rails version - 5.2.1
 * MySQL version - 8.0.12 Homebrew
 
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+* Gems
+  - Devise
+  - Carrierwave
