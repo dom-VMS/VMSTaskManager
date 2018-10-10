@@ -5,7 +5,9 @@ application up and running.
 
 Things you may want to cover:
 
-* Ruby version
+* Ruby version - 2.3.7
+* Rails version - 5.2.1
+* MySQL version - 8.0.12 Homebrew
 
 * System dependencies
 
