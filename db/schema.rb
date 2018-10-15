@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181008132917) do
+ActiveRecord::Schema.define(version: 20181010140953) do
 
   create_table "comments", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string "commenter"
@@ -58,12 +58,12 @@ ActiveRecord::Schema.define(version: 20181008132917) do
   end
 
   create_table "user_groups", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
-    t.bigint "user_id"
-    t.bigint "task_type_option_id"
+    t.bigint "users_id"
+    t.bigint "tag_type_option_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["task_type_option_id"], name: "index_user_groups_on_task_type_option_id"
-    t.index ["user_id"], name: "index_user_groups_on_user_id"
+    t.index ["tag_type_option_id"], name: "index_user_groups_on_tag_type_option_id"
+    t.index ["users_id"], name: "index_user_groups_on_users_id"
   end
 
   create_table "users", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|

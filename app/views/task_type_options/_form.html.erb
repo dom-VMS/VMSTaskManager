@@ -1,6 +1,5 @@
 
-
-<%= form_with(model: [ @task_type, @task_type.task_type_options.build ]) do |form| %>
+<%= form_with(model: [@task_type, @task_type.task_type_options.build]) do |form| %>
     <p>
         <%= form.label :name, 'Configuration Name' %><br>
         <%= form.text_field :name %>

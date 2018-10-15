@@ -4,6 +4,7 @@
 
 <%(TaskType.all).each do |task_type|%>
 <h2><%=link_to "#{task_type.name}", task_type_path(task_type) %></h2>
+<%= link_to 'Create New Role', new_task_type_task_type_option_path(task_type.id, @task_type_option) %><br>
 <table>
     <tr>
       <th>Name</th>
@@ -21,21 +22,23 @@
       <% (task_type.task_type_options.all).each do |task_type_option|%>
           <% if task_type_option.task_type_id == task_type.id%>
               <tr>
-                  <td><strong> <%= task_type_option.name %></strong></td>
-                  <td><%= task_type_option.can_view %></td>
-                  <td><%= task_type_option.can_create %></td>
-                  <td><%= task_type_option.can_update %></td>
-                  <td><%= task_type_option.can_delete %></td>
-                  <td><%= task_type_option.can_approve %></td>
-                  <td><%= task_type_option.can_verify %></td>
-                  <td><%= task_type_option.can_comment %></td>
-                  <td><%= task_type_option.can_log_labor %></td>
-                  <td><%= task_type_option.can_view_cost %></td>
+                  <td><strong> <%= link_to task_type_option.name, task_type_task_type_option_path(task_type.id, task_type_option.id) %></strong></td>
+                  <td><%= task_type_option.can_view ? '✔' : '×' %> </td>
+                  <td><%= task_type_option.can_create ? '✔' : '×' %></td>
+                  <td><%= task_type_option.can_update ? '✔' : '×' %></td>
+                  <td><%= task_type_option.can_delete ? '✔' : '×' %></td>
+                  <td><%= task_type_option.can_approve ? '✔' : '×' %></td>
+                  <td><%= task_type_option.can_verify ? '✔' : '×' %></td>
+                  <td><%= task_type_option.can_comment ? '✔' : '×' %></td>
+                  <td><%= task_type_option.can_log_labor ? '✔' : '×' %></td>
+                  <td><%= task_type_option.can_view_cost ? '✔' : '×' %></td>
+
               </tr>
           <%end%>
       <%end%>
     
 </table>
 <% end%>
-
+<br>
+<br>
 <%= link_to 'Back', admin_path %>
