@@ -26,8 +26,11 @@ class TaskTypeOptionsController < ApplicationController
     end
 
     def edit
+        @task_type_option = TaskTypeOption.find(params[:id])
         @task_type = TaskType.find(params[:task_type_id])
-        @task_type_option = @task_type.task_type_options.find_by_id(params[:id])
+
+        #@task_type = TaskType.find(params[:task_type_id])
+        #@task_type_option = @task_type.task_type_options.find_by_id(params[:id])
     end
 
     def update
