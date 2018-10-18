@@ -1,6 +1,6 @@
-<h1>Groups</h1>
+<h1>Roles & Permissions</h1>
 
-<%= link_to 'Create New Task Type', new_task_type_path %><br><br>
+<%= link_to 'Create New Group', new_task_type_path %><br><br> <!-- Move this to new page -->
 
 <%(TaskType.all).each do |task_type|%>
 <h2><%=link_to "#{task_type.name}", task_type_path(task_type) %></h2>

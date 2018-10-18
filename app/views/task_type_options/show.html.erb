@@ -25,10 +25,30 @@
         <td><%= @task_type_option.can_view_cost  ? '✔' : '×' %></td>
     </tr> 
 </table>
-<br>
-<br>
-<%= link_to 'Edit', edit_task_type_task_type_option_path(@task_type.id, @task_type_option.id) %><br>
-<%= link_to 'Delete', task_type_task_type_option_path(@task_type.id, @task_type_option.id),
+<br><br>
+<h2>Assigned Users</h2>
+<table>
+    <tr>
+        <th> Name </th>
+    </tr>
+    <tr> 
+        <%(UserGroup.all).each do |user_group| %>
+            <% if @task_type_option.id == user_group.task_type_option_id%>
+                <% (User.all).each do |user|%>
+                    <%if user.id == user_group.users_id%>
+                        <td> <%= user.full_name %><br> </td>
+                    <%end%>
+                <%end%>
+            <%end%>
+        <%end%>
+    <tr>
+
+
+</table>
+<%= link_to 'Assign User', new_user_group_path(:task_type_option_id => params[:id]) %><br><br>
+<br><br>
+<%= link_to 'Edit Configuration', edit_task_type_task_type_option_path(@task_type.id, @task_type_option.id) %><br>
+<%= link_to 'Delete Configuration', task_type_task_type_option_path(@task_type.id, @task_type_option.id),
                 method: :delete,
                 data: { confirm: 'Are you sure you want to delete this role?' } %><br>
 <%= link_to 'Back', task_types_path %>

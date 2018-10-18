@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  get 'home/login'
   get 'home/index'
   get '/admin' => 'admin#index'
 
@@ -7,13 +8,15 @@ Rails.application.routes.draw do
   end
 
   resources :task_types do
-    resources :tasks
-    resources :task_type_options
+    resources :task_type_options 
   end
 
-  resources :users
+  resources :user_groups
+  resources :users do
+    resources :user_groups
+  end
   
-  root 'home#index'
+  root 'home#login'
 
 
 end

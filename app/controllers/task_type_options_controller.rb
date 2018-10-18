@@ -7,6 +7,14 @@ class TaskTypeOptionsController < ApplicationController
     def show
         @task_type = TaskType.find(params[:task_type_id])
         @task_type_option = @task_type.task_type_options.find_by_id(params[:id])
+
+
+        #@user_group = UserGroup.find_by_task_type_option_id(@task_type_option)
+        #userID = @user_group.users_id
+        #@user = User.find_by_id(userID)
+
+
+
     end
 
     def new
@@ -28,9 +36,6 @@ class TaskTypeOptionsController < ApplicationController
     def edit
         @task_type_option = TaskTypeOption.find(params[:id])
         @task_type = TaskType.find(params[:task_type_id])
-
-        #@task_type = TaskType.find(params[:task_type_id])
-        #@task_type_option = @task_type.task_type_options.find_by_id(params[:id])
     end
 
     def update

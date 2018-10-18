@@ -1,0 +1,20 @@
+<h1> <%= @user.full_name %>'s Roles & Permissions </h1>
+<% if @task_type_option.nil? || @user_group.nil?%>
+    <h2>No roles/permissions assigned to this user</h2>
+<% else %>
+    <table>
+        <tr>
+            <th>Role</th>
+            <th>Department</th>
+        </tr>
+            <% @user_group.zip(@task_type_option).each do |user_group, task_type_option|%>
+                <tr>
+                    <td><%= role(user_group, task_type_option)%></td>
+                    <td><%= TaskTypeOption.get_task_type_name(task_type_option)%></td>
+                    <td><%= link_to 'Remove', user_group_path(user_group),
+                        method: :delete,
+                        data: { confirm: "Are you sure you want to remove this role from #{@user.full_name}?" } %></td><br>
+                </tr>
+            <% end %>
+    </table>
+<% end %>
