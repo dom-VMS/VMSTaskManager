@@ -4,8 +4,11 @@
 # Foreign Key(s): None
 
 class User < ApplicationRecord
-    has_many :user_groups
+    has_many :user_groups, dependent: :destroy
     has_many :task_type_options, through: :user_groups
+
+    has_many :task_assignments, dependent: :destroy
+    has_many :tasks, through: :task_assignments
 
     validates :f_name,  presence: true, length: { maximum: 25 }
     validates :l_name,  presence: true, length: { maximum: 25 }

@@ -3,14 +3,14 @@
  <%= form_with model: @user_group, local: true do |form| %>
     
     <p>
-        <%= form.label :users_id, 'Select User' %>
-        <%= form.collection_select :users_id, User.all, :id, :full_name%>
+        <%= form.label :user_id, 'Select User' %>
+        <%= form.select(:assignee, options_from_collection_for_select(User.all, :id, :full_name), include_blank: "Select User") %>
     </p>
 
     <%=form.hidden_field 'task_type_option_id', :value => params[:task_type_option_id] %>
 
 
     <p>
-        <%= form.submit %>
+        <%= form.submit "Assign"%>
     </p>
 <% end %>

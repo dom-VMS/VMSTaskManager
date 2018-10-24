@@ -1,5 +1,5 @@
 
-<%= form_with(model: [@task_type, @task_type_option]) do |form| %>
+<%= form_with(model: @task_type_option) do |form| %>
     <p>
         <%= form.label :name, 'Configuration Name' %><br>
         <%= form.text_field :name %>
@@ -49,6 +49,9 @@
         <%= form.label :can_view_cost, 'View Cost' %><br>
         <%= form.check_box :can_view_cost%><br>
     </p>
+
+    <%=form.hidden_field 'task_type_id', :value => @task_type.id %>
+
 
     <p>
         <%= form.submit %>

@@ -1,7 +1,16 @@
-<h1><%= @task_type.name %></h1>
+<!-- Admin Page for Task_Types 
+     Will allow for:
+     - View all open tasks
+     - View all "Completed" tasks
+     - Option to mark "Completed" tasks as "Approved" & close.
+     - Assign Users to Tasks
+     - Option to view all past tasks (open and closed)-->
+
+<% @task_type.each do |task_type|%>
+<h1><%= task_type.name %></h1>
 <p>
     <strong>Description:</strong>
-    <%= @task_type.description %>
+    <%= task_type.description %>
 </p>
 
 <%= link_to 'Create New Task', new_task_path(:task_types_id => params[:id]) %><br>
@@ -14,7 +23,7 @@
       <th>Status</th>
     </tr>
     <% (Task.all).each do |task| %>
-    <% if task.task_types_id == @task_type.id%>
+    <% if task.task_types_id == task_type.id%>
         <tr>
           <td><%= task.title %></td>
           <td>
@@ -48,4 +57,5 @@
       <%end%>
   <% end %>
   </table><br>
+  <% end %>
   <%= link_to 'Back', home_index_path %>

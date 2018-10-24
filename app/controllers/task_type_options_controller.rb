@@ -1,33 +1,24 @@
 class TaskTypeOptionsController < ApplicationController
     def index
-        @task_type = TaskType.all
-        @task_type_options = @task_type.task_type_options.all
+        @task_type_options = TaskTypeOption.all
     end
 
     def show
-        @task_type = TaskType.find(params[:task_type_id])
-        @task_type_option = @task_type.task_type_options.find_by_id(params[:id])
-
-
-        #@user_group = UserGroup.find_by_task_type_option_id(@task_type_option)
-        #userID = @user_group.users_id
-        #@user = User.find_by_id(userID)
-
-
-
+        @task_type_option = TaskTypeOption.find(params[:id])
+        @task_type_name = (TaskType.find_by_id(@task_type_option.task_type_id)).name
+        @user = TaskTypeOption.get_associated_users(@task_type_option)
     end
 
     def new
-        @task_type = TaskType.find(params[:task_type_id])
-        @task_type_option = @task_type.task_type_options.new
+        @task_type = TaskType.find_by_id(params[:task_type])
+        @task_type_option = TaskTypeOption.new
     end
 
     def create
-        @task_type = TaskType.find(params[:task_type_id])
-        @task_type_option = @task_type.task_type_options.new(task_type_options_params)
+        @task_type_option = TaskTypeOption.new(task_type_options_params)
 
         if @task_type_option.save
-            redirect_to task_types_path
+            redirect_to @task_type_option
         else
             render 'new'
         end
@@ -35,26 +26,24 @@ class TaskTypeOptionsController < ApplicationController
 
     def edit
         @task_type_option = TaskTypeOption.find(params[:id])
-        @task_type = TaskType.find(params[:task_type_id])
+        @task_type = TaskType.find_by_id(@task_type_option.task_type_id)
     end
 
     def update
-        @task_type = TaskType.find(params[:task_type_id])
-        @task_type_option = @task_type.task_type_options.find_by_id(params[:id])
+        @task_type_option = TaskTypeOption.find(params[:id])
 
         if @task_type_option.update(task_type_options_params)
-            redirect_to task_types_path
+            redirect_to @task_type_option
         else
             render 'edit'
         end
     end
 
     def destroy
-        @task_type = TaskType.find(params[:task_type_id])
-        @task_type_option = @task_type.task_type_options.find(params[:id])
+        @task_type_option = TaskTypeOption.find(params[:id])
         @task_type_option.destroy
 
-        redirect_to task_types_path
+        redirect_to task_type_options_path
     end
 
     private

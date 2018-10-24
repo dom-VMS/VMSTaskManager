@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181016142934) do
+ActiveRecord::Schema.define(version: 20181022134206) do
 
   create_table "comments", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string "commenter"
@@ -19,6 +19,17 @@ ActiveRecord::Schema.define(version: 20181016142934) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["task_id"], name: "index_comments_on_task_id"
+  end
+
+  create_table "task_assignments", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.bigint "task_id"
+    t.bigint "assigned_to_id"
+    t.bigint "assigned_by_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["assigned_by_id"], name: "index_task_assignments_on_assigned_by_id"
+    t.index ["assigned_to_id"], name: "index_task_assignments_on_assigned_to_id"
+    t.index ["task_id"], name: "index_task_assignments_on_task_id"
   end
 
   create_table "task_type_options", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
@@ -58,12 +69,12 @@ ActiveRecord::Schema.define(version: 20181016142934) do
   end
 
   create_table "user_groups", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
-    t.bigint "users_id"
+    t.bigint "user_id"
     t.bigint "task_type_option_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["task_type_option_id"], name: "index_user_groups_on_task_type_option_id"
-    t.index ["users_id"], name: "index_user_groups_on_users_id"
+    t.index ["user_id"], name: "index_user_groups_on_user_id"
   end
 
   create_table "users", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
@@ -78,5 +89,8 @@ ActiveRecord::Schema.define(version: 20181016142934) do
   end
 
   add_foreign_key "comments", "tasks"
+  add_foreign_key "task_assignments", "tasks"
+  add_foreign_key "task_assignments", "users", column: "assigned_by_id"
+  add_foreign_key "task_assignments", "users", column: "assigned_to_id"
   add_foreign_key "task_type_options", "task_types"
 end

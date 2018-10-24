@@ -1,3 +1,11 @@
+<!-- Admin Page for Task_Types 
+     Will allow for:
+     - View all open tasks
+     - View all "Completed" tasks
+     - Option to mark "Completed" tasks as "Approved" & close.
+     - Assign Users to Tasks
+     - Option to view all past tasks (open and closed)-->
+
 <h1><%= @task_type.name %></h1>
 <p>
     <strong>Description:</strong>
@@ -49,3 +57,5 @@
   <% end %>
   </table><br>
   <%= link_to 'Back', home_index_path %>
+
+    

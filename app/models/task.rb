@@ -1,5 +1,9 @@
 class Task < ApplicationRecord
     has_many :comments, dependent: :destroy
+    
+    has_many :task_assignments, dependent: :destroy
+    has_many :users, through: :task_assignments
+
     has_one :task_type
     validates :title, presence: true, 
                     length: { minimum: 5 }

@@ -1,7 +1,7 @@
 class UserGroupsController < ApplicationController
     def index
         @user = User.find_by_id(params[:user_id])
-        @user_group = UserGroup.where(users_id: @user.id).all
+        @user_group = UserGroup.where(user_id: @user.id).all
         if !@user_group.empty?
             @task_type_option = TaskTypeOption.find_by_user_group(@user_group)
         end
@@ -9,6 +9,7 @@ class UserGroupsController < ApplicationController
 
     def show
         @user_group = UserGroup.find(params[:id])
+        @user = User.find(params[:user_id])
     end
 
     def new
@@ -42,6 +43,6 @@ class UserGroupsController < ApplicationController
 
     private 
     def user_group_params
-        params.require(:user_group).permit(:users_id, :task_type_option_id)
+        params.require(:user_group).permit(:user_id, :task_type_option_id)
     end
 end

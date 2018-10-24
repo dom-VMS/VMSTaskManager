@@ -5,21 +5,26 @@ class TasksController < ApplicationController
     
     def show
         @task = Task.find(params[:id])
+        @assignee = TaskAssignment.get_assignee(@task)
     end
     
     def new
         @task = Task.new
+        @task_assignment = TaskAssignment.new
     end
 
     def edit
         @task = Task.find(params[:id])
+        @assignee = TaskAssignment.get_assignee_object(@task);
     end
 
     def create
         @task = Task.new(new_task_params)
- 
+
         if @task.save!
             redirect_to @task
+            @task_assignment = TaskAssignment.create(task_id: @task.id, assigned_to_id: assignment_params_new[:assigned_to_id])
+            @task_assignment.save!
         else
             render 'new'
         end
@@ -28,10 +33,11 @@ class TasksController < ApplicationController
 
     def update
         @task = Task.find(params[:id])
-       
+        @task_assignment = TaskAssignment.where("task_id = #{params[:id]}")
+
         if @task.update(edit_task_params)
-            
-          redirect_to @task
+            @task_assignment.exists? ? @task_assignment.update(assignment_params) : TaskAssignment.create(assignment_params)
+            redirect_to @task
         else
           render 'edit'
         end
@@ -51,5 +57,13 @@ class TasksController < ApplicationController
 
       def edit_task_params
         params.require(:task).permit(:title, :description, :priority, :status, :percentComplete)
+      end
+
+      def assignment_params
+        params.require(:task).permit(:task_id, :assigned_to_id)
+      end
+
+      def assignment_params_new
+        params.require(:task).permit(:assigned_to_id)
       end
 end

@@ -17,7 +17,6 @@
     </div>
   <% end %>
  
-  <!-- Input for Title, Description, Priority -->
     <p>
         <%= form.label :title %><br>
         <%= form.text_field :title %>
@@ -30,12 +29,12 @@
 
     <p>
         <%= form.label :priority %><br>
-        <%= form.select(:priority, options_for_select([['Low', 1],['Normal', 2],['High', 3],['Urgent', 4]]), include_blank: "Select Priority") %>
+        <%= form.select(:priority, options_for_select([['Low', 1],['Normal', 2],['High', 3],['Urgent', 4]], @task.priority), include_blank: "Select Priority") %>
     </p>
 
     <p>
         <%= form.label :status %><br>
-        <%= form.select(:status, options_for_select([['Incomplete', 1],['In-progress', 2],['Complete', 3]]), include_blank: "Select Status") %>
+        <%= form.select(:status, options_for_select([['Incomplete', 1],['In-progress', 2],['Complete', 3]], @task.status), include_blank: "Select Status") %>
     </p>
 
     <p>
@@ -43,7 +42,19 @@
         <%= form.range_field :percentComplete, :in => 0..100, :step => '10'%>
     </p>
 
-    <%=form.hidden_field 'task_types_id', :value => params[:task_types_id] %>
+    <p>
+        <%= form.label :assigned_to_id, 'Assignee'%><br>
+        <% if @assignee.present?%>
+            <%= form.select(:assigned_to_id, options_from_collection_for_select(User.all, :id, :full_name, @assignee.id)) %>
+        <% else %>
+            <%= form.select(:assigned_to_id, options_from_collection_for_select(User.all, :id, :full_name), include_blank: "Select User") %>
+        <% end %>
+
+    </p>
+
+
+    <%= form.hidden_field 'task_types_id', :value => params[:task_types_id] %>
+    <%= form.hidden_field 'task_id', :value => params[:id] %>
  
     <p>
         <%= form.submit %>

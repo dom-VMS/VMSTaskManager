@@ -30,6 +30,15 @@
     <%= @task.percentComplete %>%
 </p>
 
+<p>
+    <strong>Assignee:</strong>
+    <% unless @assignee.empty? %>
+        <% @assignee.each do |assignee| %>
+            <%= assignee %><br>
+        <%end%>
+    <% end %>
+</p>
+
 <h2>Comments</h2>
 <%= render @task.comments %>
 
