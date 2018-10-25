@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181022134206) do
+ActiveRecord::Schema.define(version: 20181025154532) do
 
   create_table "comments", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string "commenter"
@@ -19,6 +19,17 @@ ActiveRecord::Schema.define(version: 20181022134206) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["task_id"], name: "index_comments_on_task_id"
+  end
+
+  create_table "logged_labors", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.bigint "task_id"
+    t.bigint "user_id"
+    t.decimal "time_spent", precision: 10, scale: 2
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["task_id"], name: "index_logged_labors_on_task_id"
+    t.index ["user_id"], name: "index_logged_labors_on_user_id"
   end
 
   create_table "task_assignments", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
@@ -89,6 +100,8 @@ ActiveRecord::Schema.define(version: 20181022134206) do
   end
 
   add_foreign_key "comments", "tasks"
+  add_foreign_key "logged_labors", "tasks"
+  add_foreign_key "logged_labors", "users"
   add_foreign_key "task_assignments", "tasks"
   add_foreign_key "task_assignments", "users", column: "assigned_by_id"
   add_foreign_key "task_assignments", "users", column: "assigned_to_id"

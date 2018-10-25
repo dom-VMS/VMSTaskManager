@@ -6,6 +6,7 @@ class TasksController < ApplicationController
     def show
         @task = Task.find(params[:id])
         @assignee = TaskAssignment.get_assignee(@task)
+        @hours_spent = LoggedLabor.hours_spent_on_task(@task)
     end
     
     def new

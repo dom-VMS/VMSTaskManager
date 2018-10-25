@@ -6,7 +6,11 @@ Rails.application.routes.draw do
 
   resources :tasks do
     resources :comments
+    resources :logged_labors
   end
+
+  resources :logged_labors
+
   resources :task_types
 
   get 'admin/task_types' => 'task_type#index'

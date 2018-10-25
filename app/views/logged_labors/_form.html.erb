@@ -1,0 +1,41 @@
+<%= form_with model: [@task, @task.logged_labors.build], local: true do |form| %>
+
+ <!-- Error Messages -->
+  <% if @logged_labors.errors.any? %>
+    <div id="error_explanation">
+      <h2>
+        <%= pluralize(@logged_labors.errors.count, "error") %> prohibited
+        this task from being saved:
+      </h2>
+      <ul>
+        <% @logged_labors.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+    <%puts "IN LOOP HERE #{@logged_labors.errors}"%>
+  <% end %>
+
+  <%puts "NOT IN LOOP HERE #{@logged_labors.errors}"%>
+
+
+  <p>
+    <%= form.label :user_id %><br>
+    <%= form.select(:user_id, options_from_collection_for_select(User.all, :id, :full_name), include_blank: "Select User") %>  </p>
+  </p>
+  <p>
+    <%= form.label :description %><br>
+    <%= form.text_area :description %>
+  </p>
+  <p>
+    <%= form.label :time_spent %><br>
+    <%= form.text_field :time_spent %>
+  </p>
+  
+  <%=form.hidden_field 'task_id', :value => @task.id %>
+
+  <p>
+    <%= form.submit %>
+  </p>
+  <p>
+<% end %>

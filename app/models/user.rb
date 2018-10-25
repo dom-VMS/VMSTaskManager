@@ -4,6 +4,8 @@
 # Foreign Key(s): None
 
 class User < ApplicationRecord
+    has_many :logged_labors
+
     has_many :user_groups, dependent: :destroy
     has_many :task_type_options, through: :user_groups
 

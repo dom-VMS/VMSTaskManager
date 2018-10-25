@@ -1,14 +1,8 @@
-<h2>VMS Task #<%= @task.id %></h2>
-
+<h2>VMS Task #<%= @task.id %> - <%= @task.title %></h2>
 </p>
     <strong>Task Type:</strong>
     <%= TaskType.find(@task.task_types_id).name unless @task.task_types_id.blank?%>
 <p>
-
-<p>
-    <strong>Title:</strong>
-    <%= @task.title %>
-</p>
 
 <p>
     <strong>Description:</strong>
@@ -39,6 +33,11 @@
     <% end %>
 </p>
 
+<p>
+    <strong>Hours Spent: </strong>
+    <%= @hours_spent.zero? ? '0' : (link_to "#{@hours_spent}", task_logged_labors_path(@task)) %>
+</p>
+
 <h2>Comments</h2>
 <%= render @task.comments %>
 
@@ -46,7 +45,8 @@
 <%= render 'comments/form' %>
 
 <%= link_to 'Edit', edit_task_path(@task)%>
-<td><%= link_to 'Delete', task_path(@task),
+<%= link_to 'Delete', task_path(@task),
                   method: :delete,
                   data: { confirm: 'Are you sure you want to delete this task?' } %></td><br>
-<%= link_to 'Back', home_index_path %>
+<%= link_to 'Log time', new_task_logged_labor_path(@task) %><br>
+<%= link_to 'Back', task_type_path(@task.task_types_id) %>
