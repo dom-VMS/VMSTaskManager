@@ -1,4 +1,8 @@
+require 'date'
+
 class TasksController < ApplicationController
+    http_basic_authenticate_with name: "admin", password: "Vms.1946!", only: :destroy
+
     def index
         @tasks = Task.all
     end
@@ -7,6 +11,7 @@ class TasksController < ApplicationController
         @task = Task.find(params[:id])
         @assignee = TaskAssignment.get_assignee(@task)
         @hours_spent = LoggedLabor.hours_spent_on_task(@task)
+        @date = (@task.created_at).strftime("%m/%d/%Y") 
     end
     
     def new
@@ -17,6 +22,12 @@ class TasksController < ApplicationController
     def edit
         @task = Task.find(params[:id])
         @assignee = TaskAssignment.get_assignee_object(@task);
+        @task_type = TaskType.find_by_id(@task.task_type_id)
+        @assignable_users = []
+        (@task_type.task_type_options).each do |task_type_options|
+            @assignable_users.concat(task_type_options.users)
+        end
+
     end
 
     def create
@@ -53,7 +64,7 @@ class TasksController < ApplicationController
 
     private
       def new_task_params
-        params.require(:task).permit(:title, :description, :priority, :status, :percentComplete, :task_types_id)
+        params.require(:task).permit(:title, :description, :priority, :status, :percentComplete, :task_type_id)
       end
 
       def edit_task_params

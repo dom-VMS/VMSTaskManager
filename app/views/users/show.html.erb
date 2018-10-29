@@ -15,6 +15,25 @@
     <%= @user.email %>
 </p>
 
+<strong>Roles/Permissions</strong><br><br>
+<% if @task_type_option.nil? || @user_group.nil?%>
+    <h2>No roles/permissions assigned to this user</h2>
+<% else %>
+    <table>
+        <tr>
+            <th>Department</th>
+            <th>Role</th>
+        </tr>
+        <% @user.user_groups.each do |user_group|%>        
+        <tr>
+            <tr>
+            <td><%= user_group.task_type_option.task_type.name%></td>
+            <td><%= link_to "#{user_group.task_type_option.name}", task_type_option_path(user_group.task_type_option)%></td>
+        </tr>
+         <% end %>
+    </table>
+<% end %><br>
+
 
 <%= link_to 'Edit', edit_user_path(@user)%>
 <%= link_to 'Back', users_path %>

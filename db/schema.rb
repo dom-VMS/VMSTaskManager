@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181025154532) do
+ActiveRecord::Schema.define(version: 20181029124501) do
 
   create_table "comments", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string "commenter"
@@ -75,8 +75,9 @@ ActiveRecord::Schema.define(version: 20181025154532) do
     t.integer "percentComplete"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "task_types_id"
-    t.index ["task_types_id"], name: "index_tasks_on_task_types_id"
+    t.bigint "task_type_id"
+    t.boolean "isApproved"
+    t.index ["task_type_id"], name: "index_tasks_on_task_type_id"
   end
 
   create_table "user_groups", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|

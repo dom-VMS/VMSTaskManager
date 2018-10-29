@@ -45,15 +45,15 @@
     <p>
         <%= form.label :assigned_to_id, 'Assignee'%><br>
         <% if @assignee.present?%>
-            <%= form.select(:assigned_to_id, options_from_collection_for_select(User.all, :id, :full_name, @assignee.id)) %>
+            <%= form.select(:assigned_to_id, options_from_collection_for_select(@assignable_users, :id, :full_name, @assignee.id)) %>
         <% else %>
-            <%= form.select(:assigned_to_id, options_from_collection_for_select(User.all, :id, :full_name), include_blank: "Select User") %>
+            <%= form.select(:assigned_to_id, options_from_collection_for_select(@assignable_users, :id, :full_name), include_blank: "Select User") %>
         <% end %>
 
     </p>
 
 
-    <%= form.hidden_field 'task_types_id', :value => params[:task_types_id] %>
+    <%= form.hidden_field 'task_type_id', :value => params[:task_type_id] %>
     <%= form.hidden_field 'task_id', :value => params[:id] %>
  
     <p>

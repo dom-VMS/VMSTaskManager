@@ -4,7 +4,7 @@
     
     <p>
         <%= form.label :user_id, 'Select User' %>
-        <%= form.select(:assignee, options_from_collection_for_select(User.all, :id, :full_name), include_blank: "Select User") %>
+        <%= form.select(:user_id, options_from_collection_for_select(User.all, :id, :full_name), include_blank: "Select User") %>
     </p>
 
     <%=form.hidden_field 'task_type_option_id', :value => params[:task_type_option_id] %>

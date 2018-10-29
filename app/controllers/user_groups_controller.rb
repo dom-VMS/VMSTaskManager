@@ -1,9 +1,9 @@
 class UserGroupsController < ApplicationController
     def index
         @user = User.find_by_id(params[:user_id])
-        @user_group = UserGroup.where(user_id: @user.id).all
-        if !@user_group.empty?
-            @task_type_option = TaskTypeOption.find_by_user_group(@user_group)
+        @user_group = @user.user_groups 
+        @user_group.each do |user_group|
+            @task_type_option = user_group.task_type_option
         end
     end
 

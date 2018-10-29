@@ -4,48 +4,22 @@
     <%= @task_type.description %>
 </p>
 
-<%= link_to 'Create New Task', new_task_path(:task_types_id => params[:id]) %><br>
+<%= link_to 'Create New Task', new_task_path(:task_type_id => params[:id]) %><br>
 <h2>Open Tasks</h2>
 
 <table>
     <tr>
-      <th>Title</th>
-      <th>Priority</th>
-      <th>Status</th>
+        <th>Title</th>
+        <th>Priority</th>
+        <th>Status</th>
     </tr>
-    <% (Task.all).each do |task| %>
-    <% if task.task_types_id == @task_type.id%>
-        <tr>
-          <td><%= task.title %></td>
-          <td>
-            <% if task.priority != nil %>
-              <% if task.priority == 1 %>
-                      Low
-              <% elsif task.priority == 2 %>
-                      Normal
-              <% elsif task.priority == 3 %>
-                      High
-              <% elsif task.priority == 4 %>
-                      Urgent
-              <% end %>
-              <% else %>
-              <% end%>
-          </td>
-          <td>
-            <% if task.status != nil %>
-              <% if task.status == 1 %>
-                  Incomplete
-              <% elsif task.status == 2 %>
-                  In-Progress
-              <% elsif task.status == 3 %>
-                  Complete
-              <% end %>
-            <%else%>
-            <%end%>
-          </td>
-          <td><%= link_to 'Show', task_path(task) %></td>
-        </tr>
-      <%end%>
-  <% end %>
-  </table><br>
-  <%= link_to 'Back', home_index_path %>
+    <% (@task_type.tasks).each do |task| %>
+    <tr>
+        <td><%= task.title %></td>
+        <td><%= task.priority.nil? ? "" : task_priority(task) %></td>
+        <td><%= task.status.nil? ? "" : task_status(task) %></td>
+        <td><%= link_to 'Show', task_path(task) %></td>
+    </tr>
+    <%end%>
+</table><br>
+<%= link_to 'Back', home_index_path %>

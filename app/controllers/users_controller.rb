@@ -5,6 +5,10 @@ class UsersController < ApplicationController
 
     def show
         @user = User.find(params[:id])
+        @user_group = @user.user_groups   
+        @user_group.each do |user_group|
+            @task_type_option = user_group.task_type_option
+        end
     end
     
     def new
@@ -13,6 +17,10 @@ class UsersController < ApplicationController
 
     def edit
         @user = User.find(params[:id])
+        @user_group = @user.user_groups   
+        @user_group.each do |user_group|
+            @task_type_option = user_group.task_type_option
+        end
     end
 
     def create

@@ -37,6 +37,29 @@
             <%= form.text_field :email %>
         </p>
 
+        <strong>Roles/Permissions</strong>
+            <% if @task_type_option.nil? || @user_group.nil?%>
+                <h2>No roles/permissions assigned to this user</h2>
+            <% else %>
+                <table>
+                    <tr>
+                        <th>Department</th>
+                        <th>Role</th>
+                    </tr>
+                    <% @user.user_groups.each do |user_group|%>        
+                    <tr>
+                        <tr>
+                        <td><%= user_group.task_type_option.task_type.name%>
+                        <td><%= user_group.task_type_option.name%></td>
+                        <td><%= link_to 'Remove', user_group_path(user_group),
+                            method: :delete,
+                            data: { confirm: "Are you sure you want to remove this role from #{@user.full_name}?" } %></td><br>
+                    </tr>
+                    <% end %>
+                </table>
+            <% end %><br>
+
+        <!-- Should Make this a seperate form -->
         <p>
             <%= form.label :password_digest, 'Password' %><br>
             <%= form.password_field :password_digest %>

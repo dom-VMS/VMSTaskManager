@@ -12,7 +12,7 @@
     <%= @task_type.description %>
 </p>
 
-<%= link_to 'Create New Task', new_task_path(:task_types_id => params[:id]) %><br>
+<%= link_to 'Create New Task', new_task_path(:task_type_id => params[:id]) %><br>
 <h2>Open Tasks</h2>
 
 <table>
@@ -22,7 +22,7 @@
       <th>Status</th>
     </tr>
     <% (Task.all).each do |task| %>
-    <% if task.task_types_id == @task_type.id%>
+    <% if task.task_type_id == @task_type.id%>
         <tr>
           <td><%= task.title %></td>
           <td>

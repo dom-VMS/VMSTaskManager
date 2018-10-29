@@ -25,6 +25,10 @@ class User < ApplicationRecord
    has_secure_password
 
     def full_name
-        "#{f_name} #{l_name}"
+        name = "#{f_name} #{l_name}"
+        if name.nil?
+           return ""
+        end
+        return name
     end
 end
