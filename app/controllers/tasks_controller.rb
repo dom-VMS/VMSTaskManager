@@ -17,6 +17,13 @@ class TasksController < ApplicationController
     def new
         @task = Task.new
         @task_assignment = TaskAssignment.new
+        @file_attachment = FileAttachment.new
+        @task_type = TaskType.find_by_id(params[:task_type_id])
+        @assignable_users = []
+        (@task_type.task_type_options).each do |task_type_options|
+            @assignable_users.concat(task_type_options.users)
+        end
+
     end
 
     def edit
@@ -35,8 +42,12 @@ class TasksController < ApplicationController
 
         if @task.save!
             redirect_to @task
+
             @task_assignment = TaskAssignment.create(task_id: @task.id, assigned_to_id: assignment_params_new[:assigned_to_id])
             @task_assignment.save!
+
+            @file_attachment = FileAttachment.create(task_id: @task.id, file: attachment_params_new[:file])
+            @file_attachment.save!
         else
             render 'new'
         end
@@ -46,9 +57,12 @@ class TasksController < ApplicationController
     def update
         @task = Task.find(params[:id])
         @task_assignment = TaskAssignment.where("task_id = #{params[:id]}")
+        @file_attachment = FileAttachment.where("task_id = #{params[:id]}")
 
         if @task.update(edit_task_params)
             @task_assignment.exists? ? @task_assignment.update(assignment_params) : TaskAssignment.create(assignment_params)
+            @file_attachment.exists? ? @file_attachment.update(attachment_params) : TaskAssignment.create(attachment_params)
+
             redirect_to @task
         else
           render 'edit'
@@ -77,5 +91,13 @@ class TasksController < ApplicationController
 
       def assignment_params_new
         params.require(:task).permit(:assigned_to_id)
+      end
+
+      def attachment_params
+        params.require(:task).permit(:task_id, :file)
+      end
+
+      def attachment_params_new
+        params.require(:task).permit(:file)
       end
 end

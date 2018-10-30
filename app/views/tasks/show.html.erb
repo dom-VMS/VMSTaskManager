@@ -43,6 +43,11 @@
     <%= @date %>
 </p>
 
+<h2>Attachments</h2>
+<% @task.file_attachments.each do |file_attachment|%>
+    <a href="<%= file_attachment.file.url %>" target="_blank"><%= image_tag(file_attachment.file.url, size:'320') if !file_attachment.blank? %></a>
+<% end %>
+
 <h2>Comments</h2>
 <%= render @task.comments %>
 
