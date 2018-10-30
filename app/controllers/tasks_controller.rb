@@ -61,7 +61,7 @@ class TasksController < ApplicationController
 
         if @task.update(edit_task_params)
             @task_assignment.exists? ? @task_assignment.update(assignment_params) : TaskAssignment.create(assignment_params)
-            @file_attachment.exists? ? @file_attachment.update(attachment_params) : TaskAssignment.create(attachment_params)
+            @file_attachment.exists? ? @file_attachment.update(attachment_params) : FileAttachment.create(attachment_params)
 
             redirect_to @task
         else
