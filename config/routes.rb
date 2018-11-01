@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
   get 'home/login'
   get 'home/index'
+  get 'home/ticket'
   get '/admin' => 'admin#index'
   get '/admin/task_types' => 'admin#task_types'
 

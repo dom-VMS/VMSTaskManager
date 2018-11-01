@@ -19,26 +19,19 @@ class TasksController < ApplicationController
         @task_assignment = TaskAssignment.new
         @task_type = TaskType.find_by_id(params[:task_type_id])        
         @task.file_attachments.build
-        @assignable_users = []
-        (@task_type.task_type_options).each do |task_type_options|
-            @assignable_users.concat(task_type_options.users)
-        end
+        @assignable_users = Task.get_assignable_users(@task_type.task_type_options)
     end
 
     def edit
         @task = Task.find(params[:id])
         @assignee = TaskAssignment.get_assignee_object(@task);
         @task_type = TaskType.find_by_id(@task.task_type_id)
-        @assignable_users = []
-        (@task_type.task_type_options).each do |task_type_options|
-            @assignable_users.concat(task_type_options.users)
-        end
+        @assignable_users = Task.get_assignable_users(@task_type.task_type_options)
     end
 
     def create
         @task = Task.new(new_task_params)
         if @task.save!
-            redirect_to @task
             @task_assignment = TaskAssignment.create(task_id: @task.id, assigned_to_id: assignment_params_new[:assigned_to_id])
             @task_assignment.save!
             if !(attachment_params[:file_attachments_attributes]).nil?

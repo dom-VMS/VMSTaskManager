@@ -1,8 +1,3 @@
-# User Model
-# Attributes: id, employee_number, f_name, l_name, email, hourly_rate, password_digest.
-# Primary Key: id
-# Foreign Key(s): None
-
 class User < ApplicationRecord
     has_many :logged_labors
 

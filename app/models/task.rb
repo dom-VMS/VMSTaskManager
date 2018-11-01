@@ -11,4 +11,13 @@ class Task < ApplicationRecord
     validates :title, presence: true, 
                     length: { minimum: 5 }
     validates_presence_of :task_type_id
+
+
+    def self.get_assignable_users(task_type_options)
+        assignable_users = []
+        task_type_options.each do |task_type_option|
+            assignable_users.concat(task_type_option.users)
+        end
+        return assignable_users
+    end
 end

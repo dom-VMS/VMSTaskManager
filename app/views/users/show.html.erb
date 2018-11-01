@@ -26,7 +26,6 @@
         </tr>
         <% @user.user_groups.each do |user_group|%>        
         <tr>
-            <tr>
             <td><%= user_group.task_type_option.task_type.name%></td>
             <td><%= link_to "#{user_group.task_type_option.name}", task_type_option_path(user_group.task_type_option)%></td>
         </tr>
@@ -34,6 +33,26 @@
     </table>
 <% end %><br>
 
+<strong>Recent Activity</strong>
+<% unless @user.logged_labors.empty? %>
+<table>
+    <tr>
+        <th>Task</th>
+        <th>Description</th>
+        <th>Time Spent</th>
+        <th>Date</th>
+    </tr>
+    <% @user.logged_labors.each do |activity|%>
+    <tr>
+        <td><%= link_to "#{Task.find_by_id(activity.task_id).title}", task_path(activity.task_id) %></td>
+        <td><%= activity.description%></td>
+        <td><%= activity.time_spent %></td>
+        <td><%= (activity.updated_at).strftime("%m/%d/%Y")  %></td>
+    </tr>
+    <% end %>
+</table>
+<% end %>
 
+<br>
 <%= link_to 'Edit', edit_user_path(@user)%>
 <%= link_to 'Back', users_path %>

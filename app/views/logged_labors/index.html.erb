@@ -11,12 +11,14 @@
         <th> User </th>
         <th> Description </th>
         <th> Time Spent </th>
+        <th> Date </th>
     </tr>
     <% @logged_labors.each do |logged_labor| %>
     <tr>
         <td><%= logged_labor.user.full_name %></td>
         <td><%= logged_labor.description %></td>
         <td><%= logged_labor.time_spent %></td>
+        <td><%= (logged_labor.created_at).strftime("%m/%d/%Y")  %></td>
 
 
     </tr>
