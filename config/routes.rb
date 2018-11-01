@@ -5,8 +5,9 @@ Rails.application.routes.draw do
   get '/admin/task_types' => 'admin#task_types'
 
   resources :tasks do
-    resources :comments
+    resources :comments, :only => [:create, :destroy]
     resources :logged_labors
+    resources :file_attachments, :only => [:create, :destroy]
   end
 
   resources :logged_labors

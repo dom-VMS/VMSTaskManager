@@ -17,13 +17,12 @@ class TasksController < ApplicationController
     def new
         @task = Task.new
         @task_assignment = TaskAssignment.new
-        @file_attachment = FileAttachment.new
-        @task_type = TaskType.find_by_id(params[:task_type_id])
+        @task_type = TaskType.find_by_id(params[:task_type_id])        
+        @task.file_attachments.build
         @assignable_users = []
         (@task_type.task_type_options).each do |task_type_options|
             @assignable_users.concat(task_type_options.users)
         end
-
     end
 
     def edit
@@ -34,35 +33,29 @@ class TasksController < ApplicationController
         (@task_type.task_type_options).each do |task_type_options|
             @assignable_users.concat(task_type_options.users)
         end
-
     end
 
     def create
         @task = Task.new(new_task_params)
-
         if @task.save!
             redirect_to @task
-
             @task_assignment = TaskAssignment.create(task_id: @task.id, assigned_to_id: assignment_params_new[:assigned_to_id])
             @task_assignment.save!
-
-            @file_attachment = FileAttachment.create(task_id: @task.id, file: attachment_params_new[:file])
-            @file_attachment.save!
         else
             render 'new'
         end
-
     end
 
     def update
         @task = Task.find(params[:id])
         @task_assignment = TaskAssignment.where("task_id = #{params[:id]}")
-        @file_attachment = FileAttachment.where("task_id = #{params[:id]}")
+
+        if !(attachment_params[:file_attachments_attributes]).nil?
+            @task.file_attachments.create(:task_id => attachment_params[:task], :file => attachment_params[:file_attachments_attributes][:file])
+        end
 
         if @task.update(edit_task_params)
             @task_assignment.exists? ? @task_assignment.update(assignment_params) : TaskAssignment.create(assignment_params)
-            @file_attachment.exists? ? @file_attachment.update(attachment_params) : FileAttachment.create(attachment_params)
-
             redirect_to @task
         else
           render 'edit'
@@ -73,12 +66,12 @@ class TasksController < ApplicationController
         @task = Task.find(params[:id])
         @task.destroy
        
-        redirect_to home_index_path
+        redirect_to task_type_path(@task.task_type_id)
     end
 
     private
       def new_task_params
-        params.require(:task).permit(:title, :description, :priority, :status, :percentComplete, :task_type_id)
+        params.require(:task).permit(:title, :description, :priority, :status, :percentComplete, :task_type_id, file_attachments_attributes: [:file])
       end
 
       def edit_task_params
@@ -94,10 +87,6 @@ class TasksController < ApplicationController
       end
 
       def attachment_params
-        params.require(:task).permit(:task_id, :file)
-      end
-
-      def attachment_params_new
-        params.require(:task).permit(:file)
+        params.require(:task).permit(file_attachments_attributes: [:id, :file])
       end
 end
