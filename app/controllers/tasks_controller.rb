@@ -41,6 +41,9 @@ class TasksController < ApplicationController
             redirect_to @task
             @task_assignment = TaskAssignment.create(task_id: @task.id, assigned_to_id: assignment_params_new[:assigned_to_id])
             @task_assignment.save!
+            if !(attachment_params[:file_attachments_attributes]).nil?
+                @task.file_attachments.create(:task_id => attachment_params[:task], :file => attachment_params[:file_attachments_attributes][:file])
+            end
         else
             render 'new'
         end
@@ -71,7 +74,7 @@ class TasksController < ApplicationController
 
     private
       def new_task_params
-        params.require(:task).permit(:title, :description, :priority, :status, :percentComplete, :task_type_id, file_attachments_attributes: [:file])
+        params.require(:task).permit(:title, :description, :priority, :status, :percentComplete, :task_type_id)
       end
 
       def edit_task_params
