@@ -12,6 +12,7 @@ class TasksController < ApplicationController
         @assignee = TaskAssignment.get_assignee(@task)
         @hours_spent = LoggedLabor.hours_spent_on_task(@task)
         @date = (@task.created_at).strftime("%m/%d/%Y") 
+        @task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task.task_type_id)
     end
     
     def new
@@ -37,6 +38,7 @@ class TasksController < ApplicationController
             if !(attachment_params[:file_attachments_attributes]).nil?
                 @task.file_attachments.create(:task_id => attachment_params[:task], :file => attachment_params[:file_attachments_attributes][:file])
             end
+            redirect_to @task
         else
             render 'new'
         end

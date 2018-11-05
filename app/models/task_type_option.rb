@@ -4,28 +4,6 @@ class TaskTypeOption < ApplicationRecord
   has_many :user_groups, dependent: :destroy
   has_many :users, through: :user_groups
 
-  # Runs a process to find the related @task_type_option(s) when provided a @user_group.
-  # Params:
-  # user_group - An instance of the object @user_group.
-  def self.find_by_user_group(user_group)
-    task_type_option = []
-    user_group.each do |i|
-      task_type_option.push(TaskTypeOption.find_by_id(i.task_type_option_id))
-    end
-
-    return task_type_option
-  end
-
-  # Gets @task_type.name of any task_type related to a provided @task_type_option
-  # Params:
-  # task_type_option -  An instance of the object @task_type_option.
-  def self.get_task_type_name(task_type_option)
-    task_type_id_search = task_type_option.task_type_id
-    task_type_name = (TaskType.find_by_id(task_type_id_search)).name
-
-    return task_type_name
-  end
-
   # Gets all @users associated with task_type_option via @user_groups
   # Params:
   # task_type_option -  An instance of the object @task_type_option.
@@ -40,6 +18,21 @@ class TaskTypeOption < ApplicationRecord
     end
 
     return users
+  end
+
+  # Some users belong to multiple task_types. Their associated TaskTypeOptions
+  # may vary by TaskType. To ensure the current_user is granted their permissions
+  # when visiting their TaskType page, call this method to grab that specific
+  # set of TaskTypeOptions for a given current_user
+  # Params:
+  # current_user - current user in the session.
+  # task_type_id - give the task_type_id associated with the task_type or task.
+  def self.get_task_type_specific_options(current_user, task_type_id)
+    (current_user.task_type_options).each do |i|
+      if i.task_type_id == task_type_id
+          return task_type_option = i 
+      end
+    end
   end
 
 end

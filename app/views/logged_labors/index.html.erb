@@ -1,27 +1,27 @@
-<h1>Logged Labor</h1>
-<h2>VMS Task #<%= @task.id %> - <%= @task.title %></h2>
-<p>
-    <strong>Total Time Spent:</strong>
-    <%= @hours_spent %> hours
-</p>
-
-
-<table>
-    <tr>
-        <th> User </th>
-        <th> Description </th>
-        <th> Time Spent </th>
-        <th> Date </th>
-    </tr>
-    <% @logged_labors.each do |logged_labor| %>
-    <tr>
-        <td><%= logged_labor.user.full_name %></td>
-        <td><%= logged_labor.description %></td>
-        <td><%= logged_labor.time_spent %></td>
-        <td><%= (logged_labor.created_at).strftime("%m/%d/%Y")  %></td>
-
-
-    </tr>
-    <% end %>
-</table>
-<%= link_to 'Back', task_path(@task) %>
+<% if logged_in? %>
+    <h1>Logged Labor</h1>
+    <h2>VMS Task #<%= @task.id %> - <%= @task.title %></h2>
+    <p>
+        <strong>Total Time Spent:</strong>
+        <%= @hours_spent %> hours
+    </p>
+    <table>
+        <tr>
+            <th> User </th>
+            <th> Description </th>
+            <th> Time Spent </th>
+            <th> Date </th>
+        </tr>
+        <% @logged_labors.each do |logged_labor| %>
+        <tr>
+            <td><%= logged_labor.user.full_name %></td>
+            <td><%= logged_labor.description %></td>
+            <td><%= logged_labor.time_spent %></td>
+            <td><%= (logged_labor.created_at).strftime("%m/%d/%Y")  %></td>
+        </tr>
+        <% end %>
+    </table>
+    <%= link_to 'Back', task_path(@task) %>
+<% else %>
+    <%= render 'errors/not_signed_in' %>
+<% end %>

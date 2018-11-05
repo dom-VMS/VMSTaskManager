@@ -18,6 +18,7 @@ class User < ApplicationRecord
    validates_presence_of :employee_number
 
    has_secure_password
+   validates :password, presence: true, length: { minimum: 6 }
 
     def full_name
         name = "#{f_name} #{l_name}"

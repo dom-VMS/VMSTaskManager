@@ -5,6 +5,7 @@ class TaskTypesController < ApplicationController
     
     def show
         @task_type = TaskType.find(params[:id])
+        @task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task_type.id)
     end
     
     def new

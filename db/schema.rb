@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181030123308) do
+ActiveRecord::Schema.define(version: 20181102132407) do
 
   create_table "comments", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string "commenter"
@@ -67,6 +67,7 @@ ActiveRecord::Schema.define(version: 20181030123308) do
     t.bigint "task_type_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "isAdmin"
     t.index ["task_type_id"], name: "index_task_type_options_on_task_type_id"
   end
 

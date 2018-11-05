@@ -1,5 +1,6 @@
 class UsersController < ApplicationController
     def index
+        current_user = User.find_by_id(session[:current_user_id])
         @users = User.all
     end
 
@@ -27,6 +28,8 @@ class UsersController < ApplicationController
         @user = User.new(user_params)
  
         if @user.save!
+            log_in @user
+            flash[:success] = "Welcome to Task Manager!"
             redirect_to @user
         else
             render 'new'

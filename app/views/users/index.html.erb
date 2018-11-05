@@ -1,19 +1,22 @@
-<h1>Users</h1>
-<%= link_to 'Create New User', new_user_path %><br><br>
-
-<table>
-    <tr>
-      <th>Employee Number</th>
-      <th>Employee Name</th>
-      <th>Email Address</th>
-    </tr>
-    <% @users.each do |user| %>
+<% if logged_in? && isAdmin? %> 
+    <h1>Users</h1>
+    <%= link_to 'Create New User', new_user_path %><br><br>
+    <table>
         <tr>
-            <td><%= user.employee_number %></td>
-            <td><%= user.full_name %></td>
-            <td><%= user.email %></td>
-            <td><%= link_to 'View', user_path(user) %></td>
+        <th>Employee Number</th>
+        <th>Employee Name</th>
+        <th>Email Address</th>
         </tr>
-    <% end %>
-</table>
-<%= link_to 'Back', admin_path %>
+        <% @users.each do |user| %>
+            <tr>
+                <td><%= user.employee_number %></td>
+                <td><%= user.full_name %></td>
+                <td><%= user.email %></td>
+                <td><%= link_to 'View', user_path(user) %></td>
+            </tr>
+        <% end %>
+    </table>
+    <%= link_to 'Back', admin_path %>
+<% else %>
+     <%= render 'errors/not_signed_in' %>
+<% end %>

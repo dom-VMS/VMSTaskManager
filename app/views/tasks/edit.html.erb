@@ -1,5 +1,9 @@
-<h1>Edit task</h1>
- 
-<%= render 'form' %>
- 
-<%= link_to 'Back', task_path %>
+<% if logged_in? %>
+    <h1>Edit task</h1>
+    
+    <%= render 'form' %>
+    
+    <%= link_to 'Back', task_path %>
+<% else %>
+     <%= render 'errors/not_signed_in' %>
+<% end %>

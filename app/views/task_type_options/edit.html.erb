@@ -1,2 +1,6 @@
-<h1>Edit '<%="#{@task_type_option.name}"%>' Configuration </h1>
-<%= render 'form' %>
+<% if logged_in? && isAdmin? %>
+    <h1>Edit '<%="#{@task_type_option.name}"%>' Configuration </h1>
+    <%= render 'form' %>
+<% else %>
+     <%= render 'errors/not_signed_in' %>
+<% end %>

@@ -1,42 +1,46 @@
-<h1>Roles & Permissions</h1>
+<% if logged_in? && isAdmin? %>
+    <h1>Roles & Permissions</h1>
 
-<%(TaskType.all).each do |task_type|%>
-<h2><%= task_type.name %></h2>
-<%= link_to "Create New #{task_type.name} Role", new_task_type_option_path(@task_type_option, :task_type => task_type) %><br>
-<table>
-    <tr>
-      <th>Name</th>
-      <th>View Tasks</th>
-      <th>Create Tasks</th>
-      <th>Update Tasks</th>
-      <th>Delete Tasks</th>
-      <th>Approve Tasks</th>
-      <th>Verify Tasks</th>
-      <th>Comment on Tasks</th>
-      <th>Log Labor</th>
-      <th>View Cost</th>
-    </tr>
-    <%task_type_options = TaskTypeOption.all%>
-      <% (task_type.task_type_options.all).each do |task_type_option|%>
-          <% if task_type_option.task_type_id == task_type.id%>
-              <tr>
-                  <td><strong> <%= link_to task_type_option.name, task_type_option_path(task_type_option.id) %></strong></td>
-                  <td><%= task_type_option.can_view ? '✔' : '×' %> </td>
-                  <td><%= task_type_option.can_create ? '✔' : '×' %></td>
-                  <td><%= task_type_option.can_update ? '✔' : '×' %></td>
-                  <td><%= task_type_option.can_delete ? '✔' : '×' %></td>
-                  <td><%= task_type_option.can_approve ? '✔' : '×' %></td>
-                  <td><%= task_type_option.can_verify ? '✔' : '×' %></td>
-                  <td><%= task_type_option.can_comment ? '✔' : '×' %></td>
-                  <td><%= task_type_option.can_log_labor ? '✔' : '×' %></td>
-                  <td><%= task_type_option.can_view_cost ? '✔' : '×' %></td>
+    <%(TaskType.all).each do |task_type|%>
+    <h2><%= task_type.name %></h2>
+    <%= link_to "Create New #{task_type.name} Role", new_task_type_option_path(@task_type_option, :task_type => task_type) %><br>
+    <table>
+        <tr>
+        <th>Name</th>
+        <th>View Tasks</th>
+        <th>Create Tasks</th>
+        <th>Update Tasks</th>
+        <th>Delete Tasks</th>
+        <th>Approve Tasks</th>
+        <th>Verify Tasks</th>
+        <th>Comment on Tasks</th>
+        <th>Log Labor</th>
+        <th>View Cost</th>
+        </tr>
+        <%task_type_options = TaskTypeOption.all%>
+        <% (task_type.task_type_options.all).each do |task_type_option|%>
+            <% if task_type_option.task_type_id == task_type.id%>
+                <tr>
+                    <td><strong> <%= link_to task_type_option.name, task_type_option_path(task_type_option.id) %></strong></td>
+                    <td><%= task_type_option.can_view ? '✔' : '×' %> </td>
+                    <td><%= task_type_option.can_create ? '✔' : '×' %></td>
+                    <td><%= task_type_option.can_update ? '✔' : '×' %></td>
+                    <td><%= task_type_option.can_delete ? '✔' : '×' %></td>
+                    <td><%= task_type_option.can_approve ? '✔' : '×' %></td>
+                    <td><%= task_type_option.can_verify ? '✔' : '×' %></td>
+                    <td><%= task_type_option.can_comment ? '✔' : '×' %></td>
+                    <td><%= task_type_option.can_log_labor ? '✔' : '×' %></td>
+                    <td><%= task_type_option.can_view_cost ? '✔' : '×' %></td>
 
-              </tr>
-          <%end%>
-      <%end%>
-    
-</table>
-<% end%>
-<br>
-<br>
-<%= link_to 'Back', admin_path %>
+                </tr>
+            <%end%>
+        <%end%>
+        
+    </table>
+    <% end%>
+    <br>
+    <br>
+    <%= link_to 'Back', admin_path %>
+<% else %>
+     <%= render 'errors/not_signed_in' %>
+<% end %>

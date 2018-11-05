@@ -1,25 +1,65 @@
-<h1><%= @task_type.name %></h1>
-<p>
-    <strong>Description:</strong>
-    <%= @task_type.description %>
-</p>
+<% if logged_in? %>
+    <h1><%= @task_type.name %></h1>
+    <p>
+        <strong>Description:</strong>
+        <%= @task_type.description %>
+    </p>
 
-<%= link_to 'Create New Task', new_task_path(:task_type_id => params[:id]) %><br>
-<h2>Open Tasks</h2>
+    <% if @task_type_option.can_create %>
+        <%= link_to 'Create New Task', new_task_path(:task_type_id => params[:id]) %><br>
+    <% end %>
 
-<table>
-    <tr>
-        <th>Title</th>
-        <th>Priority</th>
-        <th>Status</th>
-    </tr>
-    <% (@task_type.tasks).each do |task| %>
-    <tr>
-        <td><%= task.title %></td>
-        <td><%= task.priority.nil? ? "" : task_priority(task) %></td>
-        <td><%= task.status.nil? ? "" : task_status(task) %></td>
-        <td><%= link_to 'Show', task_path(task) %></td>
-    </tr>
-    <%end%>
-</table><br>
-<%= link_to 'Back', home_index_path %>
+    <h2>Assigned to you:</h2>
+    <table>
+        <tr>
+            <th>Title</th>
+            <th>Priority</th>
+            <th>Status</th>
+        </tr>
+        <% (@task_type.tasks.where('status != 3')).each do |task| %>
+        <tr>
+            <td><%= task.title %></td>
+            <td><%= task.priority.nil? ? "" : task_priority(task) %></td>
+            <td><%= task.status.nil? ? "" : task_status(task) %></td>
+            <td><%= link_to 'Show', task_path(task) %></td>
+        </tr>
+        <%end%>
+    </table><br>
+
+    <h2>Open Tasks</h2>
+    <table>
+        <tr>
+            <th>Title</th>
+            <th>Priority</th>
+            <th>Status</th>
+        </tr>
+        <% (@task_type.tasks.where('status != 3')).each do |task| %>
+        <tr>
+            <td><%= task.title %></td>
+            <td><%= task.priority.nil? ? "" : task_priority(task) %></td>
+            <td><%= task.status.nil? ? "" : task_status(task) %></td>
+            <td><%= link_to 'Show', task_path(task) %></td>
+        </tr>
+        <%end%>
+    </table><br>
+
+    <h2>Recently Complete</h2>
+    <table>
+        <tr>
+            <th>Title</th>
+            <th>Priority</th>
+            <th>Status</th>
+        </tr>
+        <% (@task_type.tasks.where('status = 3')).each do |task| %>
+        <tr>
+            <td><%= task.title %></td>
+            <td><%= task.priority.nil? ? "" : task_priority(task) %></td>
+            <td><%= task.status.nil? ? "" : task_status(task) %></td>
+            <td><%= link_to 'Show', task_path(task) %></td>
+        </tr>
+        <%end%>
+    </table><br>
+    <%= link_to 'Back', home_index_path %>
+<% else %>
+     <%= render 'errors/not_signed_in' %>
+<% end %>

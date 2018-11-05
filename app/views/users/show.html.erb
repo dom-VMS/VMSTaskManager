@@ -1,58 +1,62 @@
-<h2>User Profile</h2>
+<% if logged_in? && (isAdmin? or current_user == @user) %>
+    <h2>User Profile</h2>
 
-</p>
-    <strong>Employee Number:</strong>
-    <%= @user.employee_number%>
-<p>
+    </p>
+        <strong>Employee Number:</strong>
+        <%= @user.employee_number%>
+    <p>
 
-<p>
-    <strong>Name:</strong>
-    <%= @user.full_name %>
-</p>
+    <p>
+        <strong>Name:</strong>
+        <%= @user.full_name %>
+    </p>
 
-<p>
-    <strong>Email:</strong>
-    <%= @user.email %>
-</p>
+    <p>
+        <strong>Email:</strong>
+        <%= @user.email %>
+    </p>
 
-<strong>Roles/Permissions</strong><br><br>
-<% if @task_type_option.nil? || @user_group.nil?%>
-    <h2>No roles/permissions assigned to this user</h2>
-<% else %>
+    <strong>Roles/Permissions</strong><br><br>
+    <% if @task_type_option.nil? || @user_group.nil?%>
+        <h2>No roles/permissions assigned to this user</h2>
+    <% else %>
+        <table>
+            <tr>
+                <th>Department</th>
+                <th>Role</th>
+            </tr>
+            <% @user.user_groups.each do |user_group|%>        
+            <tr>
+                <td><%= user_group.task_type_option.task_type.name%></td>
+                <td><%= link_to "#{user_group.task_type_option.name}", task_type_option_path(user_group.task_type_option)%></td>
+            </tr>
+            <% end %>
+        </table>
+    <% end %><br>
+
+    <strong>Recent Activity</strong>
+    <% unless @user.logged_labors.empty? %>
     <table>
         <tr>
-            <th>Department</th>
-            <th>Role</th>
+            <th>Task</th>
+            <th>Description</th>
+            <th>Time Spent</th>
+            <th>Date</th>
         </tr>
-        <% @user.user_groups.each do |user_group|%>        
+        <% @user.logged_labors.each do |activity|%>
         <tr>
-            <td><%= user_group.task_type_option.task_type.name%></td>
-            <td><%= link_to "#{user_group.task_type_option.name}", task_type_option_path(user_group.task_type_option)%></td>
+            <td><%= link_to "#{Task.find_by_id(activity.task_id).title}", task_path(activity.task_id) %></td>
+            <td><%= activity.description%></td>
+            <td><%= activity.time_spent %></td>
+            <td><%= (activity.updated_at).strftime("%m/%d/%Y")  %></td>
         </tr>
-         <% end %>
+        <% end %>
     </table>
-<% end %><br>
-
-<strong>Recent Activity</strong>
-<% unless @user.logged_labors.empty? %>
-<table>
-    <tr>
-        <th>Task</th>
-        <th>Description</th>
-        <th>Time Spent</th>
-        <th>Date</th>
-    </tr>
-    <% @user.logged_labors.each do |activity|%>
-    <tr>
-        <td><%= link_to "#{Task.find_by_id(activity.task_id).title}", task_path(activity.task_id) %></td>
-        <td><%= activity.description%></td>
-        <td><%= activity.time_spent %></td>
-        <td><%= (activity.updated_at).strftime("%m/%d/%Y")  %></td>
-    </tr>
     <% end %>
-</table>
-<% end %>
 
-<br>
-<%= link_to 'Edit', edit_user_path(@user)%>
-<%= link_to 'Back', users_path %>
+    <br>
+    <%= link_to 'Edit', edit_user_path(@user)%>
+    <%= link_to 'Back', users_path %>
+<% else %>
+     <%= render 'errors/not_signed_in' %>
+<% end %>

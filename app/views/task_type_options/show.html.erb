@@ -1,49 +1,54 @@
 <!-- Display the different Task Type Configurations -->
-
-<h1><%= "#{@task_type_name}" %> - <%= "#{@task_type_option.name}" %> Configurations </h1>
-<table>
-    <tr>
-      <th>View Tasks</th>
-      <th>Create Tasks</th>
-      <th>Update Tasks</th>
-      <th>Delete Tasks</th>
-      <th>Approve Tasks</th>
-      <th>Verify Tasks</th>
-      <th>Comment on Tasks</th>
-      <th>Log Labor</th>
-      <th>View Cost</th>
-    </tr>
-    <tr>
-        <td><%= @task_type_option.can_view  ? '✔' : '×' %></td>
-        <td><%= @task_type_option.can_create  ? '✔' : '×' %></td>
-        <td><%= @task_type_option.can_update  ? '✔' : '×' %></td>
-        <td><%= @task_type_option.can_delete  ? '✔' : '×' %></td>
-        <td><%= @task_type_option.can_approve  ? '✔' : '×' %></td>
-        <td><%= @task_type_option.can_verify  ? '✔' : '×' %></td>
-        <td><%= @task_type_option.can_comment  ? '✔' : '×' %></td>
-        <td><%= @task_type_option.can_log_labor  ? '✔' : '×' %></td>
-        <td><%= @task_type_option.can_view_cost  ? '✔' : '×' %></td>
-    </tr> 
-</table>
-<br><br>
-<% if @user.empty? %>
-    <h3>No users have been assigned to this role.</h3>
-<% else %>
+<% if logged_in? %>
+    <h1><%= "#{@task_type_name}" %> - <%= "#{@task_type_option.name}" %> Configurations </h1>
     <table>
         <tr>
-            <th>Assigned Users</th>
+        <th>View Tasks</th>
+        <th>Create Tasks</th>
+        <th>Update Tasks</th>
+        <th>Delete Tasks</th>
+        <th>Approve Tasks</th>
+        <th>Verify Tasks</th>
+        <th>Comment on Tasks</th>
+        <th>Log Labor</th>
+        <th>View Cost</th>
         </tr>
-         <% @user.each do |user| %>
-        <tr> 
-            <td><%= user.full_name %></td>
-        </tr>
-        <% end %>
+        <tr>
+            <td><%= @task_type_option.can_view  ? '✔' : '×' %></td>
+            <td><%= @task_type_option.can_create  ? '✔' : '×' %></td>
+            <td><%= @task_type_option.can_update  ? '✔' : '×' %></td>
+            <td><%= @task_type_option.can_delete  ? '✔' : '×' %></td>
+            <td><%= @task_type_option.can_approve  ? '✔' : '×' %></td>
+            <td><%= @task_type_option.can_verify  ? '✔' : '×' %></td>
+            <td><%= @task_type_option.can_comment  ? '✔' : '×' %></td>
+            <td><%= @task_type_option.can_log_labor  ? '✔' : '×' %></td>
+            <td><%= @task_type_option.can_view_cost  ? '✔' : '×' %></td>
+        </tr> 
     </table>
-<% end %><br>
-<%= link_to 'Assign User', new_user_group_path(:task_type_option_id => params[:id]) %><br>
-<br>
-<%= link_to 'Edit Configuration', edit_task_type_option_path(@task_type_option) %><br>
-<%= link_to 'Delete Configuration', task_type_option_path(@task_type_option),
-                method: :delete,
-                data: { confirm: 'Are you sure you want to delete this role?' } %><br>
-<%= link_to 'Back', task_type_options_path %>
+    <br><br>
+    <% if isAdmin? %>
+        <% if @user.empty? %>
+            <h3>No users have been assigned to this role.</h3>
+        <% else %>
+            <table>
+                <tr>
+                    <th>Assigned Users</th>
+                </tr>
+                <% @user.each do |user| %>
+                <tr> 
+                    <td><%= user.full_name %></td>
+                </tr>
+                <% end %>
+            </table>
+        <% end %><br>
+        <%= link_to 'Assign User', new_user_group_path(:task_type_option_id => params[:id]) %><br>
+        <br>
+        <%= link_to 'Edit Configuration', edit_task_type_option_path(@task_type_option) %><br>
+        <%= link_to 'Delete Configuration', task_type_option_path(@task_type_option),
+                        method: :delete,
+                        data: { confirm: 'Are you sure you want to delete this role?' } %><br>
+        <%= link_to 'Back', task_type_options_path %>
+    <% end %>
+<% else %>
+     <%= render 'errors/not_signed_in' %>
+<% end %>

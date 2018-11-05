@@ -4,6 +4,13 @@ Rails.application.routes.draw do
   get 'home/ticket'
   get '/admin' => 'admin#index'
   get '/admin/task_types' => 'admin#task_types'
+  get 'admin/task_types' => 'task_type#index'
+  get 'errors/not_signed_in'
+
+  #sessions
+  get    '/login',   to: 'sessions#new'
+  post   '/login',   to: 'sessions#create'
+  delete '/logout',  to: 'sessions#destroy'
 
   resources :tasks do
     resources :comments, :only => [:create, :destroy]
@@ -15,7 +22,7 @@ Rails.application.routes.draw do
 
   resources :task_types
 
-  get 'admin/task_types' => 'task_type#index'
+  
   resources :task_type_options 
   resources :user_groups
   
@@ -23,7 +30,5 @@ Rails.application.routes.draw do
     resources :user_groups
   end
   
-  root 'home#login'
-
-
+  root 'sessions#new'
 end
