@@ -47,7 +47,7 @@
         <% if @assignee.present?%>
             <%= form.select(:assigned_to_id, options_from_collection_for_select(@assignable_users, :id, :full_name, @assignee.id)) %>
         <% else %>
-            <%= form.select(:assigned_to_id, options_from_collection_for_select(@assignable_users, :id, :full_name), include_blank: "Select User") %>
+            <%= form.select(:assigned_to_id, options_from_collection_for_select(@assignable_users, :id, :full_name), include_blank: "All") %>
         <% end %>
     </p>
 
@@ -69,9 +69,11 @@
         </p>
     <% end %>
 
+    <% assigned_by_id = current_user.id %>
     <%= form.hidden_field 'task_type_id', :value => params[:task_type_id] %>
     <%= form.hidden_field 'task_id', :value => params[:id] %>
- 
+    <%= form.hidden_field 'assigned_by_id', :value => assigned_by_id %>
+
     <p>
         <%= form.submit %>
     </p>

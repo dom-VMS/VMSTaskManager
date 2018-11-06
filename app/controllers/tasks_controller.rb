@@ -77,11 +77,11 @@ class TasksController < ApplicationController
       end
 
       def assignment_params
-        params.require(:task).permit(:task_id, :assigned_to_id)
+        params.require(:task).permit(:task_id, :assigned_to_id, :assigned_by_id)
       end
 
       def assignment_params_new
-        params.require(:task).permit(:assigned_to_id)
+        params.require(:task).permit(:assigned_to_id, :assigned_by_id)
       end
 
       def attachment_params

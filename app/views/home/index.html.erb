@@ -1,4 +1,6 @@
 <h1>VMS Task Manager</h1>
+<%puts session.to_json%>
+<%puts current_user.to_json%>
 <% if logged_in? %>
   <h3>Welcome, <%= current_user.full_name %>! </h3>
   <h3>Please select a department to view tasks.</h3>

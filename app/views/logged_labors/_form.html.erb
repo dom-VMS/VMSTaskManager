@@ -16,10 +16,6 @@
   <% end %>
 
   <p>
-    <%= form.label :user_id %><br>
-    <%= form.select(:user_id, options_from_collection_for_select(@assignable_users, :id, :full_name), include_blank: "Select User") %>  </p>
-  </p>
-  <p>
     <%= form.label :description %><br>
     <%= form.text_area :description %>
   </p>
@@ -28,7 +24,10 @@
     <%= form.text_field :time_spent %>
   </p>
   
-  <%=form.hidden_field 'task_id', :value => @task.id %>
+  <% user_id = current_user.id %>
+
+  <%= form.hidden_field 'user_id', :value => user_id %>
+  <%= form.hidden_field 'task_id', :value => @task.id %>
 
   <p>
     <%= form.submit %>

@@ -10,8 +10,6 @@ class LoggedLaborsController < ApplicationController
 
     def new
         @task = Task.find(params[:task_id])
-        @task_type = TaskType.find_by_id(@task.task_type_id) 
-        @assignable_users = Task.get_assignable_users(@task_type.task_type_options)
         @logged_labors = LoggedLabor.new
     end
 

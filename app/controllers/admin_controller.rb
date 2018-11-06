@@ -1,9 +1,12 @@
 class AdminController < ApplicationController
     def index
-        unless isAdmin?
-            redirect_to home_index_path
+        if logged_in?
+            unless isAdmin?
+                redirect_to home_index_path
+            end
+        else
+            render partial: 'errors/not_signed_in'
         end
-
     end
 
     def task_types

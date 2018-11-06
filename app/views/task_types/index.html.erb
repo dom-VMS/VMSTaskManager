@@ -1,5 +1,6 @@
-<h1>Groups</h1>
 <% if logged_in? && isAdmin? %>
+    <h1>Groups</h1>
+
     <%= link_to 'Add New Group', new_task_type_path %><br><br> <!-- Move this to new page -->
 
     <% @task_type.each do |task_type|%>

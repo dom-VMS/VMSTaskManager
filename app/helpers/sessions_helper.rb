@@ -19,7 +19,7 @@ module SessionsHelper
 
     # Logs out the current user
     def log_out
-        session.destroy(:user_id)
+        session.destroy
         @current_user = nil
     end
 

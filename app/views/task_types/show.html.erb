@@ -8,8 +8,27 @@
     <% if @task_type_option.can_create %>
         <%= link_to 'Create New Task', new_task_path(:task_type_id => params[:id]) %><br>
     <% end %>
-
-    <h2>Assigned to you:</h2>
+    <% unless get_tasks_assigned_to_user_for_task_type(@task_type).empty? %>
+        <h2>Assigned to you:</h2>
+        <table>
+            <tr>
+                <th>Title</th>
+                <th>Priority</th>
+                <th>Status</th>
+            </tr>
+            <% get_tasks_assigned_to_user_for_task_type(@task_type).each do |task| %>
+            <tr>
+                <td><%= task.title %></td>
+                <td><%= task.priority.nil? ? "" : task_priority(task) %></td>
+                <td><%= task.status.nil? ? "" : task_status(task) %></td>
+                <td><%= link_to 'Show', task_path(task) %></td>
+            </tr>
+            <% end %>
+        </table><br>
+    <% else %>
+        <h3>Assigned to you: N/A</h3>
+    <%end%>
+    <h2>All Open Tasks:</h2>
     <table>
         <tr>
             <th>Title</th>
@@ -26,24 +45,7 @@
         <%end%>
     </table><br>
 
-    <h2>Open Tasks</h2>
-    <table>
-        <tr>
-            <th>Title</th>
-            <th>Priority</th>
-            <th>Status</th>
-        </tr>
-        <% (@task_type.tasks.where('status != 3')).each do |task| %>
-        <tr>
-            <td><%= task.title %></td>
-            <td><%= task.priority.nil? ? "" : task_priority(task) %></td>
-            <td><%= task.status.nil? ? "" : task_status(task) %></td>
-            <td><%= link_to 'Show', task_path(task) %></td>
-        </tr>
-        <%end%>
-    </table><br>
-
-    <h2>Recently Complete</h2>
+    <h2>Recently Completed:</h2>
     <table>
         <tr>
             <th>Title</th>
