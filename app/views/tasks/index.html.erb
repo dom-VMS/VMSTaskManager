@@ -1,1 +1,5 @@
-<h1>Working on it...</h1>
+  <h3>Please select a department to view tasks.</h3>
+
+<% @task_types.each do |type| %>
+    <h2><%= link_to "#{type.name}", task_type_path(type) %></h2>
+<% end %>

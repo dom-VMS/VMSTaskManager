@@ -1,21 +1,32 @@
-<h1>VMS Task Manager</h1>
-<%puts session.to_json%>
-<%puts current_user.to_json%>
 <% if logged_in? %>
-  <h3>Welcome, <%= current_user.full_name %>! </h3>
-  <h3>Please select a department to view tasks.</h3>
+  <h1>Welcome, <%= current_user.full_name %>! </h1>
 
-  <% @task_types.each do |type| %>
-  <h2><%= link_to "#{type.name}", task_type_path(type) %></h2>
+  <% @task_types.each do %>
+    <% unless get_all_tasks_assigned_to_user.empty? %>
+        <h2>Assigned to you:</h2>
+        <table class="table table-borderless table-hover table-sm w-50">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <% get_all_tasks_assigned_to_user.each do |task| %>
+            <tbody> 
+                <tr>
+                    <td><%= task.title %></td>
+                    <td><%= task.priority.nil? ? "" : task_priority(task) %></td>
+                    <td><%= task.status.nil? ? "" : task_status(task) %></td>
+                    <td><%= link_to 'Show', task_path(task) %></td>
+                </tr>
+            </tbody>
+            <% end %>
+        </table><br>
+    <% else %>
+        <h3>Assigned to you: N/A</h3>
+    <%end%>
   <% end %>
-
-  <% if isAdmin? == true %>
-    <%= link_to 'Administration',  admin_path %>
-  <% end%>
-
-  <br><%= link_to 'Sign Out', logout_path,
-                  method: :delete,
-                  data: { confirm: 'Are you sure you want to sign out?' } %>
 
 <% else %>
   <%= render 'errors/not_signed_in' %>

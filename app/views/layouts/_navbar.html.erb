@@ -1,3 +1,73 @@
-<nav class="navbar navbar-light bg-light">
-  <a class="navbar-brand" href="/">Our Logo</a>
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+
+<% if logged_in? %>
+ <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="/home/index">
+      <%= image_tag "logo.png", alt: "Varland Metal Service" %> 
+    </a>  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <%= link_to fa_icon('tasks 2x', text:'Tasks'),
+                          tasks_path,
+                          class: "nav-link"%>
+        </li>
+      <% if isAdmin? %>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="/admin" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <%= fa_icon('user-cog 2x', text:"Admin") %>
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <%= link_to fa_icon('users 2x', text:"Users"),
+                             users_path, 
+                             class:  "dropdown-item"%>
+          <%= link_to fa_icon('user-tie 2x',text:'Roles'),
+                             task_type_options_path, 
+                             class:  "dropdown-item" %>
+          <%= link_to fa_icon('tags', text:'Groups'),
+                             admin_task_types_path, 
+                             class:  "dropdown-item" %>
+        </div>
+      </li>
+      <% end %>
+    </ul>
+    <ul class="nav-item-inline dropdown my-2 my-lg-0">
+      <a class="nav-link-inline dropdown-toggle" href="/" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <%= fa_icon('user-alt', text:"#{current_user.f_name}")%>
+      </a>
+      <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+        <%= link_to fa_icon("user-circle 2x", text:"Profile"),
+                        user_path(current_user.id), 
+                        class:  "nav-link",
+                        title: 'Profile' %>
+        <%= link_to fa_icon("sign-out-alt 2x", text:"Sign Out"), 
+                      logout_path,
+                      class:  "dropdown-item",
+                      title: 'Sign Out',
+                      method: :delete, 
+                      data: { confirm: 'Are you sure you want to sign out?' } %>
+      </div>
+    </ul>
+  </div>
 </nav>
+
+<% else %>
+  <nav class="navbar navbar-dark bg-dark">
+    <a class="navbar-brand" href="/">
+      <%= image_tag "logo.png", alt: "Varland Metal Service" %>
+    </a>
+    <form class="form-inline">
+      <a class="btn btn-outline-primary" href="/login" role="button">
+      Login
+      </a>
+      <div style="padding-left: 10px;">
+        <a class="btn btn-outline-success" href="/users/new" role="button">
+        Sign Up
+        </a>
+      </div>
+    </form>
+  </nav>
+<% end %>

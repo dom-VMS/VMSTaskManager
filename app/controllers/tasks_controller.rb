@@ -4,7 +4,11 @@ class TasksController < ApplicationController
     http_basic_authenticate_with name: "admin", password: "Vms.1946!", only: :destroy
 
     def index
-        @tasks = Task.all
+      user_group = current_user.user_groups
+      @task_types = []
+      user_group.each do |ug| 
+        @task_types.push(TaskType.find_by_id(ug.task_type_option.task_type_id))
+      end
     end
     
     def show
@@ -13,6 +17,8 @@ class TasksController < ApplicationController
         @hours_spent = LoggedLabor.hours_spent_on_task(@task)
         @date = (@task.created_at).strftime("%m/%d/%Y") 
         @task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task.task_type_id)
+        @logged_labors = LoggedLabor.where(:task_id => @task.id)
+        @hours_spent = LoggedLabor.hours_spent_on_task(@task)
     end
     
     def new
@@ -69,11 +75,11 @@ class TasksController < ApplicationController
 
     private
       def new_task_params
-        params.require(:task).permit(:title, :description, :priority, :status, :percentComplete, :task_type_id)
+        params.require(:task).permit(:title, :description, :priority, :status, :percentComplete,  :isApproved, :task_type_id)
       end
 
       def edit_task_params
-        params.require(:task).permit(:title, :description, :priority, :status, :percentComplete)
+        params.require(:task).permit(:title, :description, :priority, :status, :percentComplete,  :isApproved)
       end
 
       def assignment_params

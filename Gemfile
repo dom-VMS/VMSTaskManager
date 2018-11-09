@@ -21,9 +21,14 @@ gem 'uglifier', '>= 1.3.0'
 
 # Hash function for passwords
 gem 'bcrypt', '>= 3.1.12'
-
-#Use Carrierwave for file attachments
+# Use Carrierwave for file attachments
 gem 'carrierwave', '~> 1.0'
+# Using Bootstrap for CSS/Front-end
+gem 'bootstrap', '~> 4.1.3'
+# Bootstrap dependency
+gem 'jquery-rails'
+# Used for icons
+gem "font-awesome-rails"
 
 # Use CoffeeScript for .coffee assets and views
 gem 'coffee-rails', '~> 4.2'

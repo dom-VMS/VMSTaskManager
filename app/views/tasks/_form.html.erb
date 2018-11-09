@@ -56,7 +56,9 @@
         <% if (file_attachment.file).present? %>
             <a href="<%= file_attachment.file.url %>" target="_blank"><%= image_tag(file_attachment.file.url, size:'32') if !file_attachment.blank? %></a>
             <%if @task.persisted?%>
-                <%= link_to 'Remove', [file_attachment.task, file_attachment],
+                <%= link_to fa_icon('trash-alt'), 
+                        [file_attachment.task, file_attachment],
+                        title: 'Remove',
                         method: :delete,
                         data: { confirm: 'Are you sure you want to remove this attachment?' } %><br>
             <%end%>
@@ -64,7 +66,7 @@
     <% end %>
     <%= form.fields_for :file_attachments_attributes do |fa| %>
         <p>
-            <%= fa.label :file, 'Select File' %>
+            <%= fa.label :file, ' ' %>
             <%= fa.file_field :file %>
         </p>
     <% end %>
@@ -73,6 +75,8 @@
     <%= form.hidden_field 'task_type_id', :value => params[:task_type_id] %>
     <%= form.hidden_field 'task_id', :value => params[:id] %>
     <%= form.hidden_field 'assigned_by_id', :value => assigned_by_id %>
+    <%= form.hidden_field 'isApproved', :value => true %>
+
 
     <p>
         <%= form.submit %>

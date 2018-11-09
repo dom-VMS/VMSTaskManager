@@ -1,29 +1,31 @@
 <!-- Display the different Task Type Configurations -->
 <% if logged_in? %>
     <h1><%= "#{@task_type_name}" %> - <%= "#{@task_type_option.name}" %> Configurations </h1>
-    <table>
-        <tr>
-        <th>View Tasks</th>
-        <th>Create Tasks</th>
-        <th>Update Tasks</th>
-        <th>Delete Tasks</th>
-        <th>Approve Tasks</th>
-        <th>Verify Tasks</th>
-        <th>Comment on Tasks</th>
-        <th>Log Labor</th>
-        <th>View Cost</th>
-        </tr>
-        <tr>
-            <td><%= @task_type_option.can_view  ? '✔' : '×' %></td>
-            <td><%= @task_type_option.can_create  ? '✔' : '×' %></td>
-            <td><%= @task_type_option.can_update  ? '✔' : '×' %></td>
-            <td><%= @task_type_option.can_delete  ? '✔' : '×' %></td>
-            <td><%= @task_type_option.can_approve  ? '✔' : '×' %></td>
-            <td><%= @task_type_option.can_verify  ? '✔' : '×' %></td>
-            <td><%= @task_type_option.can_comment  ? '✔' : '×' %></td>
-            <td><%= @task_type_option.can_log_labor  ? '✔' : '×' %></td>
-            <td><%= @task_type_option.can_view_cost  ? '✔' : '×' %></td>
-        </tr> 
+       <table class="table">
+        <thead>
+            <tr>
+            <th>View Tasks</th>
+            <th>Create Tasks</th>
+            <th>Update Tasks</th>
+            <th>Delete Tasks</th>
+            <th>Approve Tasks</th>
+            <th>Verify Tasks</th>
+            <th>Comment on Tasks</th>
+            <th>Log Labor</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><%= @task_type_option.can_view ? fa_icon('check') : fa_icon('times') %> </td>
+                <td><%= @task_type_option.can_create ? fa_icon('check') : fa_icon('times') %></td>
+                <td><%= @task_type_option.can_update ? fa_icon('check') : fa_icon('times') %></td>
+                <td><%= @task_type_option.can_delete ? fa_icon('check') : fa_icon('times') %></td>
+                <td><%= @task_type_option.can_approve ? fa_icon('check') : fa_icon('times') %></td>
+                <td><%= @task_type_option.can_verify ? fa_icon('check') : fa_icon('times') %></td>
+                <td><%= @task_type_option.can_comment ? fa_icon('check') : fa_icon('times') %></td>
+                <td><%= @task_type_option.can_log_labor ? fa_icon('check') : fa_icon('times') %></td>
+            </tr>
+        <tbody>
     </table>
     <br><br>
     <% if isAdmin? %>

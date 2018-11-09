@@ -1,5 +1,14 @@
 <% if logged_in? %>
-    <h2>VMS Task #<%= @task.id %> - <%= @task.title %></h2>
+<nav>
+  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+    <a class="nav-item nav-link active" id="nav-task-tab" data-toggle="tab" href="#nav-task" role="tab" aria-controls="nav-task" aria-selected="true">Task</a>
+    <a class="nav-item nav-link" id="nav-time-spent-tab" data-toggle="tab" href="#nav-time-spent" role="tab" aria-controls="nav-time-spent" aria-selected="false">Time Spent</a>
+    <a class="nav-item nav-link" id="nav-edit-tab" data-toggle="tab" href="#nav-contact" role="tab" aria-controls="nav-contact" aria-selected="false">Activity</a>
+  </div>
+</nav>
+<div class="tab-content" id="nav-tabContent">
+  <div class="tab-pane fade show active" id="nav-task" role="tabpanel" aria-labelledby="nav-task-tab">
+    <h1>VMS Task #<%= @task.id %> - <%= @task.title %></h1>
     </p>
         <strong>Task Type:</strong>
         <%= TaskType.find(@task.task_type_id).name unless @task.task_type_id.blank?%>
@@ -22,7 +31,12 @@
 
     <p>
         <strong>Percent Complete:</strong>
-        <%= @task.percentComplete %>%
+        <div class="progress w-25">
+            <div class="progress-bar" role="progressbar" style="width: <%= @task.percentComplete %>%;" 
+                aria-valuenow= "<%= @task.percentComplete %>" aria-valuemin="0" aria-valuemax="100">
+                <%= @task.percentComplete %>%
+            </div>
+        </div>
     </p>
 
     <p>
@@ -38,7 +52,7 @@
 
     <p>
         <strong>Hours Spent: </strong>
-        <%= @hours_spent.zero? ? '0' : (link_to "#{@hours_spent}", task_logged_labors_path(@task)) %>
+        <%= @hours_spent.zero? ? '0' : @hours_spent%>
     </p>
 
     <p>
@@ -56,12 +70,20 @@
     <%= render 'comments/form' %>
 
     <%= link_to 'Edit', edit_task_path(@task)%>
-    <% if @task_type_option.can_delete %>
-        <%= link_to 'Delete', task_path(@task),
-                        method: :delete,
-                        data: { confirm: 'Are you sure you want to delete this task?' } %></td><br>
-    <% end %>
-    <%= link_to 'Log time', new_task_logged_labor_path(@task) %><br>
+        <% if @task_type_option.can_delete %>
+            <%= link_to 'Delete', task_path(@task),
+                            method: :delete,
+                            data: { confirm: 'Are you sure you want to delete this task?' } %></td><br>
+        <% end %>
+  </div>
+  <div class="tab-pane fade" id="nav-time-spent" role="tabpanel" aria-labelledby="nav-time-spent-tab">
+    <%= render 'logged_labors/index'%>
+     <%= link_to 'Log time', new_task_logged_labor_path(@task) %><br>
+  </div>
+  <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
+    This page could be used to show who/what all of the updates are.
+  </div>
+</div>
     <%= link_to 'Back', task_type_path(@task.task_type_id) %>
 <% else %>
      <%= render 'errors/not_signed_in' %>

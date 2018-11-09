@@ -2,6 +2,7 @@ Rails.application.routes.draw do
   get 'home/login'
   get 'home/index'
   get 'home/ticket'
+  get 'home/welcom'
   get '/admin' => 'admin#index'
   get '/admin/task_types' => 'admin#task_types'
   get 'admin/task_types' => 'task_type#index'
@@ -30,5 +31,5 @@ Rails.application.routes.draw do
     resources :user_groups
   end
   
-  root 'sessions#new'
+  root 'home#welcome'
 end

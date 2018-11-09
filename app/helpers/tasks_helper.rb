@@ -1,13 +1,13 @@
 module TasksHelper
     def task_priority(task)
         if task.priority == 1 
-            return "Low"
+            return ('<span class="badge badge-light">Low</span>').html_safe
         elsif task.priority == 2 
-            return "Normal"
+            return ('<span class="badge badge-primary">Normal</span>').html_safe
         elsif task.priority == 3 
-            return "High"
+            return ('<span class="badge badge-warning">High</span>').html_safe
         elsif task.priority == 4 
-            return "Urgent"
+            return ('<span class="badge badge-danger">Urgent</span>').html_safe
         end 
     end
 
