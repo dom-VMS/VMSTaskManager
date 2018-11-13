@@ -1,67 +1,100 @@
 <% if logged_in? %>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/home/index">Home</a></li>
+            <li class="breadcrumb-item"><a href="/task_types">Departments</a></li>
+            <li class="breadcrumb-item"><a href="/task_types/<%=@task_type.id%>"><%=@task_type.name%></a></li>
+        </ol>
+    </nav>
     <h1><%= @task_type.name %></h1>
     <p>
         <strong>Description:</strong>
         <%= @task_type.description %>
     </p>
-
     <% if @task_type_option.can_create %>
-        <%= link_to 'Create New Task', new_task_path(:task_type_id => params[:id]) %><br>
+        <%= link_to fa_icon('plus-circle', text:'Create New Task'), new_task_path(:task_type_id => params[:id]) %><br><br>
     <% end %>
-    <% unless get_tasks_assigned_to_user_for_task_type(@task_type).empty? %>
-        <h2>Assigned to you:</h2>
-        <table>
-            <tr>
-                <th>Title</th>
-                <th>Priority</th>
-                <th>Status</th>
-            </tr>
-            <% get_tasks_assigned_to_user_for_task_type(@task_type).each do |task| %>
-            <tr>
-                <td><%= task.title %></td>
-                <td><%= task.priority.nil? ? "" : task_priority(task) %></td>
-                <td><%= task.status.nil? ? "" : task_status(task) %></td>
-                <td><%= link_to 'Show', task_path(task) %></td>
-            </tr>
-            <% end %>
-        </table><br>
-    <% else %>
-        <h3>Assigned to you: N/A</h3>
-    <%end%>
-    <h2>All Open Tasks:</h2>
-    <table>
-        <tr>
-            <th>Title</th>
-            <th>Priority</th>
-            <th>Status</th>
-        </tr>
-        <% (@task_type.tasks.where('status != 3')).each do |task| %>
-        <tr>
-            <td><%= task.title %></td>
-            <td><%= task.priority.nil? ? "" : task_priority(task) %></td>
-            <td><%= task.status.nil? ? "" : task_status(task) %></td>
-            <td><%= link_to 'Show', task_path(task) %></td>
-        </tr>
-        <%end%>
-    </table><br>
-
-    <h2>Recently Completed:</h2>
-    <table>
-        <tr>
-            <th>Title</th>
-            <th>Priority</th>
-            <th>Status</th>
-        </tr>
-        <% (@task_type.tasks.where('status = 3')).each do |task| %>
-        <tr>
-            <td><%= task.title %></td>
-            <td><%= task.priority.nil? ? "" : task_priority(task) %></td>
-            <td><%= task.status.nil? ? "" : task_status(task) %></td>
-            <td><%= link_to 'Show', task_path(task) %></td>
-        </tr>
-        <%end%>
-    </table><br>
-    <%= link_to 'Back', home_index_path %>
+    <div class="container-fluid">
+        <div class="card-columns">
+            <div class="card">
+                <div class="card-header">
+                    <strong>All Open Tasks</strong>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless table-hover table-sm w-50">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Priority</th>
+                            </tr>
+                        </thead>
+                        <% (@task_type.tasks.where('status != 3')).each do |task| %>
+                        <tbody> 
+                            <tr>
+                                <td><%= task.title %></td>
+                                <td><%= task.priority.nil? ? "" : task_priority(task) %></td>
+                                <td><%= link_to 'Show', task_path(task) %></td>
+                            </tr>
+                        </tbody> 
+                        <%end%>
+                    </table>
+                </div>
+            </div>
+            <% unless get_tasks_assigned_to_user_for_task_type(@task_type).empty? %>
+            <div class="card">
+                <div class="card-header">
+                    <strong>Assigned to you:</strong>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless table-hover table-sm w-50">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Priority</th>
+                            </tr>
+                        </thead>
+                        <% get_tasks_assigned_to_user_for_task_type(@task_type).each do |task| %>
+                        <tbody> 
+                            <tr>
+                                <td><%= task.title %></td>
+                                <td><%= task.priority.nil? ? "" : task_priority(task) %></td>
+                                <td><%= link_to 'Show', task_path(task) %></td>
+                            </tr>
+                        </tbody> 
+                        <% end %>
+                    </table>
+                </div>
+            </div>
+            <%end%>
+            <% unless (@task_type.tasks.where('status = 3')).empty? %>
+            <div class="card">
+                <div class="card-header">
+                    <strong>Recently Completed</strong>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless table-hover table-sm w-50">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Priority</th>
+                            </tr>
+                        </thead>
+                        <% (@task_type.tasks.where('status = 3')).each do |task| %>
+                        <tbody> 
+                            <tr>
+                                <td><%= task.title %></td>
+                                <td><%= task.priority.nil? ? "" : task_priority(task) %></td>
+                                <td><%= link_to 'Show', task_path(task) %></td>
+                            </tr>
+                        </tbody> 
+                        <%end%>
+                    </table><br>
+                </div>
+            </div>
+            <%end%>
+        </div>
+    </div>
+    </div>
 <% else %>
      <%= render 'errors/not_signed_in' %>
 <% end %>

@@ -1,14 +1,26 @@
-<% if logged_in? && isAdmin? %>
-    <h1>Groups</h1>
-
-    <%= link_to 'Add New Group', new_task_type_path %><br><br> <!-- Move this to new page -->
-
-    <% @task_type.each do |task_type|%>
-    <h2><%=link_to "#{task_type.name}", task_type_path(task_type) %></h2>
-    <% end%>
-    <br>
-    <br>
-    <%= link_to 'Back', admin_path %>
+<% if logged_in? %>
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/home/index">Home</a></li>
+        <li class="breadcrumb-item"><a href="/task_types">Departments</a></li>
+    </ol>
+</nav>
+<h1>Departments</h1>
+<div class="container-fluid">
+    <div class="card-deck">
+        <% @task_type.each do |task_type|%>
+        <div class="card">
+            <div class="card-header"> 
+                <strong><%= task_type.name %></strong>
+            </div>
+            <div class="card-body">
+                <p class="card-text"><%= task_type.description %></p>
+                <%= link_to "View Tasks", task_type_path(task_type), class: "btn btn-primary"%>
+            </div>
+        </div>
+        <% end%>
+    </div>
+</div>
 <% else %>
-     <%= render 'errors/not_signed_in' %>
+    <%= render 'errors/not_signed_in' %>
 <% end %>

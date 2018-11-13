@@ -14,7 +14,12 @@
         <%= link_to fa_icon('tasks 2x', text:'Tasks'),
                           tasks_path,
                           class: "nav-link"%>
-        </li>
+      </li>
+      <li class="nav-item">
+        <%= link_to fa_icon('building 2x', text:'Departments'),
+                          task_types_path,
+                          class: "nav-link"%>
+      </li>
       <% if isAdmin? %>
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="/admin" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -36,7 +41,7 @@
     </ul>
     <ul class="nav-item-inline dropdown my-2 my-lg-0">
       <a class="nav-link-inline dropdown-toggle" href="/" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <%= fa_icon('user-alt', text:"#{current_user.f_name}")%>
+          <%= fa_icon('user-alt 2x', text:"#{current_user.f_name}")%>
       </a>
       <div class="dropdown-menu" aria-labelledby="navbarDropdown">
         <%= link_to fa_icon("user-circle 2x", text:"Profile"),

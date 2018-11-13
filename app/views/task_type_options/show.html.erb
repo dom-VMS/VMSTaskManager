@@ -1,5 +1,12 @@
 <!-- Display the different Task Type Configurations -->
 <% if logged_in? %>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/home/index">Home</a></li>
+            <li class="breadcrumb-item"><a href="/task_type_options">Roles & Permissions</a></li>
+            <li class="breadcrumb-item"><a href="/task_type_options/<%= @task_type_option.id%>"><%= @task_type_option.name %> </a></li>
+        </ol>
+    </nav>
     <h1><%= "#{@task_type_name}" %> - <%= "#{@task_type_option.name}" %> Configurations </h1>
        <table class="table">
         <thead>

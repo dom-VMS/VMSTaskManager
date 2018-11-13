@@ -1,4 +1,10 @@
 <% if logged_in? && isAdmin? %> 
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/home/index">Home</a></li>
+            <li class="breadcrumb-item"><a href="/users">Users</a></li>
+        </ol>
+    </nav>
     <h1>Users</h1>
     <%= link_to 'Create New User', new_user_path %><br><br>
         <table class="table table-sm ">

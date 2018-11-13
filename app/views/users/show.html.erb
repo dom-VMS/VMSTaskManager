@@ -1,4 +1,20 @@
 <% if logged_in? && (isAdmin? or current_user == @user) %>
+<% if isAdmin?%>
+    <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/home/index">Home</a></li>
+                <li class="breadcrumb-item"><a href="/users">Users</a></li>
+                <li class="breadcrumb-item"><a href="/users/<%=@user.id%>"><%=@user.full_name%></a></li>
+            </ol>
+    </nav>
+<% else %>
+    <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/home/index">Home</a></li>
+                <li class="breadcrumb-item"><a href="/users/<%=@user.id%>"><%=@user.full_name%></a></li>
+            </ol>
+    </nav>
+<% end %>
 <nav>
   <div class="nav nav-tabs" id="nav-tab" role="tablist">
     <a class="nav-item nav-link active" id="nav-user-tab" data-toggle="tab" href="#nav-user" role="tab" aria-controls="nav-user" aria-selected="true">User</a>
@@ -27,7 +43,7 @@
     <% if @task_type_option.nil? || @user_group.nil?%>
         <h2>No roles/permissions assigned to this user</h2>
     <% else %>
-        <table class="table  w-25" >
+        <table class="table  w-25">
             <thead>
                 <tr>
                     <th>Department</th>
