@@ -92,7 +92,7 @@
      <%= link_to 'Log time', new_task_logged_labor_path(@task) %><br>
   </div>
   <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
-    This page could be used to show who/what all of the updates are.
+    <%= render 'activities/activity'%>
   </div>
 </div>
     <%= link_to 'Back', task_type_path(@task.task_type_id) %>

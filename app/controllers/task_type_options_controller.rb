@@ -49,6 +49,7 @@ class TaskTypeOptionsController < ApplicationController
     private
     def task_type_options_params
       params.require(:task_type_option).permit(:name,
+                                               :isAdmin,
                                                :can_view,
                                                :can_create,
                                                :can_update,

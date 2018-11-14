@@ -32,8 +32,11 @@
           <%= link_to fa_icon('user-tie 2x',text:'Roles'),
                              task_type_options_path, 
                              class:  "dropdown-item" %>
-          <%= link_to fa_icon('tags', text:'Groups'),
+          <%= link_to fa_icon('tags 2x', text:'Groups'),
                              admin_task_types_path, 
+                             class:  "dropdown-item" %>
+          <%= link_to fa_icon('eye 2x', text:'Activities'),
+                             activities_path, 
                              class:  "dropdown-item" %>
         </div>
       </li>

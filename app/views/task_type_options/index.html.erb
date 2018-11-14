@@ -23,6 +23,7 @@
                         <thead>
                             <tr>
                             <th>Name</th>
+                            <th>Admin</th>
                             <th>View Tasks</th>
                             <th>Create Tasks</th>
                             <th>Update Tasks</th>
@@ -39,6 +40,7 @@
                         <tbody>
                             <tr>
                                 <td><strong> <%= link_to task_type_option.name, task_type_option_path(task_type_option.id) %></strong></td>
+                                <td><%= task_type_option.isAdmin ? fa_icon('check') : fa_icon('times') %> </td>
                                 <td><%= task_type_option.can_view ? fa_icon('check') : fa_icon('times') %> </td>
                                 <td><%= task_type_option.can_create ? fa_icon('check') : fa_icon('times') %></td>
                                 <td><%= task_type_option.can_update ? fa_icon('check') : fa_icon('times') %></td>

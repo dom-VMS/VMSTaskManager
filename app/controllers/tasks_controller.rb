@@ -20,6 +20,7 @@ class TasksController < ApplicationController
         @task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task.task_type_id)
         @logged_labors = LoggedLabor.where(:task_id => @task.id)
         @hours_spent = LoggedLabor.hours_spent_on_task(@task)
+        @activities = TasksHelper.get_activities(@task)
     end
     
     def new

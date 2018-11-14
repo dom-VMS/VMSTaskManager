@@ -1,9 +1,10 @@
 <% if logged_in? %>
-  <h1>Welcome, <%= current_user.full_name %>! </h1>
+  <h1>Welcome,</h1>
+  <h1><strong><%= current_user.full_name %></strong></h1>
+  <h5><%=Time.now.strftime("%m/%d/%Y") %></h5>
 
-  
     <% unless get_all_tasks_assigned_to_user.empty? %>
-        <h2>Assigned to you:</h2>
+        <h2>Your current tasks:</h2>
         <table class="table table-borderless table-hover table-sm w-50">
             <thead>
                 <tr>

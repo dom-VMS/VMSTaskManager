@@ -8,21 +8,23 @@
         </ol>
     </nav>
     <h1><%= "#{@task_type_name}" %> - <%= "#{@task_type_option.name}" %> Configurations </h1>
-       <table class="table">
+       <table class="table text-center">
         <thead>
             <tr>
-            <th>View Tasks</th>
-            <th>Create Tasks</th>
-            <th>Update Tasks</th>
-            <th>Delete Tasks</th>
-            <th>Approve Tasks</th>
-            <th>Verify Tasks</th>
-            <th>Comment on Tasks</th>
-            <th>Log Labor</th>
+                <th>Is Admin</th>
+                <th>View Tasks</th>
+                <th>Create Tasks</th>
+                <th>Update Tasks</th>
+                <th>Delete Tasks</th>
+                <th>Approve Tasks</th>
+                <th>Verify Tasks</th>
+                <th>Comment on Tasks</th>
+                <th>Log Labor</th>
             </tr>
         </thead>
         <tbody>
             <tr>
+                <td><%= @task_type_option.isAdmin ? fa_icon('check') : fa_icon('times') %> </td>
                 <td><%= @task_type_option.can_view ? fa_icon('check') : fa_icon('times') %> </td>
                 <td><%= @task_type_option.can_create ? fa_icon('check') : fa_icon('times') %></td>
                 <td><%= @task_type_option.can_update ? fa_icon('check') : fa_icon('times') %></td>
@@ -52,12 +54,14 @@
         <% end %><br>
         <%= link_to 'Assign User', new_user_group_path(:task_type_option_id => params[:id]) %><br>
         <br>
-        <%= link_to 'Edit Configuration', edit_task_type_option_path(@task_type_option) %><br>
-        <%= link_to 'Delete Configuration', task_type_option_path(@task_type_option),
-                        method: :delete,
-                        data: { confirm: 'Are you sure you want to delete this role?' } %><br>
-        <%= link_to 'Back', task_type_options_path %>
+        <%= link_to fa_icon('edit', text:'Edit Configuration'), edit_task_type_option_path(@task_type_option)%><br>
+        <%= link_to fa_icon('trash-alt', text:'Delete Configuration'), task_type_option_path(@task_type_option),
+                                         method: :delete,
+                                         data: { confirm: 'Are you sure you want to delete this role?' }%><br>
     <% end %>
 <% else %>
      <%= render 'errors/not_signed_in' %>
 <% end %>
+
+<br>
+edit

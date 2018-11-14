@@ -14,12 +14,18 @@ class TaskTypesController < ApplicationController
 
     def edit
         @task_type = TaskType.find(params[:id])
+        @task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task_type.id)
+        if @task_type_option.nil?
+            flash[:error] = "Sorry, you do not have permission to edit #{@task_type.name}."
+            redirect_to admin_task_types_path
+        end
     end
 
     def create
         @task_type = TaskType.new(task_type_params)
  
         if @task_type.save
+            flash[:success] = "#{@task_type.name} has been added!"
             redirect_to @task_type
         else
             render 'new'

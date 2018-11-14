@@ -16,7 +16,13 @@ class LoggedLaborsController < ApplicationController
     def create
         @task = Task.find(params[:task_id])
         @logged_labors = @task.logged_labors.create(logged_labor_params)
-        @logged_labors.valid? ? (redirect_to task_path(@task)) : (render 'new')
+        if @logged_labors.valid? 
+            flash[:success] = "Labor entry added."
+            redirect_to task_path(@task)
+        else
+            flash[:error] = "Labor Entry Failed!"
+            render 'new'
+        end
         
     end
 

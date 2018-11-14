@@ -11,8 +11,10 @@
         <strong>Description:</strong>
         <%= @task_type.description %>
     </p>
-    <% if @task_type_option.can_create %>
-        <%= link_to fa_icon('plus-circle', text:'Create New Task'), new_task_path(:task_type_id => params[:id]) %><br><br>
+    <% unless @task_type_option.nil? %>
+        <% if @task_type_option.can_create %>
+            <%= link_to fa_icon('plus-circle', text:'New Task'), new_task_path(:task_type_id => params[:id]), class: "btn btn-primary" %><br><br>
+        <% end %>
     <% end %>
     <div class="container-fluid">
         <div class="card-columns">

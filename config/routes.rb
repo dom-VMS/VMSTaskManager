@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get 'activities/index'
+
   get 'home/login'
   get 'home/index'
   get 'home/ticket'
@@ -12,6 +14,8 @@ Rails.application.routes.draw do
   get    '/login',   to: 'sessions#new'
   post   '/login',   to: 'sessions#create'
   delete '/logout',  to: 'sessions#destroy'
+
+  resources :activities
 
   resources :tasks do
     resources :comments, :only => [:create, :destroy]

@@ -1,4 +1,7 @@
 class Task < ApplicationRecord
+    include PublicActivity::Model
+    tracked
+
     has_many :comments, dependent: :destroy
     has_many :logged_labors, dependent: :destroy
     has_many :task_assignments, dependent: :destroy
@@ -12,6 +15,7 @@ class Task < ApplicationRecord
                     length: { minimum: 5 }
     validates_presence_of :task_type_id
 
+    tracked owner: Proc.new{ |controller, model| controller.current_user }
 
     def self.get_assignable_users(task_type_options)
         assignable_users = []
