@@ -6,6 +6,8 @@ class TaskTypesController < ApplicationController
     def show
         @task_type = TaskType.find(params[:id])
         @task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task_type.id)
+        @tasks = @task_type.tasks.where.not(status: 3).or(@task_type.tasks.where(status: nil).where(isApproved: true))
+        @tasks_recently_complete = @task_type.tasks.where('status = 3').where("created_at > ?", 14.days.ago)
     end
     
     def new
@@ -16,7 +18,7 @@ class TaskTypesController < ApplicationController
         @task_type = TaskType.find(params[:id])
         @task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task_type.id)
         if @task_type_option.nil?
-            flash[:error] = "Sorry, you do not have permission to edit #{@task_type.name}."
+            flash[:error] = "Sorry, but you do not have permission to edit #{@task_type.name}."
             redirect_to admin_task_types_path
         end
     end

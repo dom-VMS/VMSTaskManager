@@ -1,0 +1,73 @@
+<h1>File a Maintenance Request</h1>
+
+<div class="container-fluid">
+<!-- Allows user(s) to fill in 'Task' information -->
+<%= form_with model: @task, local: true do |form| %>
+ 
+    <!-- Error Messages -->
+    <% if @task.errors.any? %>
+        <div id="error_explanation">
+        <h2>
+            <%= pluralize(@task.errors.count, "error") %> prohibited
+            this task from being saved:
+        </h2>
+        <ul>
+            <% @task.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+            <% end %>
+        </ul>
+        </div>
+    <% end %>
+    
+    <% if logged_in?%>
+        <% assigned_by_id = current_user.id %>
+    <% else %>
+        <%= form.label :assigned_by_id, 'Enter your VMS Employee Number' %><br>
+        <%= form.text_field :assigned_by_id %>
+    <% end %>
+
+    <p> <!-- Task Title -->
+        <%= form.label :title, 'What is the problem?' %><br>
+        <%= form.text_field :title %>
+    </p>
+ 
+    <p> <!-- Task Description -->
+        <%= form.label :description, 'Describe the issue.' %><br>
+        <%= form.text_area :description %>
+    </p>
+
+    <p> <!-- Task Priority -->
+        <%= form.label :priority %><br>
+        <%= form.select(:priority, options_for_select([['Low', 1],['Normal', 2],['High', 3],['Urgent', 4]], @task.priority), include_blank: "Select Priority") %>
+    </p>
+
+    <h2>Attachments</h2>
+    <% @task.file_attachments.each do |file_attachment|%>
+        <% if (file_attachment.file).present? %>
+            <a href="<%= file_attachment.file.url %>" target="_blank"><%= image_tag(file_attachment.file.url, size:'32') if !file_attachment.blank? %></a>
+            <%if @task.persisted?%>
+                <%= link_to fa_icon('trash-alt'), 
+                        [file_attachment.task, file_attachment],
+                        title: 'Remove',
+                        method: :delete,
+                        data: { confirm: 'Are you sure you want to remove this attachment?' } %><br>
+            <%end%>
+        <%end%>
+    <% end %>
+    <%= form.fields_for :file_attachments_attributes do |fa| %>
+        <p>
+            <%= fa.label :file, ' ' %>
+            <%= fa.file_field :file %>
+        </p>
+    <% end %>
+
+    <%= form.hidden_field 'task_type_id', :value => 1 %>
+    <%= form.hidden_field 'isApproved', :value => nil %>
+
+
+    <p>
+        <%= form.submit 'File Request' %>
+    </p>
+ 
+<% end %>
+</div>

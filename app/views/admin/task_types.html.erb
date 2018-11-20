@@ -7,9 +7,9 @@
     </nav>
     <%= link_to fa_icon('plus-circle', text: 'Add Department'), new_task_type_path %><br><br> 
     <div class="container-fluid">
-        <div class="card-columns">
+        <div class="card-deck">
         <% @task_type.each do |task_type|%>
-                <div class="card">
+                <div class="card mb-4 text-center">
                     <div class="card-header"> 
                         <strong><%= task_type.name %></strong>
                     </div>
@@ -19,10 +19,10 @@
                         <%= link_to "Edit", edit_task_type_path(task_type), class: "btn btn-secondary"%>
                     </div>
                 </div>
+            <div class="w-100 d-none d-md-block d-lg-none"><!-- wrap every 3 on md--></div>
         <%end%>
         </div>
-    </div>  
-    <%= link_to 'Back', home_index_path %>
+    </div>
 <% else %>
         <%= render 'errors/not_signed_in' %>
 <% end %>

@@ -1,7 +1,7 @@
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
 
 <% if logged_in? %>
- <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+ <nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-dark">
     <a class="navbar-brand" href="/home/index">
       <%= image_tag "logo.png", alt: "Varland Metal Service" %> 
     </a>  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -18,6 +18,11 @@
       <li class="nav-item">
         <%= link_to fa_icon('building 2x', text:'Departments'),
                           task_types_path,
+                          class: "nav-link"%>
+      </li>
+      <li class="nav-item">
+        <%= link_to fa_icon('ticket-alt 2x', text:'File Ticket'),
+                          ticket_path,
                           class: "nav-link"%>
       </li>
       <% if isAdmin? %>
@@ -38,6 +43,12 @@
           <%= link_to fa_icon('eye 2x', text:'Activities'),
                              activities_path, 
                              class:  "dropdown-item" %>
+          <%if isMaintenanceAdmin?%>
+          <div class="dropdown-divider"></div>
+          <%= link_to fa_icon('user-tag 2x', text:'Review Tickets'),
+                            review_path, 
+                            class:  "dropdown-item" %>
+          <%end%>
         </div>
       </li>
       <% end %>

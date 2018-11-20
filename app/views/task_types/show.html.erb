@@ -6,16 +6,18 @@
             <li class="breadcrumb-item"><a href="/task_types/<%=@task_type.id%>"><%=@task_type.name%></a></li>
         </ol>
     </nav>
-    <h1><%= @task_type.name %></h1>
-    <p>
-        <strong>Description:</strong>
-        <%= @task_type.description %>
-    </p>
-    <% unless @task_type_option.nil? %>
-        <% if @task_type_option.can_create %>
-            <%= link_to fa_icon('plus-circle', text:'New Task'), new_task_path(:task_type_id => params[:id]), class: "btn btn-primary" %><br><br>
+    <div class="container-fluid">
+        <h1><%= @task_type.name %></h1>
+        <p>
+            <strong>Description:</strong>
+            <%= @task_type.description %>
+        </p>
+        <% unless @task_type_option.nil? %>
+            <% if @task_type_option.can_create %>
+                <%= link_to fa_icon('plus-circle', text:'New Task'), new_task_path(:task_type_id => params[:id]), class: "btn btn-primary" %><br><br>
+            <% end %>
         <% end %>
-    <% end %>
+    </div>
     <div class="container-fluid">
         <div class="card-columns">
             <div class="card">
@@ -23,19 +25,18 @@
                     <strong>All Open Tasks</strong>
                 </div>
                 <div class="card-body">
-                    <table class="table table-borderless table-hover table-sm w-50">
+                    <table class="table table-borderless table-hover table-sm">
                         <thead>
                             <tr>
-                                <th>Title</th>
+                                <th alighn="left">Title</th>
                                 <th>Priority</th>
                             </tr>
                         </thead>
-                        <% (@task_type.tasks.where('status != 3')).each do |task| %>
+                        <% (@tasks).each do |task| %>
                         <tbody> 
                             <tr>
-                                <td><%= task.title %></td>
+                                <td><%= link_to "#{task.title}", task_path(task)  %></td>
                                 <td><%= task.priority.nil? ? "" : task_priority(task) %></td>
-                                <td><%= link_to 'Show', task_path(task) %></td>
                             </tr>
                         </tbody> 
                         <%end%>
@@ -48,7 +49,7 @@
                     <strong>Assigned to you:</strong>
                 </div>
                 <div class="card-body">
-                    <table class="table table-borderless table-hover table-sm w-50">
+                    <table class="table table-borderless table-hover table-sm">
                         <thead>
                             <tr>
                                 <th>Title</th>
@@ -58,9 +59,8 @@
                         <% get_tasks_assigned_to_user_for_task_type(@task_type).each do |task| %>
                         <tbody> 
                             <tr>
-                                <td><%= task.title %></td>
+                                <td><%= link_to "#{task.title}", task_path(task)  %></td>
                                 <td><%= task.priority.nil? ? "" : task_priority(task) %></td>
-                                <td><%= link_to 'Show', task_path(task) %></td>
                             </tr>
                         </tbody> 
                         <% end %>
@@ -74,19 +74,18 @@
                     <strong>Recently Completed</strong>
                 </div>
                 <div class="card-body">
-                    <table class="table table-borderless table-hover table-sm w-50">
+                    <table class="table table-borderless table-hover table-sm">
                         <thead>
                             <tr>
                                 <th>Title</th>
                                 <th>Priority</th>
                             </tr>
                         </thead>
-                        <% (@task_type.tasks.where('status = 3')).each do |task| %>
+                        <% (@tasks_recently_complete).each do |task| %>
                         <tbody> 
                             <tr>
-                                <td><%= task.title %></td>
+                                <td><%= link_to "#{task.title}", task_path(task)  %></td>
                                 <td><%= task.priority.nil? ? "" : task_priority(task) %></td>
-                                <td><%= link_to 'Show', task_path(task) %></td>
                             </tr>
                         </tbody> 
                         <%end%>

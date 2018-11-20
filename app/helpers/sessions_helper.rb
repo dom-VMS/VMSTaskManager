@@ -33,4 +33,17 @@ module SessionsHelper
             return false
         end
     end
+
+    # Checks if the task_type_option is an Admin 
+    # and if the admin belongs to Maintenance (task_type_id == 1)
+    def isMaintenanceAdmin?
+        tto = current_user.task_type_options
+        check_admin = tto.pluck(:isAdmin)
+        check_task_type = tto.pluck(:task_type_id)
+        if check_admin.include?(true) && check_task_type.include?(1)
+            return true
+        else
+            return false
+        end
+    end
 end
