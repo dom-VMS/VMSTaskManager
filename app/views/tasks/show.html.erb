@@ -23,10 +23,15 @@
             </p>
         <% elsif @task.isApproved == false %>
             <span class="badge badge-danger">Ticket Denied</span>
+        <% elsif @task.isVerified == true %>
+            <span class="badge badge-success">Task Complete</span>
+        <% elsif @task.isVerified == false %>
+            <span class="badge badge-warning">Rework Required</span>
+        <% elsif @task.status == 3 && @task.isVerified != true %>
+            <span class="badge badge-secondary">Awaiting Verification</span>
         <% end %>
     </h1>
 </div>
-
 
 <nav>
   <div class="nav nav-tabs" id="nav-tab" role="tablist">
@@ -70,23 +75,18 @@
 
     <p>
         <strong>Assignee:</strong>
-        <% unless @assignee.empty? %>
-            <% @assignee.each do |assignee| %>
-                <%= assignee %><br>
-            <%end%>
-        <% else %>
-            All
-        <% end %>
+        <%= @assignee.full_name unless @assignee.blank?%><br>
+        
     </p>
 
     <p>
         <strong>Hours Spent: </strong>
-        <%= @hours_spent.zero? ? '0' : @hours_spent%>
+        <%= LoggedLabor.hours_spent_on_task(@task).zero?  ? '0' : LoggedLabor.hours_spent_on_task(@task)  %>
     </p>
 
     <p>
         <strong>Created: </strong>
-        <%= @date %>
+        <%= (@task.created_at).strftime("%m/%d/%Y") %>
     </p>
 
     <div class="card w-25">

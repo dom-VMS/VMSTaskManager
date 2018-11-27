@@ -9,7 +9,7 @@ class UserGroupsController < ApplicationController
 
     def show
         @user_group = UserGroup.find(params[:id])
-        @user = User.find(params[:user_id])
+        @user = User.find_by_id(params[:user_id])
     end
 
     def new

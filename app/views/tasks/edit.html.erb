@@ -1,4 +1,13 @@
 <% if logged_in? %>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/home/index">Home</a></li>
+    <li class="breadcrumb-item"><a href="/task_types">Departments</a></li>
+    <li class="breadcrumb-item"><a href="/task_types/<%=@task.task_type_id%>"><%=TaskType.find(@task.task_type_id).name unless @task.task_type_id.blank?%></a></li>
+    <li class="breadcrumb-item"><%= link_to "Task ##{@task.id}", task_path(@task)%></li>
+    <li class="breadcrumb-item active" aria-current="page">Edit</li>
+  </ol>
+</nav>
     <h1>Edit task</h1>
     
     <%= render 'form' %>

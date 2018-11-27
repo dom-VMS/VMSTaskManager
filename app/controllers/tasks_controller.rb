@@ -2,38 +2,27 @@ require 'date'
 
 class TasksController < ApplicationController
     def index
-        @task = Task.where(isVerified: nil).
-                     where.not(isApproved: [nil, false]).
-                     order("created_at DESC")
-        user_group = current_user.user_groups
-        @task_types = []
-        user_group.each do |ug| 
-            @task_types.push(TaskType.find_by_id(ug.task_type_option.task_type_id))
-        end
+        @task = get_open_tasks
     end
     
     def show
-        @task = Task.find(params[:id])
-        @assignee = TaskAssignment.get_assignee(@task)
-        @hours_spent = LoggedLabor.hours_spent_on_task(@task)
-        @date = (@task.created_at).strftime("%m/%d/%Y") 
-        @task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task.task_type_id)
-        @logged_labors = LoggedLabor.where(:task_id => @task.id)
-        @hours_spent = LoggedLabor.hours_spent_on_task(@task)
-        @activities = TasksHelper.get_activities(@task)
+        @task = find_task
+        @task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task.task_type_id) unless !current_user.present?
+        @activities = ActivitiesHelper.get_activities(@task)
+        @assignee = TaskAssignment.get_assignee_object(@task)
     end
     
     def new
         @task = Task.new
         @task_assignment = TaskAssignment.new
-        @task_type = TaskType.find_by_id(params[:task_type_id])        
+        @task_type = find_task_type        
         @task.file_attachments.build
         @assignable_users = Task.get_assignable_users(@task_type.task_type_options)
     end
 
     def ticket
         @task = Task.new
-        @task_type = TaskType.find_by_id(params[:task_type_id])        
+        @task_type = find_task_type       
         @task.file_attachments.build
     end
 
@@ -42,18 +31,21 @@ class TasksController < ApplicationController
         if @task.save!
             @task_assignment = TaskAssignment.create(task_id: @task.id, assigned_to_id: (User.where("employee_number = #{assignment_params_new[:assigned_to_id]}").id))
             @task_assignment.save!
-            if !(attachment_params[:file_attachments_attributes]).nil?
-                @task.file_attachments.create(:task_id => attachment_params[:task], :file => attachment_params[:file_attachments_attributes][:file])
-            end
+            add_file_attachment
             flash[:notice] = "Your ticket has been created!"
             logged_in? ? (redirect_to 'home/index') : (redirect_to 'home/welcome')
         else
+            flash[:danger] = "Ticket entry failed!"
             render 'new'
         end
     end
 
     def review
         @task = Task.where(isApproved: nil).order("created_at DESC")
+    end
+
+    def verify
+        @task = Task.where(isVerified: [nil, false]).where(status: 3).order("created_at DESC")
     end
 
     def update_ticket
@@ -63,8 +55,13 @@ class TasksController < ApplicationController
                 flash[:notice] = "Ticket Approved!"
             elsif (review_ticket_params[:isApproved] == "false")
                 flash[:notice] = "Ticket Rejected!"
+            elsif (review_ticket_params[:isVerified] == "true")
+                flash[:notice] = "Task Completion Approved!"
+            elsif (review_ticket_params[:isVerified] == "false")
+                flash[:notice] = "Task Completion Rejected!"
+            else
+                flash[:notice] = "Something went"
             end
-            
             redirect_to task
         else
           render 'edit'
@@ -72,7 +69,7 @@ class TasksController < ApplicationController
     end
 
     def edit
-        @task = Task.find(params[:id])
+        @task = find_task
         @assignee = TaskAssignment.get_assignee_object(@task);
         @task_type = TaskType.find_by_id(@task.task_type_id)
         @assignable_users = Task.get_assignable_users(@task_type.task_type_options)
@@ -83,9 +80,7 @@ class TasksController < ApplicationController
         if @task.save!
             @task_assignment = TaskAssignment.create(task_id: @task.id, assigned_to_id: assignment_params_new[:assigned_to_id])
             @task_assignment.save!
-            if !(attachment_params[:file_attachments_attributes]).nil?
-                @task.file_attachments.create(:task_id => attachment_params[:task], :file => attachment_params[:file_attachments_attributes][:file])
-            end
+            add_file_attachment
             flash[:notice] = "Successfully created task."
             redirect_to @task
         else
@@ -94,12 +89,9 @@ class TasksController < ApplicationController
     end
 
     def update
-        @task = Task.find(params[:id])
+        @task = find_task
         @task_assignment = TaskAssignment.where("task_id = #{params[:id]}")
-
-        if !(attachment_params[:file_attachments_attributes]).nil?
-            @task.file_attachments.create(:task_id => attachment_params[:task], :file => attachment_params[:file_attachments_attributes][:file])
-        end
+        add_file_attachment
 
         if @task.update(edit_task_params)
             @task_assignment.exists? ? @task_assignment.update(assignment_params) : TaskAssignment.create(assignment_params)
@@ -111,9 +103,8 @@ class TasksController < ApplicationController
     end
 
     def destroy
-        @task = Task.find(params[:id])
+        @task = find_task
         @task.destroy
-       
         redirect_to task_type_path(@task.task_type_id)
     end
 
@@ -139,6 +130,32 @@ class TasksController < ApplicationController
       end
 
       def review_ticket_params
-        params.permit(:id, :isApproved)
+        params.permit(:id, :isApproved, :isVerified, :status, :percentComplete)
+      end
+    
+    protected
+      # Finds task by id
+      def find_task
+        Task.find(params[:id])
+      end
+
+      # Finds task_type by task_type_id (used when creating a new task)
+      def find_task_type
+        TaskType.find_by_id(params[:task_type_id])
+      end
+
+      # Returns all tasks open tasks that are valid.
+      def get_open_tasks
+        Task.where(isVerified: nil).
+            where.not(percentComplete: 100).
+            where.not(isApproved: [nil, false]).
+            order("created_at DESC")
+      end
+
+      # Creates a new file_attachment entry if an attachment has been uploaded.
+      def add_file_attachment
+        if !(attachment_params[:file_attachments_attributes]).nil?
+            @task.file_attachments.create(:task_id => attachment_params[:task], :file => attachment_params[:file_attachments_attributes][:file])
+        end
       end
 end

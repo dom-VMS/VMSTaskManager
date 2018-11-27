@@ -3,7 +3,7 @@
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/home/index">Home</a></li>
             <li class="breadcrumb-item"><a href="/task_types">Departments</a></li>
-            <li class="breadcrumb-item"><a href="/task_types/<%=@task_type.id%>"><%=@task_type.name%></a></li>
+            <li class="breadcrumb-item active" aria-current="page"><%=@task_type.name%></li>
         </ol>
     </nav>
     <div class="container-fluid">
@@ -24,7 +24,7 @@
                 <div class="card-header">
                     <strong>All Open Tasks</strong>
                 </div>
-                <div class="card-body">
+                <div class="card-body scroll">
                     <table class="table table-borderless table-hover table-sm">
                         <thead>
                             <tr>
@@ -32,6 +32,7 @@
                                 <th>Priority</th>
                             </tr>
                         </thead>
+                        <%100.times{%>
                         <% (@tasks).each do |task| %>
                         <tbody> 
                             <tr>
@@ -40,6 +41,8 @@
                             </tr>
                         </tbody> 
                         <%end%>
+                        <%}%>
+
                     </table>
                 </div>
             </div>
@@ -48,7 +51,7 @@
                 <div class="card-header">
                     <strong>Assigned to you:</strong>
                 </div>
-                <div class="card-body">
+                <div class="card-body scroll">
                     <table class="table table-borderless table-hover table-sm">
                         <thead>
                             <tr>
@@ -73,7 +76,7 @@
                 <div class="card-header">
                     <strong>Recently Completed</strong>
                 </div>
-                <div class="card-body">
+                <div class="card-body scroll">
                     <table class="table table-borderless table-hover table-sm">
                         <thead>
                             <tr>

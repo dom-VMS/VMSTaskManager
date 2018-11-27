@@ -1,4 +1,5 @@
 module TasksHelper
+    # Takes a task and returns task.priority in a badge.
     def task_priority(task)
         if task.priority == 1 
             return ('<span class="badge badge-light">Low</span>').html_safe
@@ -11,6 +12,7 @@ module TasksHelper
         end 
     end
 
+    # Takes a task and returns task.status in readable text.
     def task_status(task)
         if task.status == 1
             return "Incomplete"
@@ -21,9 +23,4 @@ module TasksHelper
         end
     end
 
-    def self.get_activities(task)
-        activities_by_trackable = PublicActivity::Activity.order("created_at desc").where("trackable_type = ? and trackable_id = ?", "Task", task.id)
-        activities_by_recipient = PublicActivity::Activity.order("created_at desc").where("recipient_type = ? and recipient_id = ?", "Task", task.id)
-        return activities = activities_by_trackable + activities_by_recipient
-    end
 end

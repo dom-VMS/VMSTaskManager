@@ -1,5 +1,10 @@
 <div class="container-fluid">
     <h1>All Tasks</h1>
+    <% unless @task_type_option.nil? %>
+        <% if @task_type_option.can_create %>
+            <%= link_to fa_icon('plus-circle', text:'New Task'), new_task_path(:task_type_id => params[:id]), class: "btn btn-primary" %><br><br>
+        <% end %>
+    <% end %>
 </div>
 <div class="container-fluid">
     <table class="table table-borderless table-hover table-sm w-50">

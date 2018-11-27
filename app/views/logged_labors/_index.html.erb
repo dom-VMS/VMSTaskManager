@@ -11,7 +11,7 @@
             <p>
                 <h2>
                     <strong>Total Time Spent:</strong>
-                    <%= @hours_spent %> hours
+                    <%= LoggedLabor.hours_spent_on_task(@task) %> hours
                 </h2>
             </p>
         </div>
@@ -26,7 +26,7 @@
                     <th scope="col"> Date </th>
                 </tr>
             </thead>
-            <% @logged_labors.each do |logged_labor| %>
+            <% (@task.logged_labors).each do |logged_labor| %>
             <tbody>
                 <tr>
                     <td><%= logged_labor.user.full_name %></td>

@@ -7,9 +7,7 @@ class UsersController < ApplicationController
     def show
         @user = User.find(params[:id])
         @user_group = @user.user_groups   
-        @user_group.each do |user_group|
-            @task_type_option = user_group.task_type_option
-        end
+        get_task_type_options_from_user_group
     end
     
     def new
@@ -19,17 +17,14 @@ class UsersController < ApplicationController
     def edit
         @user = User.find(params[:id])
         @user_group = @user.user_groups   
-        @user_group.each do |user_group|
-            @task_type_option = user_group.task_type_option
-        end
+        get_task_type_options_from_user_group
     end
 
     def create
         @user = User.new(user_params)
  
         if @user.save!
-            log_in @user
-            flash[:success] = "Welcome to Task Manager!"
+            flash[:success] = "User Added!"
             redirect_to @user
         else
             render 'new'
@@ -40,7 +35,6 @@ class UsersController < ApplicationController
         @user = User.find(params[:id])
        
         if @user.update(user_params)
-            
           redirect_to @user
         else
           render 'edit'
@@ -57,5 +51,11 @@ class UsersController < ApplicationController
     private
       def user_params
         params.require(:user).permit(:employee_number, :f_name, :l_name, :email, :hourly_rate, :password_digest, :password_confirmation)
+      end
+
+      def get_task_type_options_from_user_group
+        @user_group.each do |user_group|
+            @task_type_option = user_group.task_type_option
+        end
       end
 end

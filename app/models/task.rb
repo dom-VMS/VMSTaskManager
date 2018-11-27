@@ -12,7 +12,7 @@ class Task < ApplicationRecord
 
     has_one :task_type
     validates :title, presence: true, 
-                    length: { minimum: 5 }
+                    length: { minimum: 5, message: "There must be a title."  }
     validates_presence_of :task_type_id
 
     tracked owner: Proc.new{ |controller, model| controller.current_user }

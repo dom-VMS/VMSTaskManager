@@ -43,8 +43,11 @@
           <%= link_to fa_icon('eye 2x', text:'Activities'),
                              activities_path, 
                              class:  "dropdown-item" %>
-          <%if isMaintenanceAdmin?%>
           <div class="dropdown-divider"></div>
+          <%= link_to fa_icon('check-circle 2x', text:'Verify Completion'),
+                            verify_path, 
+                            class:  "dropdown-item" %>
+          <%if isMaintenanceAdmin?%>
           <%= link_to fa_icon('user-tag 2x', text:'Review Tickets'),
                             review_path, 
                             class:  "dropdown-item" %>
