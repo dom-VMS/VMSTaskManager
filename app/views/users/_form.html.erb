@@ -70,8 +70,8 @@
         <!-- Should Make this a seperate form -->
         <% unless @user.persisted?%>
             <p>
-                <%= form.label :password_digest, 'Password' %><br>
-                <%= form.password_field :password_digest %>
+                <%= form.label :password, 'Password' %><br>
+                <%= form.password_field :password %>
             </p>
 
             <p>

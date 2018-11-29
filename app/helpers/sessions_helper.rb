@@ -34,8 +34,9 @@ module SessionsHelper
         end
     end
 
-    # Checks if the task_type_option is an Admin 
-    # and if the admin belongs to Maintenance (task_type_id == 1)
+    # Checks current user if they are an admin in Maintenance (task_type_id == 1)
+    # ...
+    # Used to determine who can "Review Tickets"
     def isMaintenanceAdmin?
         tto = current_user.task_type_options
         check_admin = tto.pluck(:isAdmin)

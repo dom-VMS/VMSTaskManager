@@ -1,7 +1,7 @@
 class UsersController < ApplicationController
     def index
         current_user = User.find_by_id(session[:current_user_id])
-        @users = User.all
+        @users = User.all.order(:employee_number)
     end
 
     def show
@@ -21,7 +21,9 @@ class UsersController < ApplicationController
     end
 
     def create
-        @user = User.new(user_params)
+        @user = User.create(user_params)
+        #@user.password_digest = BCrypt::Password.create(params[:password_digest])
+        #@user.password_confirmation = BCrypt::Password.create(params[:password_confirmation])
  
         if @user.save!
             flash[:success] = "User Added!"
@@ -50,7 +52,7 @@ class UsersController < ApplicationController
 
     private
       def user_params
-        params.require(:user).permit(:employee_number, :f_name, :l_name, :email, :hourly_rate, :password_digest, :password_confirmation)
+        params.require(:user).permit(:employee_number, :f_name, :l_name, :email, :hourly_rate, :password, :password_confirmation)
       end
 
       def get_task_type_options_from_user_group

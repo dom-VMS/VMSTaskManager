@@ -7,6 +7,7 @@
     <% end %>
 </div>
 <div class="container-fluid">
+<% unless @task.nil? %>
     <table class="table table-borderless table-hover table-sm w-50">
     <thead>
         <tr>
@@ -15,6 +16,7 @@
             <th>Priority</th>
         </tr>
     </thead>
+    
     <% @task.each do |task| %>
     <tbody> 
         <tr>
@@ -25,4 +27,7 @@
     </tbody>
     <% end %>
     </table><br>
+<% else %>
+    You need to be assigned to a department first.
+<% end %>
 </div>

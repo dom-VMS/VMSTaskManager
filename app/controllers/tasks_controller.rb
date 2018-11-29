@@ -2,7 +2,7 @@ require 'date'
 
 class TasksController < ApplicationController
     def index
-        @task = get_open_tasks
+        @task = Task.get_all_tasks_user_can_see(current_user)
     end
     
     def show
@@ -142,14 +142,6 @@ class TasksController < ApplicationController
       # Finds task_type by task_type_id (used when creating a new task)
       def find_task_type
         TaskType.find_by_id(params[:task_type_id])
-      end
-
-      # Returns all tasks open tasks that are valid.
-      def get_open_tasks
-        Task.where(isVerified: nil).
-            where.not(percentComplete: 100).
-            where.not(isApproved: [nil, false]).
-            order("created_at DESC")
       end
 
       # Creates a new file_attachment entry if an attachment has been uploaded.

@@ -32,7 +32,6 @@
                                 <th>Priority</th>
                             </tr>
                         </thead>
-                        <%100.times{%>
                         <% (@tasks).each do |task| %>
                         <tbody> 
                             <tr>
@@ -41,12 +40,10 @@
                             </tr>
                         </tbody> 
                         <%end%>
-                        <%}%>
-
                     </table>
                 </div>
             </div>
-            <% unless get_tasks_assigned_to_user_for_task_type(@task_type).empty? %>
+            <% unless @tasks_assigned_to_user.nil? %>
             <div class="card">
                 <div class="card-header">
                     <strong>Assigned to you:</strong>
@@ -59,7 +56,7 @@
                                 <th>Priority</th>
                             </tr>
                         </thead>
-                        <% get_tasks_assigned_to_user_for_task_type(@task_type).each do |task| %>
+                        <% @tasks_assigned_to_user.each do |task| %>
                         <tbody> 
                             <tr>
                                 <td><%= link_to "#{task.title}", task_path(task)  %></td>

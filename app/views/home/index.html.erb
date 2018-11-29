@@ -8,7 +8,7 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-sm-8">
-            <% unless get_all_tasks_assigned_to_user.empty? %>
+            <% unless @task.nil? %>
                 <h2>Your current tasks:</h2>
                 <table class="table table-borderless table-hover table-sm w-50">
                     <thead>
@@ -18,7 +18,7 @@
                             <th>Priority</th>
                         </tr>
                     </thead>
-                    <% get_all_tasks_assigned_to_user.each do |task| %>
+                    <% @task.each do |task| %>
                     <tbody> 
                         <tr>
                             <td><%= (TaskType.find_by_id(task.task_type_id)).name %></td>
