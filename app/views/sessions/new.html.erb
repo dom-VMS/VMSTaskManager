@@ -1,23 +1,21 @@
-<link href="sessions.scss" rel="stylesheet">
-<div class="container-fluid text-center">
-  <h1>Varland Metal Service </h1>
-  <h2> Task Manager </h2>
-</div>
-<div class="container mt-3 mb-3">
-  <div class="row justify-content-center">
-    <div class="col-12 col-sm-6 col-md-4 mb-3">
-      <% provide(:title, "Log in") %>
-      <body class="text-center container-fluid">
-        <%= form_for(:session, url: login_path) do |f| %>
-            <%= f.label :employee_number, class: "sr-only"%>
-            <%= f.number_field :employee_number, class: 'form-control', placeholder: "Employee #" %>
-
-            <%= f.label :password, class: "sr-only" %>
-            <%= f.password_field :password, class: 'form-control', placeholder: "Password"  %>
-
-          <%= f.submit "Log in", class: "btn btn-primary" %>
-        <% end %>
-      </body>
-    </div>
+<div class="container">
+  <div class="py-4 text-center">
+    <h1>Sign In</h1>
   </div>
+  <% provide(:title, "Log in") %>
+    <%= form_for(:session, url: login_path) do |f| %>
+    <div class="mb-3">
+       <p> 
+        <%= f.label :employee_number, 'Employee Number'%>
+        <%= f.number_field :employee_number, class: 'form-control', placeholder: "Employee #" %>
+      </p>
+    </div>
+    <div class="mb-3">
+      <p> 
+        <%= f.label :password, 'Password'%>
+        <%= f.password_field :password, class: 'form-control', placeholder: "Password"  %>
+      </p>
+    </div>
+    <%= f.submit "Log in", class: 'btn btn-primary  btn-lg btn-block' %>
+    <% end %>  
 </div>

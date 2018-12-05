@@ -25,7 +25,7 @@ class UserGroupsController < ApplicationController
         @user_group = UserGroup.new(user_group_params)
 
         if @user_group.save!
-            redirect_to admin_path
+            redirect_to task_type_option_path(@user_group.task_type_option)
         else
             render 'new'
         end

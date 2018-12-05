@@ -23,11 +23,22 @@ module SessionsHelper
         @current_user = nil
     end
 
-    # Checks if the task_type_option is an Admin
+    # Checks if the user is an Admin in any department
     def isAdmin?
         tto = current_user.task_type_options
-        container = tto.pluck(:isAdmin)
-        if container.include?(true)
+        admin = tto.pluck(:isAdmin)
+        if admin.include?(true)
+            return true
+        else
+            return false
+        end
+    end
+
+    # Checks if the user can verify task completion for any department.
+    def canVerify?
+        tto = current_user.task_type_options
+        verify = tto.pluck(:can_verify)
+        if verify.include?(true)
             return true
         else
             return false
@@ -36,15 +47,9 @@ module SessionsHelper
 
     # Checks current user if they are an admin in Maintenance (task_type_id == 1)
     # ...
-    # Used to determine who can "Review Tickets"
-    def isMaintenanceAdmin?
-        tto = current_user.task_type_options
-        check_admin = tto.pluck(:isAdmin)
-        check_task_type = tto.pluck(:task_type_id)
-        if check_admin.include?(true) && check_task_type.include?(1)
-            return true
-        else
-            return false
-        end
+    # Used to determine who can "Review (Approve/Deny) Tickets"
+    def isMaintenanceCanApprove?
+        maintenance_tto = TaskTypeOption.get_task_type_specific_options(current_user, 1) unless !current_user.present?
+        maintenance_tto.nil? ? (return false) : (return maintenance_tto.can_approve?)
     end
 end

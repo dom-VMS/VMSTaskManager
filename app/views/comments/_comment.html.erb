@@ -1,26 +1,34 @@
-<p>
-  <strong>Commenter:</strong>
-  <%= comment.commenter %>
-</p>
- 
-<p>
-  <strong>Comment:</strong>
-  <%= comment.body %>
-  <% comment.file_attachments.each do |file_attachment|%>
-    <% if (file_attachment.file).present? %>
-        <a href="<%= file_attachment.file.url %>" target="_blank"><%= image_tag(file_attachment.file.url, size:'32') if !file_attachment.blank? %></a>
-    <%end%>
-  <% end %>
-</p>
+
+<div class="col-sm-8">
+    <div class="panel panel-white comment panel-shadow">
+        <div class="comment-heading">
+            <div class="pull-left meta">
+                <div class="title h5">
+                    <a><b><%= comment.commenter %></b></a>
+                </div>
+                <h6 class="text-muted time"><%= time_ago_in_words(comment.created_at)%> ago</h6>
+            </div>
+        </div> 
+        <div class="comment-description"> 
+            <p>
+              <%= comment.body %>
+              <% comment.file_attachments.each do |file_attachment|%>
+                <% if (file_attachment.file).present? %>
+                    <a href="<%= file_attachment.file.url %>" target="_blank"><%= image_tag(file_attachment.file.url, size:'32') if !file_attachment.blank? %></a>
+                <%end%>
+              <% end %>
+            </p>
+        </div>
+        <% unless @task_type_option.nil?%>
+          <% if @task_type_option.can_delete %>
+            <p>
+              <%= link_to 'Delete Comment', [comment.task, comment],
+                          method: :delete,
+                          data: { confirm: 'Are you sure you want to delete this comment?' } %>
+            </p>
+          <% end %>
+        <% end %>
+    </div>
+</div>
 
 
-<!-- #TODO: IF commenterID == currentUserID || currentUserID.isAdmin == True, then display. Else, hide. -->
-<% unless @task_type_option.nil?%>
-  <% if @task_type_option.can_delete %>
-    <p>
-      <%= link_to 'Delete Comment', [comment.task, comment],
-                  method: :delete,
-                  data: { confirm: 'Are you sure you want to delete this comment?' } %>
-    </p>
-  <% end %>
-<% end %>

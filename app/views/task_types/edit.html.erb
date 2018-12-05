@@ -7,22 +7,26 @@
         <li class="breadcrumb-item active" aria-current="page">Edit</li>
     </ol>
 </nav>
-<h1>Edit Task Type</h1>
-
-<%= form_with model: @task_type, local: true do |form| %>
-    <p>
-        <%= form.label :name %><br>
-        <%= form.text_field :name %>
-    </p>
-
-    <p>
-        <%= form.label :description %><br>
-        <%= form.text_area :description %>
-    </p>
-
-    <p>
-        <%= form.submit %>
-    </p>
+<div class="container">
+    <div class="py-4 text-center">
+        <h1>Edit Group</h1>
+    </div>
+    
+    <%= form_with model: @task_type, local: true do |form| %>
+    <div class="mb-3">
+        <p>
+            <%= form.label :name %><br>
+            <%= form.text_field :name, class: 'form-control' %>
+        </p>
+    </div>
+    <div class="mb-3">
+        <p>
+            <%= form.label :description %><br>
+            <%= form.text_area :description, class: 'form-control' %>
+        </p>
+    </div>
+    <%= form.submit 'Update', class: 'btn btn-primary btn-lg btn-block' %>
+</div>
 <% end %>
 <% else %>
      <%= render 'errors/not_signed_in' %>

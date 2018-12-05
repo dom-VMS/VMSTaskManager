@@ -1,5 +1,3 @@
- 
- 
  <%= form_with model: @user, local: true do |form| %>
     <!-- Error Messages -->
     <% if @user.errors.any? %>
@@ -16,25 +14,25 @@
         </div>
     <% end %>
     
-    <!-- Input for Employee Number, First Name, Last Name -->
+    <div class="mb-3">
         <p>
             <%= form.label :employee_number, 'VMS Employee #' %><br>
-            <%= form.number_field :employee_number %>
+            <%= form.number_field :employee_number, class: 'form-control' %>
         </p>
     
         <p>
             <%= form.label :f_name, 'First Name' %><br>
-            <%= form.text_field :f_name %>
+            <%= form.text_field :f_name, class: 'form-control' %>
         </p>
 
         <p>
             <%= form.label :l_name, 'Last Name' %><br>
-            <%= form.text_field :l_name %>
+            <%= form.text_field :l_name, class: 'form-control' %>
         </p>
 
         <p>
             <%= form.label :email, 'Email' %><br>
-            <%= form.text_field :email %>
+            <%= form.text_field :email, class: 'form-control' %>
         </p>
 
         <% if @user.persisted?%>
@@ -71,14 +69,15 @@
         <% unless @user.persisted?%>
             <p>
                 <%= form.label :password, 'Password' %><br>
-                <%= form.password_field :password %>
+                <%= form.password_field :password, class: 'form-control' %>
             </p>
 
             <p>
                 <%= form.label :password_confirmation, 'Password Confirmation' %><br>
-                <%= form.password_field :password_confirmation %>
+                <%= form.password_field :password_confirmation, class: 'form-control' %>
             </p> 
          <%end%>
+    </div>
 
         <p>
             <%= form.submit %>

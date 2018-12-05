@@ -1,8 +1,12 @@
 <% if logged_in? %>
-    <h1>Log time<h1>
-    <h2>VMS Task #<%= @task.id %> - <%= @task.title %></h2>
+<div class="container">
+    <div class="py-4 text-center">
+        <h1>Log time<h1>
+        <p class="lead"> Task #<%= @task.id %></p>
+    </div>
 
     <%= render 'form' %>
+</div>
 <% else %>
     <%= render 'errors/not_signed_in' %>
 <% end %>

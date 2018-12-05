@@ -22,14 +22,14 @@ class TasksController < ApplicationController
 
     def ticket
         @task = Task.new
-        @task_type = find_task_type       
+        @task_type = find_task_type
         @task.file_attachments.build
     end
 
     def create_ticket
         @task = Task.new(new_task_params)
         if @task.save!
-            @task_assignment = TaskAssignment.create(task_id: @task.id, assigned_to_id: (User.where("employee_number = #{assignment_params_new[:assigned_to_id]}").id))
+            #@task_assignment = TaskAssignment.create(task_id: @task.id, assigned_to_id: (User.where("employee_number = #{assignment_params_new[:assigned_to_id]}").id))
             @task_assignment.save!
             add_file_attachment
             flash[:notice] = "Your ticket has been created!"
@@ -45,24 +45,29 @@ class TasksController < ApplicationController
     end
 
     def verify
-        @task = Task.where(isVerified: [nil, false]).where(status: 3).order("created_at DESC")
+        @task = Task.get_all_tasks_user_can_verify(current_user)
     end
 
     def update_ticket
         task = Task.find_by_id(review_ticket_params[:id])
         if task.update(review_ticket_params)
             if (review_ticket_params[:isApproved] == "true")
-                flash[:notice] = "Ticket Approved!"
+                flash[:notice] = "Ticket Approved! You can now add more information to the task and/or assign someone to this."
+                redirect_to edit_task_path(task)
             elsif (review_ticket_params[:isApproved] == "false")
-                flash[:notice] = "Ticket Rejected!"
+                flash[:notice] = "Ticket Rejected."
+                redirect_to review_path
             elsif (review_ticket_params[:isVerified] == "true")
-                flash[:notice] = "Task Completion Approved!"
+                flash[:notice] = "Task Completion Approved."
+                redirect_to task_path(task)
             elsif (review_ticket_params[:isVerified] == "false")
-                flash[:notice] = "Task Completion Rejected!"
+                flash[:notice] = "Task Completion Rejected."
+                redirect_to task_path(task)
             else
-                flash[:notice] = "Something went"
+                flash[:notice] = "Something went wrong"
+                render 'home/index'
             end
-            redirect_to task
+            #redirect_to task
         else
           render 'edit'
         end
@@ -76,7 +81,12 @@ class TasksController < ApplicationController
     end
 
     def create
-        @task = Task.new(new_task_params)
+        params = new_task_params 
+        unless logged_in?
+            params[:created_by_id] = User.find_by_employee_number(new_task_params[:created_by_id]).id
+        end
+        @task = Task.new(params)
+        #@task = Task.new(new_task_params)
         if @task.save!
             @task_assignment = TaskAssignment.create(task_id: @task.id, assigned_to_id: assignment_params_new[:assigned_to_id])
             @task_assignment.save!
@@ -84,6 +94,7 @@ class TasksController < ApplicationController
             flash[:notice] = "Successfully created task."
             redirect_to @task
         else
+            flash[:error] = "Task creation failed"
             render 'new'
         end
     end
@@ -110,7 +121,7 @@ class TasksController < ApplicationController
 
     private
       def new_task_params
-        params.require(:task).permit(:title, :description, :priority, :status, :percentComplete,  :isApproved, :task_type_id)
+        params.require(:task).permit(:title, :description, :priority, :status, :percentComplete,  :isApproved, :task_type_id, :created_by_id)
       end
 
       def edit_task_params

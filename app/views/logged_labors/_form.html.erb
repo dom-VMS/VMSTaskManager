@@ -14,15 +14,18 @@
       </ul>
     </div>
   <% end %>
-
-  <p>
-    <%= form.label :description %><br>
-    <%= form.text_area :description %>
-  </p>
-  <p>
-    <%= form.label :time_spent %><br>
-    <%= form.text_field :time_spent %>
-  </p>
+  <div class="mb-3">
+    <p>
+      <%= form.label :time_spent %><br>
+      <%= form.text_field :time_spent, class: 'form-control', placeholder: "Hours" %>
+    </p>
+  </div>
+  <div class="mb-3">
+    <p>
+      <%= form.label :description %><br>
+      <%= form.text_area :description, class: 'form-control',  placeholder: "Briefly explain what you did during this time." %>
+    </p>
+  </div>
   
   <% user_id = current_user.id %>
 
@@ -30,7 +33,7 @@
   <%= form.hidden_field 'task_id', :value => @task.id %>
 
   <p>
-    <%= form.submit %>
+    <%= form.submit 'Enter Time', class: 'btn btn-primary btn-lg btn-block' %>
   </p>
   <p>
 <% end %>

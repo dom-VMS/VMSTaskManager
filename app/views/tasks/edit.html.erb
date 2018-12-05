@@ -8,13 +8,16 @@
     <li class="breadcrumb-item active" aria-current="page">Edit</li>
   </ol>
 </nav>
-    <h1>Edit task</h1>
-    
-    <%= render 'form' %>
-<%if isAdmin? %>  
-    <%= link_to 'Destroy', @task, :method => :delete, :confirm => "Are you sure?" %> 
-<%end%>
-<%= link_to 'Back', task_path %>
+<div class="container">
+  <div class="py-4 text-center">
+      <h1>Edit Task # <%=@task.id%></h1>
+  </div>
+  <%= render 'form' %>
+  <%if isAdmin? %>  
+      <%= link_to 'Destroy', @task, :method => :delete, :confirm => "Are you sure?" %> 
+  <%end%>
+  <%= link_to 'Back', task_path %>
+</div>
 <% else %>
      <%= render 'errors/not_signed_in' %>
 <% end %>

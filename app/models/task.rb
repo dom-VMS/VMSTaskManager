@@ -12,7 +12,8 @@ class Task < ApplicationRecord
 
     has_one :task_type
     validates :title, presence: true, 
-                    length: { minimum: 5, message: "There must be a title."  }
+                    length: { minimum: 5, message: "is too short. It must be at least 5 characters long."  }
+    validates :created_by_id, numericality: true
     validates_presence_of :task_type_id
 
     tracked owner: Proc.new{ |controller, model| controller.current_user }
@@ -50,6 +51,23 @@ class Task < ApplicationRecord
         end
     end
 
+    # Retrieve all open tasks that the current User is permitted to approve.
+    def self.get_all_tasks_user_can_verify(user)
+        tto = user.task_type_options
+        if tto.empty?
+            return nil
+        else
+            ttoHash = tto.pluck(:task_type_id, :can_verify).to_h
+            task_types = ttoHash.key(true)
+            # task_types = tto.pluck(:task_type_id) <-- Consider reimplementing this and just making the buttons disabled.
+            return (Task.where(isVerified: [nil, false]).
+                        where(status: 3).
+                        where(task_type_id: [task_types]).
+                        order("created_at DESC"))
+            
+        end
+    end
+
     # Returns all tasks assigned to a current user.
     def self.get_all_tasks_assigned_to_user(current_user)
         tto = current_user.task_type_options
@@ -58,7 +76,7 @@ class Task < ApplicationRecord
         user_task_types = tto.pluck(:task_type_id)
         task_assigment_relation = TaskAssignment.where(assigned_to_id: [current_user.id, nil])
         task_type_relation = Task.joins(:task_assignments).where(task_type_id: [user_task_types]).
-                                                           where(isVerified: nil).
+                                                           where(isVerified: [nil, false]).
                                                            where.not(percentComplete: 100).
                                                            where.not(isApproved: [nil, false]).
                                                            order("created_at DESC")
@@ -75,7 +93,7 @@ class Task < ApplicationRecord
         if user_task_types.include? task_type.id
             task_assigment_relation = TaskAssignment.where(assigned_to_id: [current_user.id, nil])
             task_type_relation = Task.joins(:task_assignments).where(task_type_id: task_type.id).
-                                                        where(isVerified: nil).
+                                                        where(isVerified: [nil, false]).
                                                         where.not(percentComplete: 100).
                                                         where.not(isApproved: [nil, false]).
                                                         order("created_at DESC")

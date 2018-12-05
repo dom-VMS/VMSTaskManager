@@ -45,15 +45,28 @@
                              class:  "dropdown-item" %>
           <div class="dropdown-divider"></div>
           <%= link_to fa_icon('check-circle 2x', text:'Verify Completion'),
-                            verify_path, 
-                            class:  "dropdown-item" %>
-          <%if isMaintenanceAdmin?%>
+                              verify_path, 
+                              class:  "dropdown-item" %>
           <%= link_to fa_icon('user-tag 2x', text:'Review Tickets'),
                             review_path, 
                             class:  "dropdown-item" %>
-          <%end%>
         </div>
       </li>
+      <% else %>
+        <% if isMaintenanceCanApprove? %>
+        <li class="nav-item">
+          <%= link_to fa_icon('user-tag 2x', text:'Review Tickets'),
+                            review_path, 
+                            class:  "nav-link" %>
+        </li>
+        <%end%>
+        <% if canVerify? %>
+        <li class="nav-item">
+          <%= link_to fa_icon('check-circle 2x', text:'Verify Completion'),
+                              verify_path, 
+                              class:  "nav-link" %>
+        </li>
+        <% end %>
       <% end %>
     </ul>
     <ul class="nav-item-inline dropdown my-2 my-lg-0">
@@ -63,7 +76,7 @@
       <div class="dropdown-menu" aria-labelledby="navbarDropdown">
         <%= link_to fa_icon("user-circle 2x", text:"Profile"),
                         user_path(current_user.id), 
-                        class:  "nav-link",
+                        class:  "dropdown-item",
                         title: 'Profile' %>
         <%= link_to fa_icon("sign-out-alt 2x", text:"Sign Out"), 
                       logout_path,

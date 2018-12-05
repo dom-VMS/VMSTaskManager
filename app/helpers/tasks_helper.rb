@@ -23,4 +23,12 @@ module TasksHelper
         end
     end
 
+    def task_created_by_name(task)
+        if task.created_by_id.nil?
+            " "
+        else
+            User.find_by_id(task.created_by_id).full_name
+        end 
+    end
+
 end

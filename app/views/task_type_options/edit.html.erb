@@ -1,6 +1,10 @@
 <% if logged_in? && isAdmin? %>
-    <h1>Edit '<%="#{@task_type_option.name}"%>' Configuration </h1>
+<div class="container">
+    <div class="py-4 text-center">
+        <h1>Edit '<%="#{@task_type_option.name}"%>' Configuration </h1>
+    </div>
     <%= render 'form' %>
+</div>
 <% else %>
      <%= render 'errors/not_signed_in' %>
 <% end %>

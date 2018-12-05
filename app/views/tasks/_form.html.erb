@@ -1,85 +1,87 @@
-<!-- Allows user(s) to fill in 'Task' information -->
-
 <%= form_with model: @task, local: true do |form| %>
  
     <!-- Error Messages -->
     <% if @task.errors.any? %>
         <div id="error_explanation">
-        <h2>
-            <%= pluralize(@task.errors.count, "error") %> prohibited
-            this task from being saved:
-        </h2>
-        <ul>
-            <% @task.errors.full_messages.each do |msg| %>
-            <li><%= msg %></li>
-            <% end %>
-        </ul>
+            <h2>
+                <%= pluralize(@task.errors.count, "error") %> prohibited
+                this task from being saved:
+            </h2>
+            <ul>
+                <% @task.errors.full_messages.each do |msg| %>
+                <li><%= msg %></li>
+                <% end %>
+            </ul>
         </div>
     <% end %>
- 
-    <p> <!-- Task Title -->
-        <%= form.label :title %><br>
-        <%= form.text_field :title %>
-    </p>
- 
-    <p> <!-- Task Description -->
-        <%= form.label :description %><br>
-        <%= form.text_area :description %>
-    </p>
-
-    <p> <!-- Task Priority -->
-        <%= form.label :priority %><br>
-        <%= form.select(:priority, options_for_select([['Low', 1],['Normal', 2],['High', 3],['Urgent', 4]], @task.priority), include_blank: "Select Priority") %>
-    </p>
-
-    <p> <!-- Task Progress-->
-        <%= form.label :status %><br>
-        <%= form.select(:status, options_for_select([['Incomplete', 1],['In-progress', 2],['Complete', 3]], @task.status), include_blank: "Select Status") %>
-    </p>
-
-    <p> <!-- Percent Complete -->
-        <%= form.label :percentComplete, 'Percent Complete' %><br>
-        <%= form.range_field :percentComplete, :in => 0..100, :step => '10'%>
-    </p>
-
-    <p> <!-- Task Assignee-->
-        <%= form.label :assigned_to_id, 'Assignee'%><br>
-        <% if @assignee.present?%>
-            <%= form.select(:assigned_to_id, options_from_collection_for_select(@assignable_users, :id, :full_name, @assignee.id)) %>
-        <% else %>
-            <%= form.select(:assigned_to_id, options_from_collection_for_select(@assignable_users, :id, :full_name), include_blank: "All") %>
-        <% end %>
-    </p>
-
-    <h2>Attachments</h2>
-    <% @task.file_attachments.each do |file_attachment|%>
-        <% if (file_attachment.file).present? %>
-            <a href="<%= file_attachment.file.url %>" target="_blank"><%= image_tag(file_attachment.file.url, size:'32') if !file_attachment.blank? %></a>
-            <%if @task.persisted?%>
-                <%= link_to fa_icon('trash-alt'), 
-                        [file_attachment.task, file_attachment],
-                        title: 'Remove',
-                        method: :delete,
-                        data: { confirm: 'Are you sure you want to remove this attachment?' } %><br>
-            <%end%>
-        <%end%>
-    <% end %>
-    <%= form.fields_for :file_attachments_attributes do |fa| %>
-        <p>
-            <%= fa.label :file, ' ' %>
-            <%= fa.file_field :file %>
+    <div class="mb-3">
+        <p> <!-- Task Title -->
+            <%= form.label :title %><br>
+            <%= form.text_field :title, class: 'form-control' %>
         </p>
-    <% end %>
+    </div>
+    <div class="mb-3">
+        <p> <!-- Task Description -->
+            <%= form.label :description %><br>
+            <%= form.text_area :description, class: 'form-control' %>
+        </p>
+    </div>
+    <div class="mb-3">
+        <p> <!-- Task Priority -->
+            <%= form.label :priority %><br>
+            <%= form.select(:priority, options_for_select([['Low', 1],['Normal', 2],['High', 3],['Urgent', 4]], @task.priority), include_blank: "Select Priority", class: 'form-control') %>
+        </p>
+    </div>
+    <div class="mb-3">
+        <p> <!-- Task Progress-->
+            <%= form.label :status %><br>
+            <%= form.select(:status, options_for_select([['Incomplete', 1],['In-progress', 2],['Complete', 3]], @task.status), include_blank: "Select Status", class: 'form-control') %>
+        </p>
+    </div>
+    <div class="mb-3">
+        <p> <!-- Percent Complete -->
+            <%= form.label :percentComplete, 'Percent Complete' %><br>
+            <%= form.range_field :percentComplete, :in => 0..100, :step => '10', class: 'form-control'%>
+        </p>
+    </div>
+    <div class="mb-3">
+        <p> <!-- Task Assignee-->
+            <%= form.label :assigned_to_id, 'Assignee'%><br>
+            <% if @assignee.present?%>
+                <%= form.select(:assigned_to_id, options_from_collection_for_select(@assignable_users, :id, :full_name, @assignee.id), class: 'form-control') %>
+            <% else %>
+                <%= form.select(:assigned_to_id, options_from_collection_for_select(@assignable_users, :id, :full_name), include_blank: "All", class: 'form-control') %>
+            <% end %>
+        </p>
+    </div>
+    <div class="mb-3">
+        <% @task.file_attachments.each do |file_attachment|%>
+            <% if (file_attachment.file).present? %>
+                <a href="<%= file_attachment.file.url %>" target="_blank"><%= image_tag(file_attachment.file.url, size:'32') if !file_attachment.blank? %></a>
+                <%if @task.persisted?%>
+                    <%= link_to fa_icon('trash-alt'), 
+                            [file_attachment.task, file_attachment],
+                            title: 'Remove',
+                            method: :delete,
+                            data: { confirm: 'Are you sure you want to remove this attachment?' } %><br>
+                <%end%>
+            <%end%>
+        <% end %>
+        <%= form.fields_for :file_attachments_attributes do |fa| %>
+            <p>
+                <%= fa.label :file, 'File attachments ' %>
+                <%= fa.file_field :file %>
+            </p>
+        <% end %>
+    </div>
 
-    <% assigned_by_id = current_user.id %>
     <%= form.hidden_field 'task_type_id', :value => params[:task_type_id] %>
     <%= form.hidden_field 'task_id', :value => params[:id] %>
-    <%= form.hidden_field 'assigned_by_id', :value => assigned_by_id %>
     <%= form.hidden_field 'isApproved', :value => true %>
-
+    <%= form.hidden_field 'created_by_id', :value => current_user.id %>
 
     <p>
-        <%= form.submit %>
+        <%= form.submit 'Save', class: 'btn btn-primary btn-lg btn-block' %>
     </p>
  
 <% end %>

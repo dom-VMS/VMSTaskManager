@@ -12,15 +12,16 @@
         VMS Task #<%= @task.id %> - <%= @task.title %>
         <% if @task.isApproved.nil? %>
             <span class="badge badge-warning">Awaiting Approval</span>
-            <p>
-                <%= (link_to fa_icon('check-circle', text:'Approve Ticket'), review_path(@task, :isApproved => true, :id => @task.id), class: "btn btn-primary",
-                            method: 'put', 
-                            data: { confirm: 'Are you sure you want to confirm this ticket?' })%>
-
-                <%= (link_to fa_icon('times-circle', text:'Reject Ticket'), review_path(@task, :isApproved => false, :id => @task.id), class: "btn btn-danger",
-                            method: 'put', 
-                            data: { confirm: 'Are you sure you want to decline this ticket?' })%> 
-            </p>
+            <% unless @task_type_option.nil?%>
+                <p>
+                    <%= (link_to fa_icon('check-circle', text:'Approve Ticket'), review_path(@task, :isApproved => true, :id => @task.id), class: "btn btn-primary",
+                                method: 'put', 
+                                data: { confirm: 'Are you sure you want to confirm this ticket?' }) if @task_type_option.can_approve %>
+                    <%= (link_to fa_icon('times-circle', text:'Reject Ticket'), review_path(@task, :isApproved => false, :id => @task.id), class: "btn btn-danger",
+                                method: 'put', 
+                                data: { confirm: 'Are you sure you want to decline this ticket?' }) if @task_type_option.can_approve %> 
+                </p>
+            <% end %>
         <% elsif @task.isApproved == false %>
             <span class="badge badge-danger">Ticket Denied</span>
         <% elsif @task.isVerified == true %>
@@ -29,6 +30,16 @@
             <span class="badge badge-warning">Rework Required</span>
         <% elsif @task.status == 3 && @task.isVerified != true %>
             <span class="badge badge-secondary">Awaiting Verification</span>
+            <% unless @task_type_option.nil?%>
+                <p>
+                    <%= (link_to fa_icon('check-circle', text:'Verify Completion'), review_path(@task, :isVerified => true, :id => @task.id), class: "btn btn-primary",
+                                        method: 'put', 
+                                        data: { confirm: 'Are you sure you want to confirm this task as complete?' }) if @task_type_option.can_verify %>
+                    <%= (link_to fa_icon('times-circle', text:'Reject Completion'), review_path(@task, :isVerified => false, :id => @task.id), class: "btn btn-danger",
+                                    method: 'put', 
+                                    data: { confirm: 'Are you sure you want to send this task back out for re-work?' }) if @task_type_option.can_verify %> 
+                </p>
+            <%end%>
         <% end %>
     </h1>
 </div>
@@ -88,6 +99,11 @@
         <%= (@task.created_at).strftime("%m/%d/%Y") %>
     </p>
 
+    <p>
+        <strong>Created By: </strong>
+        <%= task_created_by_name(@task)%>
+    </p>
+
     <div class="card w-25">
         <div class="card-header">
             Attachments
@@ -98,12 +114,19 @@
     </div>
 
     <h2>Comments</h2>
-    <%= render @task.comments %>
-
-    <h2>Add a comment:</h2>
-    <%= render 'comments/form' %>
+    <div class="container">
+        <div class="row">
+            <%= render @task.comments %>
+        </div>
+    </div>
     
     <% unless @task_type_option.nil?%>
+        <% if @task_type_option.can_comment %>
+            <div class="container float-lg-left">
+                <h2>Add a comment:</h2>
+                <%= render 'comments/form' %>
+            </div>
+        <% end %>
         <%= link_to fa_icon('edit', text: "Edit"), edit_task_path(@task) if @task_type_option.can_update %><br>
         <%= (link_to fa_icon('trash-alt', text:'Delete'), task_path(@task),
                         method: :delete,

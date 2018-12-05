@@ -22,9 +22,7 @@ class UsersController < ApplicationController
 
     def create
         @user = User.create(user_params)
-        #@user.password_digest = BCrypt::Password.create(params[:password_digest])
-        #@user.password_confirmation = BCrypt::Password.create(params[:password_confirmation])
- 
+
         if @user.save!
             flash[:success] = "User Added!"
             redirect_to @user
@@ -36,7 +34,7 @@ class UsersController < ApplicationController
     def update
         @user = User.find(params[:id])
        
-        if @user.update(user_params)
+        if @user.update(edit_user_params)
           redirect_to @user
         else
           render 'edit'
@@ -53,6 +51,10 @@ class UsersController < ApplicationController
     private
       def user_params
         params.require(:user).permit(:employee_number, :f_name, :l_name, :email, :hourly_rate, :password, :password_confirmation)
+      end
+
+      def edit_user_params
+        params.require(:user).permit(:employee_number, :f_name, :l_name, :email, :hourly_rate)
       end
 
       def get_task_type_options_from_user_group

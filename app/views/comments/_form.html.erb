@@ -4,7 +4,7 @@
    
   <p>
     <%= form.label :body, 'Comment' %><br>
-    <%= form.text_area :body %>
+    <%= form.text_area :body, class: 'form-control', placeholder: "Give us some details." %>
   </p>
   <%= form.fields_for :file_attachments_attributes do |fa| %>
       <p>

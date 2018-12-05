@@ -41,7 +41,7 @@ class TaskTypesController < ApplicationController
        
         if @task_type.update(task_type_params)
           flash[:success] = "#{@task_type.name} has been updated!"
-          redirect_to @task_type
+          redirect_to '/admin/task_types'
         else
           flash[:danger] = "Oops! Something went wrong. #{@task_type.name} wasn't updated. "
           render 'edit'
