@@ -48,8 +48,9 @@
         <p> <!-- Task Assignee-->
             <%= form.label :assigned_to_id, 'Assignee'%><br>
             <% if @assignee.present?%>
-                <%= form.select(:assigned_to_id, options_from_collection_for_select(@assignable_users, :id, :full_name, @assignee.id), class: 'form-control') %>
+                <%= form.select(:assigned_to_id, options_from_collection_for_select(@assignable_users, :id, :full_name, @assignee.id),  include_blank: "All", class: 'form-control') %>
             <% else %>
+                <% puts "WE ARE IN THE FORM. ASSIGNABLE_USERS = #{@assignable_users}"%>
                 <%= form.select(:assigned_to_id, options_from_collection_for_select(@assignable_users, :id, :full_name), include_blank: "All", class: 'form-control') %>
             <% end %>
         </p>

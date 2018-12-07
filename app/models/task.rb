@@ -13,7 +13,7 @@ class Task < ApplicationRecord
     has_one :task_type
     validates :title, presence: true, 
                     length: { minimum: 5, message: "is too short. It must be at least 5 characters long."  }
-    validates :created_by_id, numericality: true
+    #validates :created_by_id_exists
     validates_presence_of :task_type_id
 
     tracked owner: Proc.new{ |controller, model| controller.current_user }
@@ -58,7 +58,9 @@ class Task < ApplicationRecord
             return nil
         else
             ttoHash = tto.pluck(:task_type_id, :can_verify).to_h
-            task_types = ttoHash.key(true)
+            task_types = ttoHash.select { |key, value| value == true }
+            task_types = task_types.keys
+            puts task_types
             # task_types = tto.pluck(:task_type_id) <-- Consider reimplementing this and just making the buttons disabled.
             return (Task.where(isVerified: [nil, false]).
                         where(status: 3).

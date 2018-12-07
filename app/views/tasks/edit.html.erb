@@ -14,7 +14,7 @@
   </div>
   <%= render 'form' %>
   <%if isAdmin? %>  
-      <%= link_to 'Destroy', @task, :method => :delete, :confirm => "Are you sure?" %> 
+      <%= (link_to fa_icon('trash-alt', text:'Delete Task'), @task, :method => :delete, :confirm => "Are you sure?" ) if @task_type_option.can_delete%><br>
   <%end%>
   <%= link_to 'Back', task_path %>
 </div>

@@ -75,15 +75,22 @@ class TasksController < ApplicationController
 
     def edit
         @task = find_task
+        @task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task.task_type_id) unless !current_user.present?
         @assignee = TaskAssignment.get_assignee_object(@task);
         @task_type = TaskType.find_by_id(@task.task_type_id)
         @assignable_users = Task.get_assignable_users(@task_type.task_type_options)
+        puts @assignable_users.to_json 
     end
 
     def create
         params = new_task_params 
         unless logged_in?
-            params[:created_by_id] = User.find_by_employee_number(new_task_params[:created_by_id]).id
+            if User.exists?(new_task_params[:created_by_id])
+                params[:created_by_id] = User.find_by_employee_number(new_task_params[:created_by_id]).id                
+            else 
+                flash[:error] = "The employee number you have entered does not exsist."
+                render 'ticket'
+            end
         end
         @task = Task.new(params)
         #@task = Task.new(new_task_params)
@@ -101,7 +108,12 @@ class TasksController < ApplicationController
 
     def update
         @task = find_task
+        @task_type_id = @task.task_type_id
+        @task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task.task_type_id) unless !current_user.present?
+        @task_type = TaskType.find_by_id(@task.task_type_id)
+        @assignable_users = Task.get_assignable_users(@task_type.task_type_options)
         @task_assignment = TaskAssignment.where("task_id = #{params[:id]}")
+        puts "LOOK HERE #{@task_assignment.to_json}"
         add_file_attachment
 
         if @task.update(edit_task_params)

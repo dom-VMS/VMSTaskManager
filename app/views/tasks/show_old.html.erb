@@ -1,0 +1,147 @@
+<% if logged_in? %>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/home/index">Home</a></li>
+    <li class="breadcrumb-item"><a href="/task_types">Departments</a></li>
+    <li class="breadcrumb-item"><a href="/task_types/<%=@task.task_type_id%>"><%=TaskType.find(@task.task_type_id).name unless @task.task_type_id.blank?%></a></li>
+    <li class="breadcrumb-item active" aria-current="page">Task #<%=@task.id%></li>
+  </ol>
+</nav>
+<div class="conatiner-fluid">
+    <h1>
+        VMS Task #<%= @task.id %> - <%= @task.title %>
+        <% if @task.isApproved.nil? %>
+            <span class="badge badge-warning">Awaiting Approval</span>
+            <% unless @task_type_option.nil?%>
+                <p>
+                    <%= (link_to fa_icon('check-circle', text:'Approve Ticket'), review_path(@task, :isApproved => true, :id => @task.id), class: "btn btn-primary",
+                                method: 'put', 
+                                data: { confirm: 'Are you sure you want to confirm this ticket?' }) if @task_type_option.can_approve %>
+                    <%= (link_to fa_icon('times-circle', text:'Reject Ticket'), review_path(@task, :isApproved => false, :id => @task.id), class: "btn btn-danger",
+                                method: 'put', 
+                                data: { confirm: 'Are you sure you want to decline this ticket?' }) if @task_type_option.can_approve %> 
+                </p>
+            <% end %>
+        <% elsif @task.isApproved == false %>
+            <span class="badge badge-danger">Ticket Denied</span>
+        <% elsif @task.isVerified == true %>
+            <span class="badge badge-success">Task Complete</span>
+        <% elsif @task.isVerified == false %>
+            <span class="badge badge-warning">Rework Required</span>
+        <% elsif @task.status == 3 && @task.isVerified != true %>
+            <span class="badge badge-secondary">Awaiting Verification</span>
+            <% unless @task_type_option.nil?%>
+                <p>
+                    <%= (link_to fa_icon('check-circle', text:'Verify Completion'), review_path(@task, :isVerified => true, :id => @task.id), class: "btn btn-primary",
+                                        method: 'put', 
+                                        data: { confirm: 'Are you sure you want to confirm this task as complete?' }) if @task_type_option.can_verify %>
+                    <%= (link_to fa_icon('times-circle', text:'Reject Completion'), review_path(@task, :isVerified => false, :id => @task.id), class: "btn btn-danger",
+                                    method: 'put', 
+                                    data: { confirm: 'Are you sure you want to send this task back out for re-work?' }) if @task_type_option.can_verify %> 
+                </p>
+            <%end%>
+        <% end %>
+    </h1>
+</div>
+
+<nav>
+  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+    <a class="nav-item nav-link active" id="nav-task-tab" data-toggle="tab" href="#nav-task" role="tab" aria-controls="nav-task" aria-selected="true">Task</a>
+    <a class="nav-item nav-link" id="nav-time-spent-tab" data-toggle="tab" href="#nav-time-spent" role="tab" aria-controls="nav-time-spent" aria-selected="false">Time Spent</a>
+    <a class="nav-item nav-link" id="nav-edit-tab" data-toggle="tab" href="#nav-contact" role="tab" aria-controls="nav-contact" aria-selected="false">Activity</a>
+  </div>
+</nav>
+
+<div class="tab-content" id="nav-tabContent">
+  <div class="tab-pane fade show active container-fluid" id="nav-task" role="tabpanel" aria-labelledby="nav-task-tab">
+    </p>
+        <strong>Task Type:</strong>
+        <%= TaskType.find(@task.task_type_id).name unless @task.task_type_id.blank?%>
+    <p>
+
+    <p>
+        <strong>Description:</strong>
+        <%= @task.description %>
+    </p>
+
+    <p>
+        <strong>Priority:</strong>
+        <%= @task.priority.nil? ? "" : task_priority(@task) %>
+    </p>
+
+    <p>
+        <strong>Status:</strong> 
+        <%= @task.status.nil? ? "" : task_status(@task) %> 
+    </p>
+
+    <p>
+        <strong>Percent Complete:</strong>
+        <div class="progress w-25">
+            <div class="progress-bar" role="progressbar" style="width: <%= @task.percentComplete %>%;" 
+                aria-valuenow= "<%= @task.percentComplete %>" aria-valuemin="0" aria-valuemax="100">
+                <%= @task.percentComplete %>%
+            </div>
+        </div>
+    </p>
+
+    <p>
+        <strong>Assignee:</strong>
+        <%= @assignee.blank? ? "All" : @assignee.full_name  %><br>
+    </p>
+
+    <p>
+        <strong>Hours Spent: </strong>
+        <%= LoggedLabor.hours_spent_on_task(@task).zero?  ? '0' : LoggedLabor.hours_spent_on_task(@task)  %>
+    </p>
+
+    <p>
+        <strong>Created: </strong>
+        <%= (@task.created_at).strftime("%m/%d/%Y") %>
+    </p>
+
+    <p>
+        <strong>Created By: </strong>
+        <%= task_created_by_name(@task)%>
+    </p>
+
+    <div class="card w-25">
+        <div class="card-header">
+            Attachments
+        </div>
+        <div class="card-body">
+            <%= render 'file_attachments/attachments' %>
+        </div>
+    </div>
+
+    
+    <div class="container float-lg-left">
+        <h2>Comments</h2>
+        <div class="row">
+            <%= render @task.comments %>
+        </div>
+    </div>
+    
+    <% unless @task_type_option.nil?%>
+        <% if @task_type_option.can_comment %>
+            <div class="container float-lg-left">
+                <h2>Add a comment:</h2>
+                <%= render 'comments/form' %>
+            </div>
+        <% end %>
+        <%= link_to fa_icon('edit', text: "Edit"), edit_task_path(@task) if @task_type_option.can_update %><br>
+        <%= (link_to fa_icon('trash-alt', text:'Delete'), task_path(@task),
+                        method: :delete,
+                        data: { confirm: 'Are you sure you want to delete this task?' }) if @task_type_option.can_delete %></td><br>
+    <% end %>
+
+  </div>
+  <div class="tab-pane fade" id="nav-time-spent" role="tabpanel" aria-labelledby="nav-time-spent-tab">
+    <%= render 'logged_labors/index'%>
+  </div>
+  <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
+    <%= render 'activities/activity'%>
+  </div>
+</div>
+<% else %>
+     <%= render 'errors/not_signed_in' %>
+<% end %>
