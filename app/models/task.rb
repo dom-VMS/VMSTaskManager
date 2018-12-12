@@ -65,8 +65,7 @@ class Task < ApplicationRecord
             return (Task.where(isVerified: [nil, false]).
                         where(status: 3).
                         where(task_type_id: [task_types]).
-                        order("created_at DESC"))
-            
+                        order("updated_at DESC"))
         end
     end
 

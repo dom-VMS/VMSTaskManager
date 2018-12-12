@@ -29,7 +29,6 @@ class TasksController < ApplicationController
     def create_ticket
         @task = Task.new(new_task_params)
         if @task.save!
-            #@task_assignment = TaskAssignment.create(task_id: @task.id, assigned_to_id: (User.where("employee_number = #{assignment_params_new[:assigned_to_id]}").id))
             @task_assignment.save!
             add_file_attachment
             flash[:notice] = "Your ticket has been created!"
