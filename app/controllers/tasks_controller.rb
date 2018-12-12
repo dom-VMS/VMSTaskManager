@@ -78,7 +78,6 @@ class TasksController < ApplicationController
         @assignee = TaskAssignment.get_assignee_object(@task);
         @task_type = TaskType.find_by_id(@task.task_type_id)
         @assignable_users = Task.get_assignable_users(@task_type.task_type_options)
-        puts @assignable_users.to_json 
     end
 
     def create
@@ -112,7 +111,6 @@ class TasksController < ApplicationController
         @task_type = TaskType.find_by_id(@task.task_type_id)
         @assignable_users = Task.get_assignable_users(@task_type.task_type_options)
         @task_assignment = TaskAssignment.where("task_id = #{params[:id]}")
-        puts "LOOK HERE #{@task_assignment.to_json}"
         add_file_attachment
 
         if @task.update(edit_task_params)

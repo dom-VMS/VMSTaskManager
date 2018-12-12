@@ -15,42 +15,41 @@
         </div>
     <% end %>
     <div class="mb-3">
-        <p> <!-- Task Title -->
+        <p> 
             <%= form.label :title %><br>
             <%= form.text_field :title, class: 'form-control' %>
         </p>
     </div>
     <div class="mb-3">
-        <p> <!-- Task Description -->
+        <p> 
             <%= form.label :description %><br>
             <%= form.text_area :description, class: 'form-control' %>
         </p>
     </div>
     <div class="mb-3">
-        <p> <!-- Task Priority -->
+        <p>
             <%= form.label :priority %><br>
             <%= form.select(:priority, options_for_select([['Low', 1],['Normal', 2],['High', 3],['Urgent', 4]], @task.priority), include_blank: "Select Priority", class: 'form-control') %>
         </p>
     </div>
     <div class="mb-3">
-        <p> <!-- Task Progress-->
+        <p> 
             <%= form.label :status %><br>
             <%= form.select(:status, options_for_select([['Incomplete', 1],['In-progress', 2],['Complete', 3]], @task.status), include_blank: "Select Status", class: 'form-control') %>
         </p>
     </div>
     <div class="mb-3">
-        <p> <!-- Percent Complete -->
+        <p> 
             <%= form.label :percentComplete, 'Percent Complete' %><br>
             <%= form.range_field :percentComplete, :in => 0..100, :step => '10', class: 'form-control'%>
         </p>
     </div>
     <div class="mb-3">
-        <p> <!-- Task Assignee-->
+        <p>
             <%= form.label :assigned_to_id, 'Assignee'%><br>
             <% if @assignee.present?%>
                 <%= form.select(:assigned_to_id, options_from_collection_for_select(@assignable_users, :id, :full_name, @assignee.id),  include_blank: "All", class: 'form-control') %>
             <% else %>
-                <% puts "WE ARE IN THE FORM. ASSIGNABLE_USERS = #{@assignable_users}"%>
                 <%= form.select(:assigned_to_id, options_from_collection_for_select(@assignable_users, :id, :full_name), include_blank: "All", class: 'form-control') %>
             <% end %>
         </p>

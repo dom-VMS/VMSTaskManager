@@ -18,6 +18,14 @@ class Task < ApplicationRecord
 
     tracked owner: Proc.new{ |controller, model| controller.current_user }
 
+    filterrific(
+        default_filter_params: { sorted_by: 'created_at_desc' },
+        available_filters: [
+          :sorted_by,
+          :search_query
+        ]
+    )
+
     # Retrieves all possible users that can be assigned to a task.
     def self.get_assignable_users(task_type_options)
         assignable_users = []
@@ -60,7 +68,6 @@ class Task < ApplicationRecord
             ttoHash = tto.pluck(:task_type_id, :can_verify).to_h
             task_types = ttoHash.select { |key, value| value == true }
             task_types = task_types.keys
-            puts task_types
             # task_types = tto.pluck(:task_type_id) <-- Consider reimplementing this and just making the buttons disabled.
             return (Task.where(isVerified: [nil, false]).
                         where(status: 3).
