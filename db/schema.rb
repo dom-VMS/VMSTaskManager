@@ -10,7 +10,26 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181008132917) do
+ActiveRecord::Schema.define(version: 20181204161324) do
+
+  create_table "activities", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.string "trackable_type"
+    t.bigint "trackable_id"
+    t.string "owner_type"
+    t.bigint "owner_id"
+    t.string "key"
+    t.text "parameters"
+    t.string "recipient_type"
+    t.bigint "recipient_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["owner_id", "owner_type"], name: "index_activities_on_owner_id_and_owner_type"
+    t.index ["owner_type", "owner_id"], name: "index_activities_on_owner_type_and_owner_id"
+    t.index ["recipient_id", "recipient_type"], name: "index_activities_on_recipient_id_and_recipient_type"
+    t.index ["recipient_type", "recipient_id"], name: "index_activities_on_recipient_type_and_recipient_id"
+    t.index ["trackable_id", "trackable_type"], name: "index_activities_on_trackable_id_and_trackable_type"
+    t.index ["trackable_type", "trackable_id"], name: "index_activities_on_trackable_type_and_trackable_id"
+  end
 
   create_table "comments", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string "commenter"
@@ -19,6 +38,38 @@ ActiveRecord::Schema.define(version: 20181008132917) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["task_id"], name: "index_comments_on_task_id"
+  end
+
+  create_table "file_attachments", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.bigint "task_id"
+    t.bigint "comment_id"
+    t.string "file"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["comment_id"], name: "index_file_attachments_on_comment_id"
+    t.index ["task_id"], name: "index_file_attachments_on_task_id"
+  end
+
+  create_table "logged_labors", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.bigint "task_id"
+    t.bigint "user_id"
+    t.decimal "time_spent", precision: 10, scale: 2
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["task_id"], name: "index_logged_labors_on_task_id"
+    t.index ["user_id"], name: "index_logged_labors_on_user_id"
+  end
+
+  create_table "task_assignments", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.bigint "task_id"
+    t.bigint "assigned_to_id"
+    t.bigint "assigned_by_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["assigned_by_id"], name: "index_task_assignments_on_assigned_by_id"
+    t.index ["assigned_to_id"], name: "index_task_assignments_on_assigned_to_id"
+    t.index ["task_id"], name: "index_task_assignments_on_task_id"
   end
 
   create_table "task_type_options", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
@@ -35,6 +86,7 @@ ActiveRecord::Schema.define(version: 20181008132917) do
     t.bigint "task_type_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "isAdmin"
     t.index ["task_type_id"], name: "index_task_type_options_on_task_type_id"
   end
 
@@ -53,8 +105,12 @@ ActiveRecord::Schema.define(version: 20181008132917) do
     t.integer "percentComplete"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "task_types_id"
-    t.index ["task_types_id"], name: "index_tasks_on_task_types_id"
+    t.bigint "task_type_id"
+    t.boolean "isApproved"
+    t.boolean "isVerified"
+    t.bigint "created_by_id"
+    t.index ["created_by_id"], name: "index_tasks_on_created_by_id"
+    t.index ["task_type_id"], name: "index_tasks_on_task_type_id"
   end
 
   create_table "user_groups", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
@@ -78,5 +134,13 @@ ActiveRecord::Schema.define(version: 20181008132917) do
   end
 
   add_foreign_key "comments", "tasks"
+  add_foreign_key "file_attachments", "comments"
+  add_foreign_key "file_attachments", "tasks"
+  add_foreign_key "logged_labors", "tasks"
+  add_foreign_key "logged_labors", "users"
+  add_foreign_key "task_assignments", "tasks"
+  add_foreign_key "task_assignments", "users", column: "assigned_by_id"
+  add_foreign_key "task_assignments", "users", column: "assigned_to_id"
   add_foreign_key "task_type_options", "task_types"
+  add_foreign_key "tasks", "users", column: "created_by_id"
 end

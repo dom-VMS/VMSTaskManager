@@ -1,3 +1,10 @@
-<h1> New <%="#{@task_type.name}"%> Employee Type Configuration </h1>
-
-<%= render 'form' %>
+<% if logged_in? && isAdmin? %>
+<div class="container">
+    <div class="py-4 text-center">
+        <h1> New <%= "#{@task_type_name}"%> Role Configuration </h1>
+    </div>
+    <%= render 'form' %>
+</div>
+<% else %>
+     <%= render 'errors/not_signed_in' %>
+<% end %>

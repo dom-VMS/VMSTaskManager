@@ -2,13 +2,20 @@
 
 <%= form_with(model: [ @task, @task.comments.build ]) do |form| %>
   <p>
-    <%= form.label :commenter %><br>
-    <%= form.text_field :commenter %>
-  </p>
-  <p>
     <%= form.label :body, 'Comment' %><br>
-    <%= form.text_area :body %>
+    <%= form.text_area :body, class: 'form-control', placeholder: "Give us some details." %>
   </p>
+  <%= form.fields_for :file_attachments_attributes do |fa| %>
+      <p>
+          <%= fa.label :file, 'Attach a File to Comment' %>
+          <%= fa.file_field :file %>
+      </p>
+  <% end %>
+
+
+  <% commenter = current_user.full_name %>
+  <%= form.hidden_field 'commenter', :value => commenter%>
+
   <p>
     <%= form.submit %>
   </p>

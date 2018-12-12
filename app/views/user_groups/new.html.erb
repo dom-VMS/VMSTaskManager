@@ -1,18 +1,20 @@
-<h1>User Groups</h1>
-<h2>Add User to a Group</h2>
+<% if logged_in? && isAdmin?%>
+    <h1>Assign User as  <%="#{@task_type_option.name}" %></h1>
 
-<%= form_with model: @user_group, local: true do |form| %>
-<p>
-        <%= form.label :task_type_option_id, 'Task Type Option' %><br>
-        <%= form.select(:task_type_option_id, options_from_collection_for_select(TaskTypeOption.all, :id, :name), include_blank: "Select Option") %>
-</p>
+    <%= form_with model: @user_group, local: true do |form| %>
+        
+        <p>
+            <%= form.label :user_id, 'Select User' %>
+            <%= form.select(:user_id, options_from_collection_for_select(User.all, :id, :full_name), include_blank: "Select User") %>
+        </p>
 
-<p>
-        <%= form.label :user_id, 'User' %><br>
-        <%= form.select(:user_id, options_from_collection_for_select(User.all, :id, :full_name), include_blank: "Select Option") %>
-</p>
+        <%=form.hidden_field 'task_type_option_id', :value => params[:task_type_option_id] %>
 
-<p>
-        <%= form.submit %>
-</p>
-<% end%>
+
+        <p>
+            <%= form.submit "Assign"%>
+        </p>
+    <% end %>
+<% else %>
+     <%= render 'errors/not_signed_in' %>
+<% end %>

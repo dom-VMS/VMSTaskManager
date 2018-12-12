@@ -1,10 +1,13 @@
 class UsersController < ApplicationController
     def index
-        @users = User.all
+        current_user = User.find_by_id(session[:current_user_id])
+        @users = User.all.order(:employee_number)
     end
 
     def show
         @user = User.find(params[:id])
+        @user_group = @user.user_groups   
+        get_task_type_options_from_user_group
     end
     
     def new
@@ -13,12 +16,15 @@ class UsersController < ApplicationController
 
     def edit
         @user = User.find(params[:id])
+        @user_group = @user.user_groups   
+        get_task_type_options_from_user_group
     end
 
     def create
-        @user = User.new(user_params)
- 
+        @user = User.create(user_params)
+
         if @user.save!
+            flash[:success] = "User Added!"
             redirect_to @user
         else
             render 'new'
@@ -28,8 +34,7 @@ class UsersController < ApplicationController
     def update
         @user = User.find(params[:id])
        
-        if @user.update(user_params)
-            
+        if @user.update(edit_user_params)
           redirect_to @user
         else
           render 'edit'
@@ -45,6 +50,16 @@ class UsersController < ApplicationController
 
     private
       def user_params
-        params.require(:user).permit(:employee_number, :f_name, :l_name, :email, :hourly_rate, :password_digest, :password_confirmation)
+        params.require(:user).permit(:employee_number, :f_name, :l_name, :email, :hourly_rate, :password, :password_confirmation)
+      end
+
+      def edit_user_params
+        params.require(:user).permit(:employee_number, :f_name, :l_name, :email, :hourly_rate)
+      end
+
+      def get_task_type_options_from_user_group
+        @user_group.each do |user_group|
+            @task_type_option = user_group.task_type_option
+        end
       end
 end

@@ -1,0 +1,67 @@
+<% if logged_in? && isAdmin? %>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/home/index">Home</a></li>
+            <li class="breadcrumb-item"><a href="/task_type_options">Role & Permissions</a></li>
+        </ol>
+    </nav>
+    <h1>Roles & Permissions</h1>
+    <%(TaskType.all).each do |task_type|%>
+    <div class="accordion w-75" id="accoridan">
+        <div class="card">
+            <div class="card-header" id="heading<%=task_type.id%>">
+                <h5 class="mb-0">
+                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse<%=task_type.id%>" aria-expanded="true" aria-controls="collapse<%=task_type.id%>">
+                        <strong><%= task_type.name %></strong>
+                    </button>
+                </h5>
+            </div>
+            <div id="collapse<%=task_type.id%>" class="collapse" aria-labelledby="heading<%=task_type.id%>" data-parent="#accoridan">
+                <div class="card-body">
+                    <%= link_to fa_icon('plus-circle', text: "New #{task_type.name} Role"), new_task_type_option_path(@task_type_option, :task_type => task_type) %><br>
+                    <table class="table table-borderless">
+                        <thead>
+                            <tr>
+                            <th>Name</th>
+                            <th>Admin</th>
+                            <th>View Tasks</th>
+                            <th>Create Tasks</th>
+                            <th>Update Tasks</th>
+                            <th>Delete Tasks</th>
+                            <th>Approve Tasks</th>
+                            <th>Verify Tasks</th>
+                            <th>Comment on Tasks</th>
+                            <th>Log Labor</th>
+                            </tr>
+                        </thead>
+                        <%task_type_options = TaskTypeOption.all%>
+                        <% (task_type.task_type_options.all).each do |task_type_option|%>
+                        <% if task_type_option.task_type_id == task_type.id%>
+                        <tbody>
+                            <tr>
+                                <td><strong> <%= link_to task_type_option.name, task_type_option_path(task_type_option.id) %></strong></td>
+                                <td><%= task_type_option.isAdmin ? fa_icon('check') : fa_icon('times') %> </td>
+                                <td><%= task_type_option.can_view ? fa_icon('check') : fa_icon('times') %> </td>
+                                <td><%= task_type_option.can_create ? fa_icon('check') : fa_icon('times') %></td>
+                                <td><%= task_type_option.can_update ? fa_icon('check') : fa_icon('times') %></td>
+                                <td><%= task_type_option.can_delete ? fa_icon('check') : fa_icon('times') %></td>
+                                <td><%= task_type_option.can_approve ? fa_icon('check') : fa_icon('times') %></td>
+                                <td><%= task_type_option.can_verify ? fa_icon('check') : fa_icon('times') %></td>
+                                <td><%= task_type_option.can_comment ? fa_icon('check') : fa_icon('times') %></td>
+                                <td><%= task_type_option.can_log_labor ? fa_icon('check') : fa_icon('times') %></td>
+                            </tr>
+                        <tbody>
+                        <%end%>
+                        <%end%>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>    
+    <% end%>
+    <br>
+    <br>
+    <%= link_to 'Back', admin_path %>
+<% else %>
+     <%= render 'errors/not_signed_in' %>
+<% end %>

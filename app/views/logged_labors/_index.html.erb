@@ -1,0 +1,44 @@
+<% if logged_in? %>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col">
+        <div style="width: 50%; display: inline;" class="pull-right text-align-middle">
+        <% unless @task_type_option.nil? %>
+            <br><%= (link_to fa_icon('clock', text:'Log time'), new_task_logged_labor_path(@task), class: "btn btn-primary") if @task_type_option.can_log_labor%> </div>
+        <%else%>
+            </div>
+        <% end %>
+            <p>
+                <h2>
+                    <strong>Total Time Spent:</strong>
+                    <%= LoggedLabor.hours_spent_on_task(@task) %> hours
+                </h2>
+            </p>
+        </div>
+    </div>
+    <div class="row">
+        <table class="table table-responsive">
+            <thead>
+                <tr>
+                    <th scope="col"> User </th>
+                    <th scope="col"> Description </th>
+                    <th scope="col"> Time Spent </th>
+                    <th scope="col"> Date </th>
+                </tr>
+            </thead>
+            <% (@task.logged_labors).each do |logged_labor| %>
+            <tbody>
+                <tr>
+                    <td><%= logged_labor.user.full_name %></td>
+                    <td><%= logged_labor.description %></td>
+                    <td><%= logged_labor.time_spent %></td>
+                    <td><%= (logged_labor.created_at).strftime("%m/%d/%Y")  %></td>
+                </tr>
+            <tbody>
+            <% end %>
+        </table>
+    </div>
+</div>
+<% else %>
+    <%= render 'errors/not_signed_in' %>
+<% end %>

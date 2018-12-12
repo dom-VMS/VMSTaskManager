@@ -1,10 +1,14 @@
-<h1>Administration</h1>
-<h4>Use this page to view/edit data</h4>
+<% if logged_in? && isAdmin? %>
+    <h1>Administration</h1>
+    <h4>Use this page to view/edit data</h4>
 
-<%= link_to 'Users', users_path %><br>
-<%= link_to 'Task-Types (GROUPS/DEPARTMENTS)', task_types_path %><br>
-<%= link_to 'User-Groups (ROLES/PERMISSIONS)', user_groups_path%><br><br>
-<!-- Roles and Permissions -->
+    <%= link_to 'Users', users_path %><br>
+    <%= link_to 'Roles', task_type_options_path %><br>
+    <%= link_to 'Groups', admin_task_types_path %><br>
+    <br>
 
+    <%= link_to 'Back', home_index_path %>
+<% else %>
+        <%= render 'errors/not_signed_in' %>
+<% end%>
 
-<%= link_to 'Back', tasks_path %><br>

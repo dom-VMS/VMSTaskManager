@@ -1,0 +1,35 @@
+<div class="container-fluid text-center">
+    <h1>Completed Tasks</h1>
+    <p class="font-weight-light">Verify or Deny completion of tasks.</p>
+    <% unless @task_type_option.nil? %>
+        <% if @task_type_option.can_create %>
+            <%= link_to fa_icon('plus-circle', text:'New Task'), new_task_path(:task_type_id => params[:id]), class: "btn btn-primary" %><br><br>
+        <% end %>
+    <% end %>
+</div>
+<div class="container-fluid">
+    <div class="row">
+    <% @task.each do |task|%>
+        <div class="col-sm-4">
+            <div class="card text-center mb-3">
+                <div class="card-header"> 
+                    <strong>Task #<%= task.id %></strong>  <%= task.priority.nil? ? "" : task_priority(task) %>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title"><%= link_to task.title.truncate_words(5), task_path(task) %></h5>
+                    <p class="card-text"><%= task.description.truncate_words(10) %></p>
+                    <%= (link_to fa_icon('check-circle'), review_path(task, :isVerified => true, :percentComplete => 100, :id => task.id), class: "btn btn-primary",
+                                    method: 'put', 
+                                    data: { confirm: 'By selecting this, you verify this task has been complete. Continue?' })%>
+                    <%= (link_to fa_icon('times-circle'), review_path(task, :isVerified => false, :status => 1, :percentComplete => 0, :id => task.id), class: "btn btn-danger",
+                                    method: 'put', 
+                                    data: { confirm: 'Are you sure you want to mark this task as incomplete?' })%>           
+                </div>
+                <div class="card-footer text-muted">
+                    <%= time_ago_in_words(task.updated_at)%> ago
+                </div>
+            </div>
+        </div>
+    <% end%>
+    </div>
+</div>

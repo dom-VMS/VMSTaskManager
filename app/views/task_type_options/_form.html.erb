@@ -1,57 +1,71 @@
 
-
-<%= form_with(model: [ @task_type, @task_type.task_type_options.build ]) do |form| %>
-    <p>
-        <%= form.label :name, 'Configuration Name' %><br>
-        <%= form.text_field :name %>
-    </p>
-
-    <p>
-        <%= form.label :can_view, 'View Tasks' %><br>
-        <%= form.check_box :can_view%><br>
-    </p>
-
-    <p>
-        <%= form.label :can_create, 'Create Tasks' %><br>
-        <%= form.check_box :can_create%><br>
-    </p>
-
-    <p>
-        <%= form.label :can_update, 'Update Tasks' %><br>
-        <%= form.check_box :can_update%><br>
-    </p>
-    
-    <p>
-        <%= form.label :can_delete, 'Delete Tasks' %><br>
-        <%= form.check_box :can_delete%><br>
-    </p>
-
-    <p>
-        <%= form.label :can_approve, 'Approve Tasks' %><br>
-        <%= form.check_box :can_approve%><br>
-    </p>
-
-    <p>
-        <%= form.label :can_verify, 'Verify Tasks' %><br>
-        <%= form.check_box :can_verify%><br>
-    </p>
-
-    <p>
-        <%= form.label :can_comment, 'Comment on Tasks' %><br>
-        <%= form.check_box :can_comment%><br>
-    </p>
-
-    <p>
-        <%= form.label :can_log_labor, 'Log Labor Tasks' %><br>
-        <%= form.check_box :can_log_labor %><br>
-    </p>
-
-    <p>
-        <%= form.label :can_view_cost, 'View Cost' %><br>
-        <%= form.check_box :can_view_cost%><br>
-    </p>
-
-    <p>
-        <%= form.submit %>
-    </p>
+<%= form_with(model: @task_type_option) do |form| %>
+<div class="row">
+    <div class="col-12">
+        <div class="mb-3">
+            <p>
+                <%= form.label :name, 'Configuration Name' %><br>
+                <%= form.text_field :name, class: 'form-control' %>
+            </p>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-6">
+        <div class="mb-3">
+            <p>
+                <%= form.label :isAdmin, 'Is Admin?' %><br>
+                <%= form.check_box :isAdmin, class: 'form-control'%><br>
+            </p>
+            <p>
+                <%= form.label :can_view, 'View Tasks' %><br>
+                <%= form.check_box :can_view, class: 'form-control'%><br>
+            </p>
+            <p>
+                <%= form.label :can_create, 'Create Tasks' %><br>
+                <%= form.check_box :can_create, class: 'form-control'%><br>
+            </p>
+            <p>
+                <%= form.label :can_update, 'Update Tasks' %><br>
+                <%= form.check_box :can_update, class: 'form-control'%><br>
+            </p>
+            <p>
+                <%= form.label :can_delete, 'Delete Tasks' %><br>
+                <%= form.check_box :can_delete, class: 'form-control'%><br>
+            </p>
+        </div>
+    </div>
+    <div class="col-6">
+        <div class="mb-3">
+            <p>
+                <%= form.label :can_approve, 'Approve Tasks' %><br>
+                <%= form.check_box :can_approve, class: 'form-control'%><br>
+            </p>
+            <p>
+                <%= form.label :can_verify, 'Verify Tasks' %><br>
+                <%= form.check_box :can_verify, class: 'form-control'%><br>
+            </p>
+            <p>
+                <%= form.label :can_comment, 'Comment on Tasks' %><br>
+                <%= form.check_box :can_comment, class: 'form-control'%><br>
+            </p>
+            <p>
+                <%= form.label :can_log_labor, 'Log Labor Tasks' %><br>
+                <%= form.check_box :can_log_labor, class: 'form-control' %><br>
+            </p>
+            <p>
+                <%= form.label :can_view_cost, 'View Cost' %><br>
+                <%= form.check_box :can_view_cost, class: 'form-control'%><br>
+            </p>
+            <%=form.hidden_field 'task_type_id', :value => @task_type.id %>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <p>
+            <%= form.submit 'Save', class: 'btn btn-primary btn-lg btn-block'%>
+        </p>
+    </div>
+</div>
 <% end %>

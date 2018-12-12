@@ -1,20 +1,33 @@
-<h1>Users</h1>
-<%= link_to 'Create New User', new_user_path %><br><br>
-
-<table>
-    <tr>
-      <th>Employee Number</th>
-      <th>Employee Name</th>
-      <th>Email Address</th>
-    </tr>
-    <% @users.each do |user| %>
-        <tr>
-            <td><%= user.employee_number %></td>
-            <td><%= user.f_name + " " + user.l_name %></td>
-            <td><%= user.email %></td>
-            <td><%= link_to 'Edit', edit_user_path(user)%></td>
-            <td><%= link_to 'Permissions', edit_user_path(user)%></td>
-        </tr>
-    <% end %>
-</table>
-<%= link_to 'Back', admin_path %>
+<% if logged_in? && isAdmin? %> 
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/home/index">Home</a></li>
+            <li class="breadcrumb-item"><a href="/users">Users</a></li>
+        </ol>
+    </nav>
+    <h1>Users</h1>
+    <%= link_to fa_icon('user-plus', text:'Add User'), new_user_path,  class: 'btn btn-primary'%><br><br>
+        <table class="table table-sm ">
+            <thead>
+                <tr>
+                    <th>Employee Number</th>
+                    <th>Employee Name</th>
+                    <th>Email Address</th>
+                    <th> <th>
+                </tr>
+            </thead>
+            <% @users.each do |user| %>
+            <tbody>
+                <tr>
+                    <td><%= user.employee_number %></td>
+                    <td><%= user.full_name %></td>
+                    <td><%= user.email %></td>
+                    <td><%= link_to 'View', user_path(user) %></td>
+                </tr>                
+            </tbody>
+            <% end %>
+    </table>
+    <%= link_to 'Back', admin_path %>
+<% else %>
+     <%= render 'errors/not_signed_in' %>
+<% end %>

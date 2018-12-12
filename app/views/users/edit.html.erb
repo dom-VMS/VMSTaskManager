@@ -1,5 +1,13 @@
-<h1>Edit User</h1>
+<% if logged_in? %>
+<div class="container">
+    <div class="py-4 text-center">
+        <h1>Edit User</h1>
+    </div>
 
-<%= render 'form' %>
+    <%= render 'form' %>
 
-<%= link_to 'Back', tasks_path %>
+    <%= link_to 'Back', user_path(@user) %>
+</div>
+<% else %>
+     <%= render 'errors/not_signed_in' %>
+<% end %>

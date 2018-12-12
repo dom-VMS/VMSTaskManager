@@ -1,0 +1,75 @@
+<div class="container">
+    <div class="py-4 text-center">
+        <h2>File Maintenance Ticket</h2>
+        <p class="lead">Is there something broken? Need something installed? Please fill out the ticket below to file a Maintenance request.</p>
+    </div>
+    <%= form_with model: @task, local: true do |form| %>
+        <!-- Error Messages -->
+        <% if @task.errors.any? %>
+            <div id="error_explanation">
+                <h2>
+                    <%= pluralize(@task.errors.count, "error") %> prohibited
+                    this task from being saved:
+                </h2>
+                <ul>
+                    <% @task.errors.full_messages.each do |msg| %>
+                    <li><%= msg %></li>
+                    <% end %>
+                </ul>
+            </div>
+        <% end %>
+        <% if logged_in?%>
+            <%= form.hidden_field 'created_by_id', :value => current_user.id %>
+        <% else %>
+            <div class="row">
+                <div class="col-md-4 order-md-2 mb-4">
+                    <%= form.label :created_by_id, 'VMS Employee #' %><br>
+                    <%= form.text_field :created_by_id, class: 'form-control', placeholder: "Ex.) 007" %>
+                </div>
+            </div>
+        <% end %>
+        <div class="mb-3">
+            <p> 
+                <%= form.label :title, 'What is the problem?' %><br>
+                <%= form.text_field :title, class: 'form-control', placeholder: "Tell us the problem." %>
+            </p>
+        </div>
+        <div class="mb-3">
+            <p> 
+                <%= form.label :description, 'Describe the issue.' %><br>
+                <%= form.text_area :description, class: 'form-control', placeholder: "Give us some details." %>
+            </p>
+        </div>
+        <div class="mb-3">
+            <p> 
+                <%= form.label :priority, 'How urgent is this?' %><br>
+                <%= form.select(:priority, options_for_select([['Low', 1],['Normal', 2],['High', 3],['Urgent', 4]], @task.priority), include_blank: "Select Priority", class: 'form-control' )%>
+            </p>
+        </div>
+        <div class="mb-3">
+            <% @task.file_attachments.each do |file_attachment|%>
+                <% if (file_attachment.file).present? %>
+                    <a href="<%= file_attachment.file.url %>" target="_blank"><%= image_tag(file_attachment.file.url, size:'32') if !file_attachment.blank? %></a>
+                    <%if @task.persisted?%>
+                        <%= link_to fa_icon('trash-alt'), 
+                                [file_attachment.task, file_attachment],
+                                title: 'Remove',
+                                method: :delete,
+                                data: { confirm: 'Are you sure you want to remove this attachment?' } %><br>
+                    <%end%>
+                <%end%>
+            <% end %>
+            <%= form.fields_for :file_attachments_attributes do |fa| %>
+                <p>
+                    <%= fa.label :file, 'Upload a file?' %>
+                    <%= fa.file_field :file %>
+                </p>
+            <% end %>
+        </div>
+        <hr class="mb-4">
+        <%= form.hidden_field 'task_type_id', :value => 1 %>
+        <%= form.hidden_field 'isApproved', :value => nil %>
+        <%= form.submit 'Submit Request', class: 'btn btn-primary btn-lg btn-block'%>
+        <% end %>
+    </div>
+</div>

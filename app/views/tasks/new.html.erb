@@ -1,5 +1,20 @@
-<h1>New Task</h1>
+<% if logged_in? %>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/home/index">Home</a></li>
+    <li class="breadcrumb-item"><a href="/task_types">Departments</a></li>
+    <li class="breadcrumb-item"><%= link_to @task_type.name, task_type_path(@task_type)%></li>
+    <li class="breadcrumb-item active" aria-current="page">New Task</li>
+  </ol>
+</nav>
+<div class="container">
+  <div class="py-4 text-center">
+    <h1>New Task</h1>
+  </div>
+    <%= render 'form' %>
 
-<%= render 'form' %>
-
-<%= link_to 'Back', tasks_path %>
+    <%= link_to 'Back', home_index_path %>
+</div>
+<% else %>
+     <%= render 'errors/not_signed_in' %>
+<% end %>

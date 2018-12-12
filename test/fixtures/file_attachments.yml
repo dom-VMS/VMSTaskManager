@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  task: one
+  comment: one
+  file: MyString
+
+two:
+  task: two
+  comment: two
+  file: MyString

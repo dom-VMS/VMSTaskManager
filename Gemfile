@@ -19,8 +19,20 @@ gem 'uglifier', '>= 1.3.0'
 # See https://github.com/rails/execjs#readme for more supported runtimes
 # gem 'therubyracer', platforms: :ruby
 
+# Filter results
+gem 'filterrific'
 # Hash function for passwords
 gem 'bcrypt', '>= 3.1.12'
+# Use Carrierwave for file attachments
+gem 'carrierwave', '~> 1.0'
+# Using Bootstrap for CSS/Front-end
+gem 'bootstrap', '~> 4.1.3'
+# Bootstrap dependency
+gem 'jquery-rails'
+# Used for icons
+gem "font-awesome-rails"
+# Using PublicActivity to track what actions a user takes.
+gem 'public_activity'
 
 # Use CoffeeScript for .coffee assets and views
 gem 'coffee-rails', '~> 4.2'

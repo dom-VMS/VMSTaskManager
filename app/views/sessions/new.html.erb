@@ -1,0 +1,21 @@
+<div class="container">
+  <div class="py-4 text-center">
+    <h1>Sign In</h1>
+  </div>
+  <% provide(:title, "Log in") %>
+    <%= form_for(:session, url: login_path) do |f| %>
+    <div class="mb-3">
+       <p> 
+        <%= f.label :employee_number, 'Employee Number'%>
+        <%= f.number_field :employee_number, class: 'form-control', placeholder: "Employee #" %>
+      </p>
+    </div>
+    <div class="mb-3">
+      <p> 
+        <%= f.label :password, 'Password'%>
+        <%= f.password_field :password, class: 'form-control', placeholder: "Password"  %>
+      </p>
+    </div>
+    <%= f.submit "Log in", class: 'btn btn-primary  btn-lg btn-block' %>
+    <% end %>  
+</div>
