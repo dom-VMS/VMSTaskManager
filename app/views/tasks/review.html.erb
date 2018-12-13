@@ -15,10 +15,10 @@
                 <div class="card-body">
                     <h5 class="card-title"><%= link_to task.title.truncate_words(5), task_path(task) %></h5>
                     <p class="card-text"><%= task.description.truncate_words(10) %></p>
-                    <%= (link_to fa_icon('check-circle'), review_path(task, :isApproved => true, :id => task.id), class: "btn btn-primary",
+                    <%= (link_to fa_icon('check-circle'), review_path(task, :isApproved => true, :id => task.id), class: "btn btn-primary btn-lg",
                                     method: 'put', 
                                     data: { confirm: 'Are you sure you want to confirm this ticket?' })%>
-                    <%= (link_to fa_icon('times-circle'), review_path(task, :isApproved => false, :id => task.id), class: "btn btn-danger",
+                    <%= (link_to fa_icon('times-circle'), review_path(task, :isApproved => false, :id => task.id), class: "btn btn-danger btn-lg",
                                     method: 'put', 
                                     data: { confirm: 'Are you sure you want to decline this ticket?' })%>           
                 </div>
