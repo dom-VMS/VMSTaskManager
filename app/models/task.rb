@@ -17,7 +17,8 @@ class Task < ApplicationRecord
     validates_presence_of :task_type_id
 
     tracked owner: Proc.new{ |controller, model| controller.current_user }
-
+    
+=begin
     filterrific(
         default_filter_params: { sorted_by: 'created_at_desc' },
         available_filters: [
@@ -25,6 +26,7 @@ class Task < ApplicationRecord
           :search_query
         ]
     )
+=end
 
     # Retrieves all possible users that can be assigned to a task.
     def self.get_assignable_users(task_type_options)

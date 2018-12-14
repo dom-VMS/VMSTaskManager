@@ -1,4 +1,3 @@
-<!-- Display the different Task Type Configurations -->
 <% if logged_in? %>
 <div class="container-fluid">
     <div class="row content">
@@ -15,8 +14,8 @@
             <p><h5><small><strong>Department:</strong> <%= @task_type_name %></small></h5></p>
             <hr>
             <div class="row">
-                <div class="col-6">
-                    <table class="table text-center table-bordered ">
+                <div class="col-md-8">
+                    <table class="table text-center table-bordered">
                         <tbody>
                             <tr>
                                 <td>Admin:</td>
@@ -57,7 +56,7 @@
                         <tbody>
                     </table>
                 </div>
-                <div class="col-6">
+                <div class="col-md-4">
                     <% if isAdmin? %>
                         <% if @user.empty? %>
                             <h3>No users have been assigned to this role.</h3>
@@ -75,7 +74,7 @@
                         <% end %><br>
                         <%= link_to fa_icon('user-plus', text:'Assign User'), new_user_group_path(:task_type_option_id => params[:id]), class:'btn btn-primary' %><br>
                         <br>
-                    <% end %> 
+                    <% end %>
                 </div>
             </div>
             <hr>

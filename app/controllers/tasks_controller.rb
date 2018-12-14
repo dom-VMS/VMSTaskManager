@@ -26,19 +26,6 @@ class TasksController < ApplicationController
         @task.file_attachments.build
     end
 
-    def create_ticket
-        @task = Task.new(new_task_params)
-        if @task.save!
-            @task_assignment.save!
-            add_file_attachment
-            flash[:notice] = "Your ticket has been created!"
-            logged_in? ? (redirect_to 'home/index') : (redirect_to 'home/welcome')
-        else
-            flash[:danger] = "Ticket entry failed!"
-            render 'new'
-        end
-    end
-
     def review
         @task = Task.where(isApproved: nil).order("created_at DESC")
     end
@@ -83,15 +70,14 @@ class TasksController < ApplicationController
     def create
         params = new_task_params 
         unless logged_in?
-            if User.exists?(new_task_params[:created_by_id])
-                params[:created_by_id] = User.find_by_employee_number(new_task_params[:created_by_id]).id                
+            if (User.find_by_employee_number(params[:created_by_id])).present?  
+                params[:created_by_id] = User.find_by_employee_number(new_task_params[:created_by_id]).id         
             else 
                 flash[:error] = "The employee number you have entered does not exsist."
                 render 'ticket'
             end
         end
         @task = Task.new(params)
-        #@task = Task.new(new_task_params)
         if @task.save!
             @task_assignment = TaskAssignment.create(task_id: @task.id, assigned_to_id: assignment_params_new[:assigned_to_id])
             @task_assignment.save!

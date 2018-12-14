@@ -22,7 +22,7 @@ Rails.application.routes.draw do
 
   # Tasks and Tickets
   get   '/ticket',   to: 'tasks#ticket'
-  post  '/ticket',   to: 'tasks#create_ticket'
+  post  '/ticket',   to: 'tasks#create_ticket' #<-- I don't think this actually goes there
   get   '/review',   to: 'tasks#review'
   patch '/review',   to: 'tasks#update_ticket'
   put   '/review',   to: 'tasks#update_ticket'

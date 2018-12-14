@@ -35,7 +35,7 @@
                         <% (@tasks).each do |task| %>
                         <tbody> 
                             <tr>
-                                <td><%= link_to "#{task.title}", task_path(task)  %></td>
+                                <td><%= link_to "#{task.title.truncate_words(5)}", task_path(task)  %></td>
                                 <td><%= task.priority.nil? ? "" : task_priority(task) %></td>
                             </tr>
                         </tbody> 
@@ -59,7 +59,7 @@
                         <% @tasks_assigned_to_user.each do |task| %>
                         <tbody> 
                             <tr>
-                                <td><%= link_to "#{task.title}", task_path(task)  %></td>
+                                <td><%= link_to "#{task.title.truncate_words(5)}", task_path(task)  %></td>
                                 <td><%= task.priority.nil? ? "" : task_priority(task) %></td>
                             </tr>
                         </tbody> 
@@ -84,7 +84,7 @@
                         <% (@tasks_recently_complete).each do |task| %>
                         <tbody> 
                             <tr>
-                                <td><%= link_to "#{task.title}", task_path(task)  %></td>
+                                <td><%= link_to "#{task.title.truncate_words(5)}", task_path(task)  %></td>
                                 <td><%= task.priority.nil? ? "" : task_priority(task) %></td>
                             </tr>
                         </tbody> 
