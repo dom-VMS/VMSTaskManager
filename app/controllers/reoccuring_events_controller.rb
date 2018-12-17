@@ -1,0 +1,2 @@
+class ReoccuringEventsController < ApplicationController
+end

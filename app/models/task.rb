@@ -11,6 +11,7 @@ class Task < ApplicationRecord
     accepts_nested_attributes_for :file_attachments 
 
     has_one :task_type
+    has_one :reoccuring_event
     validates :title, presence: true, 
                     length: { minimum: 5, message: "is too short. It must be at least 5 characters long."  }
     #validates :created_by_id_exists
