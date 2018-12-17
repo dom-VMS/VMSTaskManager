@@ -4,12 +4,11 @@
   <h1><strong><%= current_user.full_name %></strong></h1>
   <h5><%=Time.now.strftime("%m/%d/%Y") %></h5>
 </div>
-
 <div class="container-fluid">
     <div class="row">
         <div class="col-sm-8">
             <% unless @task.nil? %>
-                <h2>Your current tasks:</h2>
+                <h2>Available to you:</h2>
                 <table class="table table-borderless table-hover table-sm table-responsive">
                     <thead>
                         <tr>
@@ -22,7 +21,7 @@
                     <tbody> 
                         <tr>
                             <td><%= (TaskType.find_by_id(task.task_type_id)).name %></td>
-                            <td><%= link_to "#{task.title}", task_path(task)  %></td>
+                            <td><%= link_to "#{task.title.truncate_words(5)}", task_path(task)  %></td>
                             <td><%= task.priority.nil? ? "" : task_priority(task) %></td>
                         </tr>
                     </tbody>
@@ -32,12 +31,9 @@
                 <h3>Assigned to you: N/A</h3>
             <%end%>
         </div>
-        <div class="col-sm-4">
-           <!-- Something in here -->
-        </div>
+        <div class="col-sm-4"></div>
     </div>
 </div>
-
 <% else %>
   <%= render 'errors/not_signed_in' %>
 <% end %>

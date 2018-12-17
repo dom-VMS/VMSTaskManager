@@ -1,64 +1,91 @@
-<!-- Display the different Task Type Configurations -->
 <% if logged_in? %>
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/home/index">Home</a></li>
-            <li class="breadcrumb-item"><a href="/task_type_options">Roles & Permissions</a></li>
-            <li class="breadcrumb-item"><a href="/task_type_options/<%= @task_type_option.id%>"><%= @task_type_option.name %> </a></li>
-        </ol>
-    </nav>
-    <h1><%= "#{@task_type_name}" %> - <%= "#{@task_type_option.name}" %> Configurations </h1>
-       <table class="table text-center">
-        <thead>
-            <tr>
-                <th>Is Admin</th>
-                <th>View Tasks</th>
-                <th>Create Tasks</th>
-                <th>Update Tasks</th>
-                <th>Delete Tasks</th>
-                <th>Approve Tasks</th>
-                <th>Verify Tasks</th>
-                <th>Comment on Tasks</th>
-                <th>Log Labor</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td><%= @task_type_option.isAdmin ? fa_icon('check') : fa_icon('times') %> </td>
-                <td><%= @task_type_option.can_view ? fa_icon('check') : fa_icon('times') %> </td>
-                <td><%= @task_type_option.can_create ? fa_icon('check') : fa_icon('times') %></td>
-                <td><%= @task_type_option.can_update ? fa_icon('check') : fa_icon('times') %></td>
-                <td><%= @task_type_option.can_delete ? fa_icon('check') : fa_icon('times') %></td>
-                <td><%= @task_type_option.can_approve ? fa_icon('check') : fa_icon('times') %></td>
-                <td><%= @task_type_option.can_verify ? fa_icon('check') : fa_icon('times') %></td>
-                <td><%= @task_type_option.can_comment ? fa_icon('check') : fa_icon('times') %></td>
-                <td><%= @task_type_option.can_log_labor ? fa_icon('check') : fa_icon('times') %></td>
-            </tr>
-        <tbody>
-    </table>
-    <br><br>
-    <% if isAdmin? %>
-        <% if @user.empty? %>
-            <h3>No users have been assigned to this role.</h3>
-        <% else %>
-            <table>
-                <tr>
-                    <th>Assigned Users</th>
-                </tr>
-                <% @user.each do |user| %>
-                <tr> 
-                    <td><%= user.full_name %></td>
-                </tr>
-                <% end %>
-            </table>
-        <% end %><br>
-        <%= link_to 'Assign User', new_user_group_path(:task_type_option_id => params[:id]) %><br>
-        <br>
-        <%= link_to fa_icon('edit', text:'Edit Configuration'), edit_task_type_option_path(@task_type_option)%><br>
-        <%= link_to fa_icon('trash-alt', text:'Delete Configuration'), task_type_option_path(@task_type_option),
-                                         method: :delete,
-                                         data: { confirm: 'Are you sure you want to delete this role?' }%><br>
-    <% end %>
+<div class="container-fluid">
+    <div class="row content">
+        <div class="col-sm-1 bg-light"></div>
+        <div class="col-sm-10">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/home/index">Home</a></li>
+                    <li class="breadcrumb-item"><a href="/task_type_options">Roles & Permissions</a></li>
+                    <li class="breadcrumb-item active"><a><%= @task_type_option.name %> </a></li>
+                </ol>
+            </nav>
+            <h1> <%= "#{@task_type_option.name}" %> Configurations </h1>
+            <p><h5><small><strong>Department:</strong> <%= @task_type_name %></small></h5></p>
+            <hr>
+            <div class="row">
+                <div class="col-md-8">
+                    <table class="table text-center table-bordered">
+                        <tbody>
+                            <tr>
+                                <td>Admin:</td>
+                                <td><%= @task_type_option.isAdmin ? fa_icon('check') : fa_icon('times') %> </td>
+                            </tr>
+                            <tr>
+                                <td>View tasks:</td>
+                                <td><%= @task_type_option.can_view ? fa_icon('check') : fa_icon('times') %> </td>
+                            </tr>
+                            <tr>
+                                <td>Create tasks:</td>
+                                <td><%= @task_type_option.can_create ? fa_icon('check') : fa_icon('times') %></td>
+                            </tr>
+                            <tr>
+                                <td>Update tasks:</td>
+                                <td><%= @task_type_option.can_update ? fa_icon('check') : fa_icon('times') %></td>
+                            </tr>
+                            <tr>
+                                <td>Delete tasks:</td>
+                                <td><%= @task_type_option.can_delete ? fa_icon('check') : fa_icon('times') %></td>
+                            </tr>
+                            <tr>
+                                <td>Approve tickets:</td>
+                                <td><%= @task_type_option.can_approve ? fa_icon('check') : fa_icon('times') %></td>
+                            </tr>
+                            <tr>
+                                <td>Verify completion:</td>
+                                <td><%= @task_type_option.can_verify ? fa_icon('check') : fa_icon('times') %></td>
+                            </tr>
+                            <tr>
+                                <td>Comment on tasks:</td>
+                                <td><%= @task_type_option.can_comment ? fa_icon('check') : fa_icon('times') %></td>
+                            </tr>
+                            <tr>
+                                <td>Record labor entry:</td>
+                                <td><%= @task_type_option.can_log_labor ? fa_icon('check') : fa_icon('times') %></td>
+                            </tr>
+                        <tbody>
+                    </table>
+                </div>
+                <div class="col-md-4">
+                    <% if isAdmin? %>
+                        <% if @user.empty? %>
+                            <h3>No users have been assigned to this role.</h3>
+                        <% else %>
+                            <table>
+                                <tr>
+                                    <th><h3>Assigned Users</h3></th>
+                                </tr>
+                                <% @user.each do |user| %>
+                                <tr> 
+                                    <td><%= user.full_name %></td>
+                                </tr>
+                                <% end %>
+                            </table>
+                        <% end %><br>
+                        <%= link_to fa_icon('user-plus', text:'Assign User'), new_user_group_path(:task_type_option_id => params[:id]), class:'btn btn-primary' %><br>
+                        <br>
+                    <% end %>
+                </div>
+            </div>
+            <hr>
+            <%= link_to fa_icon('edit', text:'Edit'), edit_task_type_option_path(@task_type_option)%><br>
+            <%= link_to fa_icon('trash-alt', text:'Delete'), task_type_option_path(@task_type_option),
+                                method: :delete,
+                                data: { confirm: 'Are you sure you want to delete this role?' }%><br>
+        </div>
+        <div class="col-sm-1 bg-light"></div>
+    </div>
+</div>
 <% else %>
      <%= render 'errors/not_signed_in' %>
 <% end %>

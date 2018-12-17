@@ -1,5 +1,6 @@
 class TaskTypeOptionsController < ApplicationController
     def index
+        @task_types = TaskType.all
         @task_type_options = TaskTypeOption.all
     end
 
