@@ -31,7 +31,29 @@
                 <h3>Assigned to you: N/A</h3>
             <%end%>
         </div>
-        <div class="col-sm-4"></div>
+        <div class="col-sm-4">
+        <% unless @reoccuring_event.nil? %>
+            <h2>Coming up:</h2>
+            <table class="table table-borderless table-hover table-sm table-responsive">
+                <thead>
+                    <tr>
+                        <th>Event Type</th>
+                        <th>Title</th>
+                        <th>Due</th>
+                    </tr>
+                </thead>
+                <% @reoccuring_event.each do |reoccuring_task|%>
+                <tbody class="text-center"> 
+                    <tr>
+                        <td><%= (ReoccuringEventType.find_by_id(reoccuring_task.reoccuring_event_type.id)).title %></td>
+                        <td><%= link_to (Task.find_by_id(reoccuring_task.task_id)).title, Task.find_by_id(reoccuring_task.task_id)%></td>
+                        <td><%= reoccuring_task.next_date %></td>
+                    </tr>
+                </tbody>
+                <% end %>
+            </table><br>
+        <%end%>
+        </div>
     </div>
 </div>
 <% else %>

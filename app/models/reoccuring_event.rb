@@ -1,4 +1,4 @@
 class ReoccuringEvent < ApplicationRecord
-  belongs_to :task
+  has_one :task
   belongs_to :reoccuring_event_type
 end

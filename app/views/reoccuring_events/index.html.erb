@@ -1,0 +1,36 @@
+<h1>Reoccuring Events</h1>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-8">
+            <% unless @reoccuring_events.nil? %>
+                <h2>All Reoccuring Events:</h2>
+                <table class="table table-borderless table-responsive">
+                    <thead>
+                        <tr>
+                            <th>Event Type</th>
+                            <th>Task</th>
+                            <th>Frequency (Days)</th>
+                            <th>Last Date</th>
+                            <th>Next Date</th>
+                        </tr>
+                    </thead>
+                    <% @reoccuring_events.each do |reoccuring_events| %>
+                    <tbody class="text-center">  
+                        <tr>
+                            <td><%= (ReoccuringEventType.find_by_id(reoccuring_events.reoccuring_event_type.id)).title%></td>
+                            <td><%= link_to (Task.find_by_id(reoccuring_events.task_id)).title, Task.find_by_id(reoccuring_events.task_id) %></td>
+                            <td><%= reoccuring_events.freq_days%></td>
+                            <td><%= reoccuring_events.last_date%></td>
+                            <td><%= reoccuring_events.next_date%></td>
+                        </tr>
+                    </tbody>
+                    <% end %>
+                </table><br>
+            <% else %>
+                <h3>None</h3>
+            <%end%>
+        </div>
+        <div class="col-sm-4">
+        </div>
+    </div>
+</div>

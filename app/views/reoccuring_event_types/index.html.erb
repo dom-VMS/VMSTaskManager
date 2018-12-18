@@ -1,0 +1,29 @@
+<h1>Reoccuring Event Types</h1>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-8">
+            <% unless @reoccuring_event_types.nil? %>
+                <table class="table table-borderless table-responsive">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <% @reoccuring_event_types.each do |reoccuring_event_types| %>
+                    <tbody> 
+                        <tr>
+                            <td><%= reoccuring_event_types.title %></td>
+                            <td><%= reoccuring_event_types.description   %></td>
+                        </tr>
+                    </tbody>
+                    <% end %>
+                </table><br>
+            <% else %>
+                <h3>None</h3>
+            <%end%>
+        </div>
+        <div class="col-sm-4">
+        </div>
+    </div>
+</div>

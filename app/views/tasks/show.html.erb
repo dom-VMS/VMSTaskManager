@@ -49,6 +49,7 @@
             <p><h5><small><%= fa_icon('clock')%> Created By: <%= task_created_by_name(@task)%>, <%= time_ago_in_words(@task.created_at) %> ago</small></h5></p>
 
             <p><strong>Task Type:</strong> <%= TaskType.find(@task.task_type_id).name unless @task.task_type_id.blank?%></p>
+            <p><strong>Due:</strong> <%= @reoccuring_event.next_date unless @reoccuring_event.nil?%></p>
             <p><strong>Assignee:</strong> <%= @assignee.blank? ? "All" : @assignee.full_name  %><br></p>   
             <p><strong>Description:</strong> <%= @task.description %></p> 
             <p><strong>Status:</strong> <%= @task.status.nil? ? "" : task_status(@task)%></p>

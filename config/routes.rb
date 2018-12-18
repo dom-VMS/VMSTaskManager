@@ -22,7 +22,7 @@ Rails.application.routes.draw do
 
   # Tasks and Tickets
   get   '/ticket',   to: 'tasks#ticket'
-  post  '/ticket',   to: 'tasks#create_ticket' #<-- I don't think this actually goes there
+  post  '/ticket',   to: 'tasks#create_ticket' #<-- I don't think this actually does anything right now
   get   '/review',   to: 'tasks#review'
   patch '/review',   to: 'tasks#update_ticket'
   put   '/review',   to: 'tasks#update_ticket'
@@ -31,6 +31,8 @@ Rails.application.routes.draw do
   put   '/verify',   to: 'tasks#update_ticket'
 
   resources :logged_labors
+  resources :reoccuring_events
+  resources :reoccuring_event_types
   resources :task_types
   resources :task_type_options 
   resources :user_groups

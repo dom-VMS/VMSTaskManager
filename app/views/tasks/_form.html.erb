@@ -54,6 +54,20 @@
             <% end %>
         </p>
     </div>
+    <hr class="mb-4">
+    <div class="mb-3">
+        <%= form.fields_for :reoccuring_event do |re| %>
+                <p>
+                    <%= re.label :freq_days, 'Frequency (days)' %>
+                    <%= re.number_field :file %>
+                </p>
+                <p>
+                    <%= re.label :next_date, 'Next Date' %>
+                    <%= re.date_field :next_date %>
+                </p>
+        <% end %>
+    </div>
+    <hr class="mb-4">
     <div class="mb-3">
         <% @task.file_attachments.each do |file_attachment|%>
             <% if (file_attachment.file).present? %>

@@ -10,6 +10,7 @@ class TasksController < ApplicationController
         @task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task.task_type_id) unless !current_user.present?
         @activities = ActivitiesHelper.get_activities(@task)
         @assignee = TaskAssignment.get_assignee_object(@task)
+        @reoccuring_event = ReoccuringEvent.find_by(task_id: @task.id)
     end
     
     def new
