@@ -57,6 +57,11 @@ margin: 20px 0;
     box-shadow: -1px 9px 40px -12px rgba(0, 0, 0, 0.75);
 }
 
+a.custom-card,
+a.custom-card:hover {
+  color: inherit;
+}
+
 .scroll {
     max-height: 400px;
     overflow-y: auto;

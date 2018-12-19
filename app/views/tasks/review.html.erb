@@ -1,33 +1,34 @@
 <% if logged_in? == true && isMaintenanceCanApprove? == true %>
-<div class="container-fluid text-center">
-    <h1>New Tickets</h1>
-    <p class="font-weight-light">Approve or Deny work order requests.</p>
-</div>
-
-<div class="container-fluid">
-    <div class="row">
-    <% @task.each do |task|%>
-        <div class="col-sm-4">
-            <div class="card text-center mb-3">
-                <div class="card-header"> 
-                    <strong>Task #<%= task.id %></strong>  <%= task.priority.nil? ? "" : task_priority(task) %>
-                </div>
-                <div class="card-body">
-                    <h5 class="card-title"><%= link_to task.title.truncate_words(5), task_path(task) %></h5>
-                    <p class="card-text"><%= task.description.truncate_words(10) %></p>
-                    <%= (link_to fa_icon('check-circle'), review_path(task, :isApproved => true, :id => task.id), class: "btn btn-primary btn-lg",
-                                    method: 'put', 
-                                    data: { confirm: 'Are you sure you want to confirm this ticket?' })%>
-                    <%= (link_to fa_icon('times-circle'), review_path(task, :isApproved => false, :id => task.id), class: "btn btn-danger btn-lg",
-                                    method: 'put', 
-                                    data: { confirm: 'Are you sure you want to decline this ticket?' })%>           
-                </div>
-                <div class="card-footer text-muted">
-                    <%= time_ago_in_words(task.created_at)%> ago
-                </div>
-            </div>
-        </div>
-    <% end%>
+    <div class="container-fluid text-center">
+        <h1>New Tickets</h1>
+        <p class="font-weight-light">Approve or Deny work order requests.</p>
     </div>
-</div>
+    <div class="container-fluid">
+        <div class="row">
+        <% @task.each do |task|%>
+            <div class="col-sm-4">
+                <%= link_to task_path(task) do %>
+                    <div class="card text-center mb-3" data-link="<%= task_path(task)%>">
+                        <div class="card-header"> 
+                            <strong>Task #<%= task.id %></strong>  <%= task.priority.nil? ? "" : task_priority(task) %>
+                        </div>
+                        <div class="card-body" data-link="<%= task_path(task)%>">
+                            <h5 class="card-title"><%= task.description.truncate_words(10)  unless task.description.nil?%></h5>
+                            <%= (link_to fa_icon('check-circle'), review_path(task, :isApproved => true, :id => task.id), class: "btn btn-primary btn-lg",
+                                            method: 'put', 
+                                            data: { confirm: 'Are you sure you want to confirm this ticket?' })%>
+                            <%= (link_to fa_icon('times-circle'), review_path(task, :isApproved => false, :id => task.id), class: "btn btn-danger btn-lg",
+                                            method: 'put', 
+                                            data: { confirm: 'Are you sure you want to decline this ticket?' })%>           
+                        </div>
+                        <div class="card-footer text-muted">
+                            <%= time_ago_in_words(task.created_at)%> ago
+                        </div> 
+                    </div>
+                <% end %>
+            </div>
+        <% end%>
+        </div>
+    </div> 
 <% end %>
+

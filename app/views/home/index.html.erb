@@ -19,7 +19,7 @@
                     </thead>
                     <% @task.each do |task| %>
                     <tbody> 
-                        <tr>
+                        <tr data-link="<%= task_path(task)%>">
                             <td><%= (TaskType.find_by_id(task.task_type_id)).name %></td>
                             <td><%= link_to "#{task.title.truncate_words(5)}", task_path(task)  %></td>
                             <td><%= task.priority.nil? ? "" : task_priority(task) %></td>
@@ -38,5 +38,9 @@
   <%= render 'errors/not_signed_in' %>
 <% end %>
 
-
+<script>
+    $("tr[data-link]").click(function() {
+    window.location = $(this).data("link")
+  })
+</script>
 

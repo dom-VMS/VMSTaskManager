@@ -22,7 +22,7 @@ class TasksController < ApplicationController
 
     def ticket
         @task = Task.new
-        @task_type = find_task_type
+        @task_type = TaskType.all
         @task.file_attachments.build
     end
 

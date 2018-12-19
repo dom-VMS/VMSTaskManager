@@ -1,7 +1,7 @@
 <div class="container">
     <div class="py-4 text-center">
-        <h2>File Maintenance Ticket</h2>
-        <p class="lead">Is there something broken? Need something installed? Please fill out the ticket below to file a Maintenance request.</p>
+        <h2>File a Ticket</h2>
+        <p class="lead">Have a request from a group you aren't assigned to? Fill out this form to submit your request.</p>
     </div>
     <%= form_with model: @task, local: true do |form| %>
         <!-- Error Messages -->
@@ -30,20 +30,21 @@
         <% end %>
         <div class="mb-3">
             <p> 
-                <%= form.label :title, 'What is the problem?' %><br>
-                <%= form.text_field :title, class: 'form-control', placeholder: "Tell us the problem." %>
+                <%= form.label :task_type_id, 'Who is this for?' %><br>
+                <%= form.select(:task_type_id, options_from_collection_for_select(@task_type, "id", "name"),  include_blank: "Select Project", class: 'form-control' )%>
             </p>
         </div>
         <div class="mb-3">
             <p> 
-                <%= form.label :description, 'Describe the issue.' %><br>
+                <%= form.label :description, 'What is the problem?' %><br>
                 <%= form.text_area :description, class: 'form-control', placeholder: "Give us some details." %>
             </p>
         </div>
         <div class="mb-3">
             <p> 
-                <%= form.label :priority, 'How urgent is this?' %><br>
-                <%= form.select(:priority, options_for_select([['Low', 1],['Normal', 2],['High', 3],['Urgent', 4]], @task.priority), include_blank: "Select Priority", class: 'form-control' )%>
+                <%= form.label :priority, 'Is this Urgent?' %><br>
+                <%= form.check_box :priority, {:class => "form-control"}, 4, nil %>
+
             </p>
         </div>
         <div class="mb-3">
@@ -67,7 +68,6 @@
             <% end %>
         </div>
         <hr class="mb-4">
-        <%= form.hidden_field 'task_type_id', :value => 1 %>
         <%= form.hidden_field 'isApproved', :value => nil %>
         <%= form.submit 'Submit Request', class: 'btn btn-primary btn-lg btn-block'%>
         <% end %>
