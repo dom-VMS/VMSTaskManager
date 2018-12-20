@@ -21,7 +21,7 @@
                     <%= (link_to fa_icon('check-circle'), review_path(task, :isVerified => true, :percentComplete => 100, :id => task.id), class: "btn btn-primary btn-lg ",
                                     method: 'put', 
                                     data: { confirm: 'By selecting this, you verify this task has been complete. Continue?' })%>
-                    <%= (link_to fa_icon('times-circle'), review_path(task, :isVerified => false, :status => 1, :percentComplete => 0, :id => task.id), class: "btn btn-danger btn-lg",
+                    <%= (link_to fa_icon('times-circle'), review_path(task, :isVerified => false, :status => 1, :id => task.id), class: "btn btn-danger btn-lg",
                                     method: 'put', 
                                     data: { confirm: 'Are you sure you want to mark this task as incomplete?' })%>           
                 </div>

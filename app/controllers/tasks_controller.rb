@@ -7,17 +7,26 @@ class TasksController < ApplicationController
     
     def show
         @task = find_task
+        @task_type = TaskType.find_by_id(@task.task_type_id)
         @task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task.task_type_id) unless !current_user.present?
         @activities = ActivitiesHelper.get_activities(@task)
         @assignee = TaskAssignment.get_assignee_object(@task)
+        @assignable_users = Task.get_assignable_users(@task_type.task_type_options)        
+
     end
     
     def new
-        @task = Task.new
-        @task_assignment = TaskAssignment.new
-        @task_type = find_task_type        
-        @task.file_attachments.build
-        @assignable_users = Task.get_assignable_users(@task_type.task_type_options)
+        @task_type = find_task_type  
+        current_task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task_type.id)
+        if current_task_type_option.nil?
+            flash[:error] = "Sorry, but you do not have permission to create #{@task_type.name} task."
+            redirect_to new_task_path
+        else
+            @task = Task.new
+            @task_assignment = TaskAssignment.new
+            @task.file_attachments.build
+            @assignable_users = Task.get_assignable_users(@task_type.task_type_options)        
+        end 
     end
 
     def ticket
@@ -27,7 +36,7 @@ class TasksController < ApplicationController
     end
 
     def review
-        @task = Task.where(isApproved: nil).order("created_at DESC")
+        @task = Task.get_all_tickets_user_can_approve(current_user)
     end
 
     def verify
@@ -42,6 +51,7 @@ class TasksController < ApplicationController
                 redirect_to edit_task_path(task)
             elsif (review_ticket_params[:isApproved] == "false")
                 flash[:notice] = "Ticket Rejected."
+                #
                 redirect_to review_path
             elsif (review_ticket_params[:isVerified] == "true")
                 flash[:notice] = "Task Completion Approved."

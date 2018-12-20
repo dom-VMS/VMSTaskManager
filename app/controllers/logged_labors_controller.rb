@@ -10,7 +10,14 @@ class LoggedLaborsController < ApplicationController
 
     def new
         @task = Task.find(params[:task_id])
-        @logged_labors = LoggedLabor.new
+        task_type = @task.task_type_id 
+        current_task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, task_type)
+        if current_task_type_option.nil?
+            flash[:error] = "Sorry, but you do not have permission to log time for Task ##{@task.id}"
+            redirect_to task_path(@task)
+        else
+            @logged_labors = LoggedLabor.new  
+        end 
     end
 
     def create

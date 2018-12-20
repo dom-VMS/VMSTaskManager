@@ -19,9 +19,30 @@
                             <%= (link_to fa_icon('check-circle', text:'Approve Ticket'), review_path(@task, :isApproved => true, :id => @task.id), class: "btn btn-primary",
                                         method: 'put', 
                                         data: { confirm: 'Are you sure you want to confirm this ticket?' }) if @task_type_option.can_approve %>
-                            <%= (link_to fa_icon('times-circle', text:'Reject Ticket'), review_path(@task, :isApproved => false, :id => @task.id), class: "btn btn-danger",
-                                        method: 'put', 
-                                        data: { confirm: 'Are you sure you want to decline this ticket?' }) if @task_type_option.can_approve %> 
+                            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#declineTicketModal">
+                                <%= fa_icon('times-circle', text:'Decline Ticket')%>
+                            </button>  
+                            <!-- Decline Ticket Modal -->
+                            <div class="modal fade" id="declineTicketModal" tabindex="-1" role="dialog" aria-labelledby="declineTicketModalLabel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="declineTicketModalLabel">Decline Ticket</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        ...
+                                    </div>
+                                    <div class="modal-footer">
+                                        <%= (link_to fa_icon('times-circle', text:'Decline Task'), review_path(@task, :isApproved => false, :id => @task.id), class: "btn btn-danger ",
+                                                                        method: 'put')%> 
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                    </div>
+                                    </div>
+                                </div>   
+                            </div> 
                         </p>
                     <% end %>
                 <% elsif @task.isApproved == false %>
@@ -51,11 +72,12 @@
             <p><strong>Task Type:</strong> <%= TaskType.find(@task.task_type_id).name unless @task.task_type_id.blank?%></p>
             <p><strong>Assignee:</strong> <%= @assignee.blank? ? "All" : @assignee.full_name  %><br></p>   
             <p><strong>Description:</strong> <%= @task.description %></p> 
+
             <p><strong>Status:</strong> <%= @task.status.nil? ? "" : task_status(@task)%></p>
             <p>
                 <strong>Percent Complete:</strong> 
                 <div class="progress w-50">
-                    <div class="progress-bar" role="progressbar" style="width: <%= @task.percentComplete %>%;" 
+                    <div style="width: <%= @task.percentComplete %>%;" 
                         aria-valuenow= "<%= @task.percentComplete %>" aria-valuemin="0" aria-valuemax="100">
                         <%= @task.percentComplete %>%
                     </div>
@@ -69,7 +91,6 @@
                         method: :delete,
                         data: { confirm: 'Are you sure you want to delete this task?' }) if @task_type_option.can_delete %><br>
             <% end %>
- 
             <br>
             <nav>
                 <div class="nav nav-tabs" id="nav-tab" role="tablist">
@@ -89,7 +110,7 @@
                     <% unless @task_type_option.nil?%>
                         <% if @task_type_option.can_comment %>
                         <h4>Leave a Comment:</h4>
-                            <%= render 'comments/form' %>
+                        <%= render 'comments/form' %>
                         <br><br>
                         <% end %>
                     <% end %>

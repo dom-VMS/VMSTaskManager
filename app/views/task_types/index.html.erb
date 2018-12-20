@@ -1,5 +1,4 @@
 <% if logged_in? %>
-
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="/home/index">Home</a></li>
@@ -28,3 +27,13 @@
 <% else %>
     <%= render 'errors/not_signed_in' %>
 <% end %>
+
+<script>
+$(function() {
+  // For card rotation
+     $('.btn-rotate').click(function(){
+          $('.card-front').toggleClass(' rotate-card-front');
+          $('.card-back').toggleClass(' rotate-card-back');
+     });
+  });
+</script>

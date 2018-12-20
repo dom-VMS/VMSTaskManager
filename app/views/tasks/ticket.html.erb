@@ -41,11 +41,8 @@
             </p>
         </div>
         <div class="mb-3">
-            <p> 
-                <%= form.label :priority, 'Is this Urgent?' %><br>
-                <%= form.check_box :priority, {:class => "form-control"}, 4, nil %>
-
-            </p>
+            <%= form.label :priority, 'Is this Urgent?' %>
+            <%= form.check_box :priority, {:class => "form-control"}, 4, nil %>
         </div>
         <div class="mb-3">
             <% @task.file_attachments.each do |file_attachment|%>

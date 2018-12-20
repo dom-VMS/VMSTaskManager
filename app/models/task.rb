@@ -77,6 +77,22 @@ class Task < ApplicationRecord
         end
     end
 
+    # Retrieve all open tasks that the current User is permitted to approve.
+    def self.get_all_tickets_user_can_approve(user)
+        tto = user.task_type_options
+        if tto.empty?
+            return nil
+        else
+            ttoHash = tto.pluck(:task_type_id, :can_approve).to_h
+            task_types = ttoHash.select { |key, value| value == true }
+            task_types = task_types.keys
+            # task_types = tto.pluck(:task_type_id) <-- Consider reimplementing this and just making the buttons disabled.
+            return (Task.where(isApproved: [nil]).
+                        where(task_type_id: [task_types]).
+                        order("updated_at DESC"))
+        end
+    end
+
     # Returns all tasks assigned to a current user.
     def self.get_all_tasks_assigned_to_user(current_user)
         tto = current_user.task_type_options

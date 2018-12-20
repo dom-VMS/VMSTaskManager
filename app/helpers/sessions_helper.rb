@@ -34,7 +34,7 @@ module SessionsHelper
         end
     end
 
-    # Checks if the user can verify task completion for any department.
+    # Checks if the current user can verify task completion for any department.
     def canVerify?
         tto = current_user.task_type_options
         verify = tto.pluck(:can_verify)
@@ -45,11 +45,14 @@ module SessionsHelper
         end
     end
 
-    # Checks current user if they are an admin in Maintenance (task_type_id == 1)
-    # ...
-    # Used to determine who can "Review (Approve/Deny) Tickets"
-    def isMaintenanceCanApprove?
-        maintenance_tto = TaskTypeOption.get_task_type_specific_options(current_user, 1) unless !current_user.present?
-        maintenance_tto.nil? ? (return false) : (return maintenance_tto.can_approve?)
+    # Checks if the current user can approve tickets for any department.
+    def canApprove?
+        tto = current_user.task_type_options
+        approve = tto.pluck(:can_approve)
+        if approve.include?(true)
+            return true
+        else
+            return false
+        end
     end
 end

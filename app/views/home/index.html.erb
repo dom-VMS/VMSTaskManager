@@ -4,6 +4,16 @@
   <h1><strong><%= current_user.full_name %></strong></h1>
   <h5><%=Time.now.strftime("%m/%d/%Y") %></h5>
 </div>
+
+<!-- TEST #1 -->
+<div class="container-fluid">
+<% @task_types.each do |task_type| %>
+    <h1><%= task_type.name%><h1>
+<% end %>
+</div>
+
+
+<!-- Original -->
 <div class="container-fluid">
     <div class="row">
         <div class="col-sm-8">
@@ -21,7 +31,7 @@
                     <tbody> 
                         <tr data-link="<%= task_path(task)%>">
                             <td><%= (TaskType.find_by_id(task.task_type_id)).name %></td>
-                            <td><%= link_to "#{task.title.truncate_words(5)}", task_path(task)  %></td>
+                            <td><%= task.title.empty? ? (link_to task.description.truncate_words(5), task_path(task)) :  (link_to task.title.truncate_words(5), task_path(task))  %></td>
                             <td><%= task.priority.nil? ? "" : task_priority(task) %></td>
                         </tr>
                     </tbody>

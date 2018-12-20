@@ -1,34 +1,69 @@
-<% if logged_in? == true && isMaintenanceCanApprove? == true %>
-    <div class="container-fluid text-center">
-        <h1>New Tickets</h1>
-        <p class="font-weight-light">Approve or Deny work order requests.</p>
-    </div>
-    <div class="container-fluid">
-        <div class="row">
-        <% @task.each do |task|%>
-            <div class="col-sm-4">
-                <%= link_to task_path(task) do %>
-                    <div class="card text-center mb-3" data-link="<%= task_path(task)%>">
-                        <div class="card-header"> 
-                            <strong>Task #<%= task.id %></strong>  <%= task.priority.nil? ? "" : task_priority(task) %>
-                        </div>
-                        <div class="card-body" data-link="<%= task_path(task)%>">
-                            <h5 class="card-title"><%= task.description.truncate_words(10)  unless task.description.nil?%></h5>
-                            <%= (link_to fa_icon('check-circle'), review_path(task, :isApproved => true, :id => task.id), class: "btn btn-primary btn-lg",
-                                            method: 'put', 
-                                            data: { confirm: 'Are you sure you want to confirm this ticket?' })%>
-                            <%= (link_to fa_icon('times-circle'), review_path(task, :isApproved => false, :id => task.id), class: "btn btn-danger btn-lg",
-                                            method: 'put', 
-                                            data: { confirm: 'Are you sure you want to decline this ticket?' })%>           
-                        </div>
-                        <div class="card-footer text-muted">
-                            <%= time_ago_in_words(task.created_at)%> ago
-                        </div> 
+<div class="container-fluid text-center">
+    <h1>New Tickets</h1>
+    <p class="font-weight-light">Approve or Deny work order requests.</p>
+</div>
+<div class="container-fluid">
+    <div class="row">
+    <% @task.each do |task|%>
+        <div class="col-sm-4">
+            <%= link_to task_path(task) do %>
+                <div class="card text-center mb-3" data-link="<%= task_path(task)%>">
+                    <div class="card-header"> 
+                        <strong>Task #<%= task.id %></strong>  <%= task.priority.nil? ? "" : task_priority(task) %>
                     </div>
-                <% end %>
-            </div>
-        <% end%>
+                    <div class="card-body" data-link="<%= task_path(task)%>">
+                        <h5 class="card-title"><%= task.description.truncate_words(10)  unless task.description.nil?%></h5>
+                        <%= (link_to fa_icon('check-circle'), review_path(task, :isApproved => true, :id => task.id), class: "btn btn-primary btn-lg",
+                                        method: 'put', 
+                                        data: { confirm: 'Are you sure you want to confirm this ticket?' })%>
+                        <button type="button" class="btn btn-danger btn-lg" data-toggle="modal" data-target="#declineTicketModal">
+                            <%= fa_icon('times-circle')%>
+                        </button>  
+                        <!-- Decline Ticket Modal -->
+                        <div class="modal fade" id="declineTicketModal" tabindex="-1" role="dialog" aria-labelledby="declineTicketModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="declineTicketModalLabel">Decline Ticket</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h4>Why is this task is being declined?</h4>
+                                        <%= form_with(model: [ task, task.comments.build ]) do |form| %>
+                                        <p>
+                                            <%= form.label :body, 'Click Decline Ticket when finished.' %><br>
+                                            <%= form.text_area :body, class: 'form-control', placeholder: "Please enter details here." %>
+                                        </p>
+                                        <%= form.fields_for :file_attachments_attributes do |fa| %>
+                                        <p>
+                                            <%= fa.label :file, 'Attach a File:' %>
+                                            <%= fa.file_field :file %>
+                                        </p>
+                                        <% end %>
+                                        <% commenter = current_user.full_name %>
+                                        <%= form.hidden_field 'commenter', :value => commenter%>
+                                        <%=form.submit%>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <%= (link_to fa_icon('times-circle', text:'Decline Task'), review_path(task, :isApproved => false, :id => task.id), class: "btn btn-danger ",
+                                                                    method: 'put')%> 
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                    </div>    
+                                    <% end %>
+                                </div>
+                            </div>   
+                        </div>   
+                    </div>
+                    <div class="card-footer text-muted">
+                        <%= time_ago_in_words(task.created_at)%> ago
+                    </div> 
+                </div>
+            <% end %>
         </div>
-    </div> 
-<% end %>
+    <% end%>
+    </div>
+</div> 
+
 
