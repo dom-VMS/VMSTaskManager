@@ -1,6 +1,6 @@
+
 <%= form_with model: @task, local: true do |form| %>
- 
-    <!-- Error Messages -->
+<!-- Error Messages -->
     <% if @task.errors.any? %>
         <div id="error_explanation">
             <h2>
@@ -15,30 +15,18 @@
         </div>
     <% end %>
     <div class="mb-3">
-        <p> 
-            <%= form.label :title %><br>
-            <%= form.text_field :title, class: 'form-control' %>
-        </p>
-    </div>
-    <div class="mb-3">
-        <p> 
-            <%= form.label :description %><br>
-            <%= form.text_area :description, class: 'form-control' %>
-        </p>
-    </div>
-    <div class="mb-3">
         <p>
             <%= form.label :priority %><br>
             <%= form.select(:priority, options_for_select([['Low', 1],['Normal', 2],['High', 3],['Urgent', 4]], @task.priority), include_blank: "Select Priority", class: 'form-control') %>
         </p>
     </div>
-    <div class="mb-3">
+    <div class="mb-3 ">
         <p> 
             <%= form.label :status %><br>
             <%= form.select(:status, options_for_select([['Incomplete', 1],['In-progress', 2],['Complete', 3]], @task.status), include_blank: "Select Status", class: 'form-control') %>
         </p>
     </div>
-    <div class="mb-3">
+    <div class="mb-3 w-50 ">
         <p> 
             <%= form.label :percentComplete, 'Percent Complete' %><br>
             <%= form.range_field :percentComplete, :in => 0..100, :step => '10', class: 'form-control slider'%>
@@ -74,14 +62,7 @@
             </p>
         <% end %>
     </div>
-
-    <%= form.hidden_field 'task_type_id', :value => params[:task_type_id] %>
-    <%= form.hidden_field 'task_id', :value => params[:id] %>
-    <%= form.hidden_field 'isApproved', :value => true %>
-    <%= form.hidden_field 'created_by_id', :value => current_user.id %>
-
     <p>
-        <%= form.submit 'Save', class: 'btn btn-primary btn-lg btn-block' %>
+        <%= form.submit 'Save', class: 'btn btn-primary btn-lg ' %>
     </p>
- 
 <% end %>

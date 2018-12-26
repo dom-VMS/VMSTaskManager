@@ -1,18 +1,18 @@
 require 'date'
 
 class TasksController < ApplicationController
-    def index
-        @task = Task.get_all_tasks_user_can_see(current_user)
-    end
-    
+    before_action :all_tasks, only: [:index, :update]
+    before_action :find_task, only: [:show, :edit, :update, :destroy]
+    #respond_to :html, :js
+
     def show
-        @task = find_task
+        #@task = find_task
+        #@tasks = Task.update(@task)
         @task_type = TaskType.find_by_id(@task.task_type_id)
         @task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task.task_type_id) unless !current_user.present?
         @activities = ActivitiesHelper.get_activities(@task)
         @assignee = TaskAssignment.get_assignee_object(@task)
         @assignable_users = Task.get_assignable_users(@task_type.task_type_options)        
-
     end
     
     def new
@@ -70,7 +70,7 @@ class TasksController < ApplicationController
     end
 
     def edit
-        @task = find_task
+        #@task = find_task
         @task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task.task_type_id) unless !current_user.present?
         @assignee = TaskAssignment.get_assignee_object(@task);
         @task_type = TaskType.find_by_id(@task.task_type_id)
@@ -79,6 +79,7 @@ class TasksController < ApplicationController
 
     def create
         params = new_task_params 
+        
         unless logged_in?
             if (User.find_by_employee_number(params[:created_by_id])).present?  
                 params[:created_by_id] = User.find_by_employee_number(new_task_params[:created_by_id]).id         
@@ -101,6 +102,25 @@ class TasksController < ApplicationController
     end
 
     def update
+        @task_type_id = @task.task_type_id
+        @task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task.task_type_id) unless !current_user.present?
+        @task_type = TaskType.find_by_id(@task.task_type_id)
+        @assignable_users = Task.get_assignable_users(@task_type.task_type_options)
+        @task_assignment = TaskAssignment.where("task_id = #{params[:id]}")
+        add_file_attachment
+        if @task.update_attributes(edit_task_params)
+            @task_assignment.exists? ? @task_assignment.update(assignment_params) : TaskAssignment.create(assignment_params)
+            flash[:notice] = "Task updated!"
+            respond_to do |format|
+                format.html { redirect_to @task }
+            end
+            #render task_path(@task)
+        else
+            flash[:notice] = "Something went wrong." 
+            format.html { render :new }       
+        end
+	end
+=begin
         @task = find_task
         @task_type_id = @task.task_type_id
         @task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task.task_type_id) unless !current_user.present?
@@ -116,10 +136,12 @@ class TasksController < ApplicationController
         else
           render 'edit'
         end
+
     end
+=end
 
     def destroy
-        @task = find_task
+        #@task = find_task
         @task.destroy
         redirect_to task_type_path(@task.task_type_id)
     end
@@ -150,9 +172,14 @@ class TasksController < ApplicationController
       end
     
     protected
-      # Finds task by id
+      # Retrieves all tasks a user is permitted to work on.
+      def all_tasks
+        @task = Task.get_all_tasks_user_can_see(current_user)
+      end 
+
+      # Retrieves a task by its id
       def find_task
-        Task.find(params[:id])
+        @task = Task.find(params[:id])
       end
 
       # Finds task_type by task_type_id (used when creating a new task)

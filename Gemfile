@@ -33,6 +33,8 @@ gem 'jquery-rails'
 gem "font-awesome-rails"
 # Using PublicActivity to track what actions a user takes.
 gem 'public_activity'
+# Used for AJAX support (respond_to:)
+gem 'responders'
 
 # Use CoffeeScript for .coffee assets and views
 gem 'coffee-rails', '~> 4.2'
