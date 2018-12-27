@@ -1,4 +1,3 @@
-
 <%= form_with model: @task, local: true do |form| %>
 <!-- Error Messages -->
     <% if @task.errors.any? %>
@@ -64,5 +63,12 @@
     </div>
     <p>
         <%= form.submit 'Save', class: 'btn btn-primary btn-lg ' %>
+        <%= link_to 'Cancel', task_path(@task), remote: true, class:'btn btn-secondary btn-lg' %><br>
     </p>
 <% end %>
+<script>
+    $(".btn").click(function() {
+        $('#task-form').slideUp(350);
+        $('#task-info-small').show();
+  })
+</script>

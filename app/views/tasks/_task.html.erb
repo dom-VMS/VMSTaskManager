@@ -1,7 +1,7 @@
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="/home/index">Home</a></li>
-        <li class="breadcrumb-item"><a href="/task_types">Departments</a></li>
+        <li class="breadcrumb-item"><a href="/task_types">Projects</a></li>
         <li class="breadcrumb-item"><a href="/task_types/<%=@task.task_type_id%>"><%=TaskType.find(@task.task_type_id).name unless @task.task_type_id.blank?%></a></li>
         <li class="breadcrumb-item active" aria-current="page">Task #<%=@task.id%></li>
     </ol>
@@ -67,27 +67,30 @@
 
 <p><strong>Task Type:</strong> <%= TaskType.find(@task.task_type_id).name unless @task.task_type_id.blank?%></p>
 <p><strong>Assignee:</strong> <%= @assignee.blank? ? "All" : @assignee.full_name  %><br></p>   
-<p><strong>Description:</strong> <%= @task.description %></p> 
-
-<p><strong>Status:</strong> <%= @task.status.nil? ? "" : task_status(@task)%></p>
-<p>
-    <strong>Percent Complete:</strong> 
-    <div class="progress w-50">
-        <div class="progress-bar" role="progressbar" style="width: <%= @task.percentComplete %>%;" 
-            aria-valuenow= "<%= @task.percentComplete %>" aria-valuemin="0" aria-valuemax="100">
-            <%= @task.percentComplete %>%
-        </div>
-    </div>
-</p>
-<p><strong>Hours Spent: </strong><%= LoggedLabor.hours_spent_on_task(@task).zero?  ? '0' : LoggedLabor.hours_spent_on_task(@task) %></p>
-<p><strong>Attachments: </strong><%= render 'file_attachments/attachments' %></p>
-<% unless @task_type_option.nil?%>
-<%= link_to fa_icon('edit', text: "Edit"), edit_task_path(@task), remote: true if @task_type_option.can_update %><br>
-<%= (link_to fa_icon('trash-alt', text:'Delete'), task_path(@task),
-            method: :delete,
-            data: { confirm: 'Are you sure you want to delete this task?' }) if @task_type_option.can_delete %><br>
-<% end %>
+<p><strong>Description:</strong> <%=sanitize @task.description %></p> 
 <div id="task-form" style="display:none;"></div>
+<div id="task-info-small">
+    <p><strong>Status:</strong> <%= @task.status.nil? ? "" : task_status(@task)%></p>
+    <p>
+        <strong>Percent Complete:</strong> 
+        <div class="progress w-50">
+            <div class="progress-bar" role="progressbar" style="width: <%= @task.percentComplete %>%;" 
+                aria-valuenow= "<%= @task.percentComplete %>" aria-valuemin="0" aria-valuemax="100">
+                <%= @task.percentComplete %>%
+            </div>
+        </div>
+    </p>
+    <p><strong>Hours Spent: </strong><%= LoggedLabor.hours_spent_on_task(@task).zero?  ? '0' : LoggedLabor.hours_spent_on_task(@task) %></p>
+    <p><strong>Attachments: </strong><%= render 'file_attachments/attachments' %></p>
+</div>
+<% unless @task_type_option.nil?%>
+<p>
+    <%= link_to fa_icon('edit', text: "Edit"), edit_task_path(@task), remote: true if @task_type_option.can_update %>
+    <%= (link_to fa_icon('trash-alt', text:'Delete'), task_path(@task),
+                method: :delete,
+                data: { confirm: 'Are you sure you want to delete this task?' }) if @task_type_option.can_delete %><br>
+    <% end %>
+</p>
 <br>
 <nav>
     <div class="nav nav-tabs" id="nav-tab" role="tablist">

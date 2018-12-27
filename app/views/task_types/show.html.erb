@@ -2,15 +2,15 @@
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/home/index">Home</a></li>
-            <li class="breadcrumb-item"><a href="/task_types">Departments</a></li>
-            <li class="breadcrumb-item active" aria-current="page"><%=@task_type.name%></li>
+            <li class="breadcrumb-item"><a href="/task_types">Projects</a></li>
+            <li class="breadcrumb-item active" aria-current="page"><%= sanitize @task_type.name %></li>
         </ol>
     </nav>
     <div class="container-fluid">
-        <h1><%= @task_type.name %></h1>
+        <h1><%= sanitize @task_type.name  %></h1>
         <p>
             <strong>Description:</strong>
-            <%= @task_type.description %>
+            <%= sanitize @task_type.description  %>
         </p>
         <% unless @task_type_option.nil? %>
             <% if @task_type_option.can_create %>

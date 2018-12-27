@@ -30,7 +30,7 @@
             <tbody>
                 <tr>
                     <td><%= logged_labor.user.full_name %></td>
-                    <td><%= logged_labor.description %></td>
+                    <td><%= sanitize logged_labor.description  %></td>
                     <td><%= logged_labor.time_spent %></td>
                     <td><%= (logged_labor.created_at).strftime("%m/%d/%Y")  %></td>
                 </tr>

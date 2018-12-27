@@ -44,10 +44,9 @@
                                         <% end %>
                                         <% commenter = current_user.full_name %>
                                         <%= form.hidden_field 'commenter', :value => commenter%>
-                                        <%=form.submit%>
                                     </div>
                                     <div class="modal-footer">
-                                        <%= (link_to fa_icon('times-circle', text:'Decline Task'), review_path(task, :isApproved => false, :id => task.id), class: "btn btn-danger ",
+                                        <%= (link_to fa_icon('times-circle', text:'Decline Task'), review_path(form.submit, task, :isApproved => false, :id => task.id), class: "btn btn-danger ",
                                                                     method: 'put')%> 
                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                                     </div>    

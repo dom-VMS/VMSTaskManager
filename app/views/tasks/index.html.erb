@@ -6,37 +6,47 @@
         <% end %>
     <% end %>
 </div>
+
 <div class="container-fluid">
-    <div class="row">
-        <div class="col-sm-8">
-            <% unless @task.nil? %>
-                <h2>Your current tasks:</h2>
-                <table class="table table-borderless table-hover table-sm table-responsive">
-                    <thead>
-                        <tr>
-                            <th>Department</th>
-                            <th>Title</th>
-                            <th>Priority</th>
-                        </tr>
-                    </thead>
-                    <% @task.each do |task| %>
-                    <tbody> 
-                        <tr data-link="<%= task_path(task)%>">
-                            <td><%= (TaskType.find_by_id(task.task_type_id)).name %></td>
-                            <td><%= task.title.empty? ? (link_to task.description.truncate_words(5), task_path(task)) :  (link_to task.title.truncate_words(5), task_path(task))   %></td>
-                            <td><%= task.priority.nil? ? "" : task_priority(task) %></td>
-                        </tr>
-                    </tbody>
-                    <% end %>
-                </table><br>
-            <% else %>
-                <h3>Assigned to you: N/A</h3>
+    <% unless @task.nil? %>
+        <h2>Your current tasks:</h2>
+        <div class="card-columns">
+            <% @task_types.each do |task_type| %>
+            <div class="card">
+                <div class="card-header">
+                    <a data-toggle="collapse" href="#collapse-assigned-to-you-<%=task_type.id %>" aria-expanded="true" aria-controls="collapse-assigned-to-you-<%=task_type.id %>" id="heading-assigned-to-you-<%=task_type.id %>" class="d-block">
+                        <i class="fa fa-chevron-down pull-right"></i>
+                        <strong><%= task_type.name %></strong>
+                    </a>
+                </div>
+                <div id="collapse-assigned-to-you-<%=task_type.id %>" class="collapse show" aria-labelledby="heading-assigned-to-you-<%=task_type.id %>">
+                    <div class="card-body">
+                        <table class="table table-borderless table-hover table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Priority</th>
+                                </tr>
+                            </thead>
+                            <% (@task.where(task_type_id: task_type.id)).each do |task|%>
+                            <tbody> 
+                                <tr data-link="<%= task_path(task)%>">
+                                    <td><%= task.title.empty? ? (link_to task.description.truncate_words(5), task_path(task)) :  (link_to task.title.truncate_words(5), task_path(task)) %></td>
+                                    <td><%= task.priority.nil? ? "" : task_priority(task) %></td>
+                                </tr>
+                            </tbody> 
+                            <%end%>
+                        </table>
+                    </div>
+                </div>
+            </div>
             <%end%>
         </div>
-        <div class="col-sm-4">
-        </div>
-    </div>
+    <% else %>
+        <h3>Assigned to you: N/A</h3>
+    <%end%>
 </div>
+
 
 <script>
     $("tr[data-link]").click(function() {

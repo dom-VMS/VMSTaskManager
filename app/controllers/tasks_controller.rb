@@ -3,16 +3,18 @@ require 'date'
 class TasksController < ApplicationController
     before_action :all_tasks, only: [:index, :update]
     before_action :find_task, only: [:show, :edit, :update, :destroy]
-    #respond_to :html, :js
+
+    def index
+        task_type_ids = TaskType.get_task_types_assigned_to_user(current_user)
+        @task_types = TaskType.where(id: [task_type_ids])
+    end
 
     def show
-        #@task = find_task
-        #@tasks = Task.update(@task)
         @task_type = TaskType.find_by_id(@task.task_type_id)
-        @task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task.task_type_id) unless !current_user.present?
+        get_current_user_task_type_options
         @activities = ActivitiesHelper.get_activities(@task)
         @assignee = TaskAssignment.get_assignee_object(@task)
-        @assignable_users = Task.get_assignable_users(@task_type.task_type_options)        
+        get_assignable_users        
     end
     
     def new
@@ -25,7 +27,7 @@ class TasksController < ApplicationController
             @task = Task.new
             @task_assignment = TaskAssignment.new
             @task.file_attachments.build
-            @assignable_users = Task.get_assignable_users(@task_type.task_type_options)        
+            get_assignable_users        
         end 
     end
 
@@ -51,7 +53,6 @@ class TasksController < ApplicationController
                 redirect_to edit_task_path(task)
             elsif (review_ticket_params[:isApproved] == "false")
                 flash[:notice] = "Ticket Rejected."
-                #
                 redirect_to review_path
             elsif (review_ticket_params[:isVerified] == "true")
                 flash[:notice] = "Task Completion Approved."
@@ -63,18 +64,16 @@ class TasksController < ApplicationController
                 flash[:notice] = "Something went wrong"
                 render 'home/index'
             end
-            #redirect_to task
         else
           render 'edit'
         end
     end
 
     def edit
-        #@task = find_task
-        @task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task.task_type_id) unless !current_user.present?
+        get_current_user_task_type_options    
         @assignee = TaskAssignment.get_assignee_object(@task);
         @task_type = TaskType.find_by_id(@task.task_type_id)
-        @assignable_users = Task.get_assignable_users(@task_type.task_type_options)
+        get_assignable_users
     end
 
     def create
@@ -103,9 +102,9 @@ class TasksController < ApplicationController
 
     def update
         @task_type_id = @task.task_type_id
-        @task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task.task_type_id) unless !current_user.present?
+        get_current_user_task_type_options 
         @task_type = TaskType.find_by_id(@task.task_type_id)
-        @assignable_users = Task.get_assignable_users(@task_type.task_type_options)
+        get_assignable_users
         @task_assignment = TaskAssignment.where("task_id = #{params[:id]}")
         add_file_attachment
         if @task.update_attributes(edit_task_params)
@@ -114,34 +113,13 @@ class TasksController < ApplicationController
             respond_to do |format|
                 format.html { redirect_to @task }
             end
-            #render task_path(@task)
         else
             flash[:notice] = "Something went wrong." 
             format.html { render :new }       
         end
-	end
-=begin
-        @task = find_task
-        @task_type_id = @task.task_type_id
-        @task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task.task_type_id) unless !current_user.present?
-        @task_type = TaskType.find_by_id(@task.task_type_id)
-        @assignable_users = Task.get_assignable_users(@task_type.task_type_options)
-        @task_assignment = TaskAssignment.where("task_id = #{params[:id]}")
-        add_file_attachment
-
-        if @task.update(edit_task_params)
-            @task_assignment.exists? ? @task_assignment.update(assignment_params) : TaskAssignment.create(assignment_params)
-            flash[:notice] = "Task updated!"
-            redirect_to @task
-        else
-          render 'edit'
-        end
-
     end
-=end
-
+    
     def destroy
-        #@task = find_task
         @task.destroy
         redirect_to task_type_path(@task.task_type_id)
     end
@@ -192,5 +170,13 @@ class TasksController < ApplicationController
         if !(attachment_params[:file_attachments_attributes]).nil?
             @task.file_attachments.create(:task_id => attachment_params[:task], :file => attachment_params[:file_attachments_attributes][:file])
         end
+      end
+
+      def get_current_user_task_type_options
+        @task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task.task_type_id) unless !current_user.present?
+      end
+
+      def get_assignable_users
+        @assignable_users = Task.get_assignable_users(@task_type.task_type_options) 
       end
 end
