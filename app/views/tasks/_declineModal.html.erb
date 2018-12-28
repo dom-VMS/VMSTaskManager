@@ -1,22 +1,37 @@
-<!-- Decline Modal -->
-<!-- Used in review#decline and verify#decline -->
 <div class="modal fade" id="declineTicketModal" tabindex="-1" role="dialog" aria-labelledby="declineTicketModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-        <div class="modal-header">
-            <h5 class="modal-title" id="declineTicketModalLabel">Decline Ticket</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-        <div class="modal-body">
-            ...
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-            <%= (link_to fa_icon('times-circle'), review_path(task, :isApproved => false, :id => task.id), class: "btn btn-danger btn-lg",
-                                                method: 'put')%> 
-        </div>
+            <div class="modal-header">
+                <h5 class="modal-title" id="declineTicketModalLabel">Decline Ticket</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <%= form_with(model: @task, url: {action: "update_ticket"}) do |form| %>
+            <div class="modal-body">
+                <h4>Why is this task is being declined?</h4>
+                <p>
+                    <%= form.label :body, 'Click Decline Ticket when finished.' %><br>
+                    <%= form.text_area :body, class: 'form-control', placeholder: "Please enter details here." %>
+                </p>
+                <%= form.fields_for :file_attachments_attributes do |fa| %>
+                    <p>
+                        <%= fa.label :file, 'Attach a File:' %>
+                        <%= fa.file_field :file %>
+                    </p>
+                <% end %>
+                <% commenter = current_user.full_name %>
+                <%= form.hidden_field 'commenter', :value => commenter %>
+                <%= form.hidden_field 'isApproved', :value => false %>
+                <%= form.hidden_field 'id', :value => @task.id %>
+            </div>   
+            <div class="modal-footer">
+                <%= button_tag type: 'submit', class: "btn btn-lg btn-danger", id: "register-button" do %>
+                    <%= fa_icon('times-circle', text: 'Decline Task')%>
+                <% end %>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            </div>
+            <% end %>
         </div>
     </div>   
-</div>
+</div>   

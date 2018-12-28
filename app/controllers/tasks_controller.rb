@@ -52,14 +52,16 @@ class TasksController < ApplicationController
                 flash[:notice] = "Ticket Approved! You can now add more information to the task and/or assign someone to this."
                 redirect_to edit_task_path(task)
             elsif (review_ticket_params[:isApproved] == "false")
+                insert_decline_feedback(task)
                 flash[:notice] = "Ticket Rejected."
                 redirect_to review_path
             elsif (review_ticket_params[:isVerified] == "true")
                 flash[:notice] = "Task Completion Approved."
-                redirect_to task_path(task)
+                redirect_to verify_path
             elsif (review_ticket_params[:isVerified] == "false")
+                insert_decline_feedback(task)
                 flash[:notice] = "Task Completion Rejected."
-                redirect_to task_path(task)
+                redirect_to verify_path
             else
                 flash[:notice] = "Something went wrong"
                 render 'home/index'
@@ -146,7 +148,11 @@ class TasksController < ApplicationController
       end
 
       def review_ticket_params
-        params.permit(:id, :isApproved, :isVerified, :status, :percentComplete)
+        params.require(:task).permit(:id, :isApproved, :isVerified)
+      end
+
+      def decline_feedback_params
+        params.require(:task).permit(:commenter, :body)
       end
     
     protected
@@ -172,11 +178,21 @@ class TasksController < ApplicationController
         end
       end
 
+      # Gets the current user's Task_Type_Options
       def get_current_user_task_type_options
         @task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task.task_type_id) unless !current_user.present?
       end
 
+      # Retrieves all users that may be assigned to a task.
       def get_assignable_users
         @assignable_users = Task.get_assignable_users(@task_type.task_type_options) 
+      end
+
+      # Allows an admin to place a comment in the task that is being declined to describe why it is being rejected.
+      def insert_decline_feedback(task)
+        comment = task.comments.create(commenter: decline_feedback_params[:commenter], body: decline_feedback_params[:body])
+        if !(attachment_params[:file_attachments_attributes]).nil?
+            comment.file_attachments.create(:task_id => attachment_params[:task], :file => attachment_params[:file_attachments_attributes][:file])
+        end
       end
 end
