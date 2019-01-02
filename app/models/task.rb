@@ -6,7 +6,6 @@ class Task < ApplicationRecord
     has_many :logged_labors, dependent: :destroy
     has_many :task_assignments, dependent: :destroy
     has_many :users, through: :task_assignments
-
     has_many :file_attachments, dependent: :destroy   
     accepts_nested_attributes_for :file_attachments 
 
@@ -16,16 +15,6 @@ class Task < ApplicationRecord
     validates_presence_of :task_type_id
 
     tracked owner: Proc.new{ |controller, model| controller.current_user }
-    
-=begin
-    filterrific(
-        default_filter_params: { sorted_by: 'created_at_desc' },
-        available_filters: [
-          :sorted_by,
-          :search_query
-        ]
-    )
-=end
 
     # Retrieves all possible users that can be assigned to a task.
     def self.get_assignable_users(task_type_options)

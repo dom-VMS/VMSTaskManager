@@ -173,7 +173,7 @@ class TasksController < ApplicationController
 
       # Creates a new file_attachment entry if an attachment has been uploaded.
       def add_file_attachment
-        if !(attachment_params[:file_attachments_attributes]).nil?
+        unless (attachment_params[:file_attachments_attributes]).nil?
             @task.file_attachments.create(:task_id => attachment_params[:task], :file => attachment_params[:file_attachments_attributes][:file])
         end
       end
