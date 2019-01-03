@@ -140,7 +140,14 @@
         </div>
     </p>
     <p><strong>Hours Spent: </strong><%= LoggedLabor.hours_spent_on_task(@task).zero?  ? '0' : LoggedLabor.hours_spent_on_task(@task) %></p>
-    <p><strong>Attachments: </strong><%= render 'file_attachments/attachments' %></p>
+    <p>
+        <strong>Attachments: </strong>
+            <% @task.attachments.each do |attachment|%>
+                <br><a href="<%= attachment.url %>" target="_blank"><%= image_tag(attachment.url, size:'32') if !attachment.blank? %></a>
+            <%end%>
+        
+        <% # render 'file_attachments/attachments' %>
+    </p>
 </div>
 <% unless @task_type_option.nil?%>
 <p>

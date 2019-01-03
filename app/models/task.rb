@@ -2,6 +2,8 @@ class Task < ApplicationRecord
     include PublicActivity::Model
     tracked
 
+    mount_uploaders :attachments, AttachmentUploader
+
     has_many :comments, dependent: :destroy
     has_many :logged_labors, dependent: :destroy
     has_many :task_assignments, dependent: :destroy

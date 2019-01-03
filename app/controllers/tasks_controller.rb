@@ -31,46 +31,6 @@ class TasksController < ApplicationController
         end 
     end
 
-    def ticket
-        @task = Task.new
-        @task_type = TaskType.all
-        @task.file_attachments.build
-    end
-
-    def review
-        @task = Task.get_all_tickets_user_can_approve(current_user)
-    end
-
-    def verify
-        @task = Task.get_all_tasks_user_can_verify(current_user)
-    end
-
-    def update_ticket
-        task = Task.find_by_id(review_ticket_params[:id])
-        if task.update(review_ticket_params)
-            if (review_ticket_params[:isApproved] == "true")
-                flash[:notice] = "Ticket Approved! You can now add more information to the task and/or assign someone to this."
-                redirect_to edit_task_path(task)
-            elsif (review_ticket_params[:isApproved] == "false")
-                insert_decline_feedback(task)
-                flash[:notice] = "Ticket Rejected."
-                redirect_to review_path
-            elsif (review_ticket_params[:isVerified] == "true")
-                flash[:notice] = "Task Completion Approved."
-                redirect_to verify_path
-            elsif (review_ticket_params[:isVerified] == "false")
-                insert_decline_feedback(task)
-                flash[:notice] = "Task Completion Rejected."
-                redirect_to verify_path
-            else
-                flash[:notice] = "Something went wrong"
-                render 'home/index'
-            end
-        else
-          render 'edit'
-        end
-    end
-
     def edit
         get_current_user_task_type_options    
         @assignee = TaskAssignment.get_assignee_object(@task);
@@ -126,13 +86,56 @@ class TasksController < ApplicationController
         redirect_to task_type_path(@task.task_type_id)
     end
 
+    def ticket
+        @task = Task.new
+        @task_type = TaskType.all
+        @task.file_attachments.build
+    end
+
+    def review
+        @task = Task.get_all_tickets_user_can_approve(current_user)
+    end
+
+    def verify
+        @task = Task.get_all_tasks_user_can_verify(current_user)
+    end
+
+    def update_ticket
+        task = Task.find_by_id(review_ticket_params[:id])
+        if task.update(review_ticket_params)
+            if (review_ticket_params[:isApproved] == "true")
+                flash[:notice] = "Ticket Approved! You can now add more information to the task and/or assign someone to this."
+                redirect_to edit_task_path(task)
+            elsif (review_ticket_params[:isApproved] == "false")
+                insert_decline_feedback(task)
+                flash[:notice] = "Ticket Rejected."
+                redirect_to review_path
+            elsif (review_ticket_params[:isVerified] == "true")
+                flash[:notice] = "Task Completion Approved."
+                redirect_to verify_path
+            elsif (review_ticket_params[:isVerified] == "false")
+                insert_decline_feedback(task)
+                flash[:notice] = "Task Completion Rejected."
+                redirect_to verify_path
+            else
+                flash[:notice] = "Something went wrong"
+                render 'home/index'
+            end
+        else
+          render 'edit'
+        end
+    end
+
+    def remove_attachment
+    end
+
     private
       def new_task_params
         params.require(:task).permit(:title, :description, :priority, :status, :percentComplete,  :isApproved, :task_type_id, :created_by_id)
       end
 
       def edit_task_params
-        params.require(:task).permit(:title, :description, :priority, :status, :percentComplete,  :isApproved)
+        params.require(:task).permit(:title, :description, :priority, :status, :percentComplete,  :isApproved, {attachments: []})
       end
 
       def assignment_params
