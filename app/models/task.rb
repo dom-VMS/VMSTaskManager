@@ -8,7 +8,7 @@ class Task < ApplicationRecord
     has_many :users, through: :task_assignments
 
     has_many :file_attachments, dependent: :destroy   
-    accepts_nested_attributes_for :file_attachments 
+    accepts_nested_attributes_for :file_attachments, :task_assignments
 
     has_one :task_type
     #validates :title, presence: true

@@ -13,7 +13,7 @@ class TasksController < ApplicationController
         @task_type = TaskType.find_by_id(@task.task_type_id)
         get_current_user_task_type_options
         @activities = ActivitiesHelper.get_activities(@task)
-        @assignee = TaskAssignment.get_assignee_object(@task)
+        @assignee = TaskAssignment.get_assigned_user(@task)
         get_assignable_users        
     end
     
@@ -30,6 +30,63 @@ class TasksController < ApplicationController
             get_assignable_users        
         end 
     end
+
+    def edit
+        get_current_user_task_type_options    
+        @assignee = TaskAssignment.get_assigned_user(@task);
+        @task_type = TaskType.find_by_id(@task.task_type_id)
+        get_assignable_users
+    end
+
+    def create
+        params = new_task_params 
+        
+        unless logged_in?
+            if (User.find_by_employee_number(params[:created_by_id])).present?  
+                params[:created_by_id] = User.find_by_employee_number(new_task_params[:created_by_id]).id         
+            else 
+                flash[:error] = "The employee number you have entered does not exsist."
+                render 'ticket'
+            end
+        end
+        @task = Task.new(params)
+        if @task.save!
+            @task_assignment = TaskAssignment.create(task_id: @task.id, assigned_to_id: assignment_params_new[:assigned_to_id])
+            @task_assignment.save!
+            add_file_attachment
+            flash[:notice] = "Successfully created task."
+            redirect_to @task
+        else
+            flash[:error] = "Task creation failed"
+            render 'new'
+        end
+    end
+
+    def update
+        @task_type_id = @task.task_type_id
+        get_current_user_task_type_options 
+        @task_type = TaskType.find_by_id(@task.task_type_id)
+        get_assignable_users
+        @task_assignment = @task.task_assignments
+        add_file_attachment
+        if @task.update_attributes(edit_task_params)
+            set_task_assignments
+            flash[:notice] = "Task updated!"
+            respond_to do |format|
+                format.html { redirect_to @task }
+            end
+        else
+            flash[:notice] = "Something went wrong." 
+            format.html { render :new }       
+        end
+    end
+    
+    def destroy
+        @task.destroy
+        flash[:notice] = "Successfully deleted Task ##{@task.id}" 
+        redirect_to task_type_path(@task.task_type_id)
+    end
+
 
     def ticket
         @task = Task.new
@@ -71,61 +128,6 @@ class TasksController < ApplicationController
         end
     end
 
-    def edit
-        get_current_user_task_type_options    
-        @assignee = TaskAssignment.get_assignee_object(@task);
-        @task_type = TaskType.find_by_id(@task.task_type_id)
-        get_assignable_users
-    end
-
-    def create
-        params = new_task_params 
-        
-        unless logged_in?
-            if (User.find_by_employee_number(params[:created_by_id])).present?  
-                params[:created_by_id] = User.find_by_employee_number(new_task_params[:created_by_id]).id         
-            else 
-                flash[:error] = "The employee number you have entered does not exsist."
-                render 'ticket'
-            end
-        end
-        @task = Task.new(params)
-        if @task.save!
-            @task_assignment = TaskAssignment.create(task_id: @task.id, assigned_to_id: assignment_params_new[:assigned_to_id])
-            @task_assignment.save!
-            add_file_attachment
-            flash[:notice] = "Successfully created task."
-            redirect_to @task
-        else
-            flash[:error] = "Task creation failed"
-            render 'new'
-        end
-    end
-
-    def update
-        @task_type_id = @task.task_type_id
-        get_current_user_task_type_options 
-        @task_type = TaskType.find_by_id(@task.task_type_id)
-        get_assignable_users
-        @task_assignment = TaskAssignment.where("task_id = #{params[:id]}")
-        add_file_attachment
-        if @task.update_attributes(edit_task_params)
-            @task_assignment.exists? ? @task_assignment.update(assignment_params) : TaskAssignment.create(assignment_params)
-            flash[:notice] = "Task updated!"
-            respond_to do |format|
-                format.html { redirect_to @task }
-            end
-        else
-            flash[:notice] = "Something went wrong." 
-            format.html { render :new }       
-        end
-    end
-    
-    def destroy
-        @task.destroy
-        redirect_to task_type_path(@task.task_type_id)
-    end
-
     private
       def new_task_params
         params.require(:task).permit(:title, :description, :priority, :status, :percentComplete,  :isApproved, :task_type_id, :created_by_id)
@@ -136,7 +138,7 @@ class TasksController < ApplicationController
       end
 
       def assignment_params
-        params.require(:task).permit(:task_id, :assigned_to_id, :assigned_by_id)
+        params.require(:task).permit(:task_id, task_assignments: [:assignment_id, :assigned_to_id, :assigned_by_id])
       end
 
       def assignment_params_new
@@ -193,6 +195,19 @@ class TasksController < ApplicationController
         comment = task.comments.create(commenter: decline_feedback_params[:commenter], body: decline_feedback_params[:body])
         if !(attachment_params[:file_attachments_attributes]).nil?
             comment.file_attachments.create(:task_id => attachment_params[:task], :file => attachment_params[:file_attachments_attributes][:file])
+        end
+      end
+
+      def set_task_assignments
+        if @task_assignment.exists? 
+            puts "THIS IS @task_assignment: #{@task_assignment.to_json}"
+            @task_assignment.each do |task_assignment|
+                puts "NOW WE ARE INSIDE THE LOOP: #{task_assignment.to_json}"
+                puts assignment_params
+                task_assignment.update(assignment_params) 
+            end
+        else
+            TaskAssignment.create(:task_id => @task.id, :assigned_to_id => assignment_params[:assigned_to_id])
         end
       end
 end

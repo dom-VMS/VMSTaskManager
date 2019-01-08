@@ -1,6 +1,6 @@
 <!-- Allows user(s) to create comments -->
 
-<%= form_with(model: [ @task, @task.comments.build ]) do |form| %>
+<%= form_with(model: [ @task, @task.comments.build ], remote: true) do |form| %>
   <p>
     <%= form.label :body, 'Comment' %><br>
     <%= form.text_area :body, class: 'form-control', placeholder: "Give us some details." %>

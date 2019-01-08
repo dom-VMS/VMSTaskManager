@@ -31,27 +31,42 @@
             <%= form.range_field :percentComplete, :in => 0..100, :step => '10', class: 'form-control slider'%>
         </p>
     </div>
+
+    <!-- HERE -->
     <div class="mb-3">
         <p>
-            <%= form.label :assigned_to_id, 'Assignee'%><br>
-            <% if @assignee.present?%>
-                <%= form.select(:assigned_to_id, options_from_collection_for_select(@assignable_users, :id, :full_name, @assignee.id),  include_blank: "All", class: 'form-control') %>
-            <% else %>
-                <%= form.select(:assigned_to_id, options_from_collection_for_select(@assignable_users, :id, :full_name), include_blank: "All", class: 'form-control') %>
+            <%= fields_for :task_assignments do |f| %>
+                <%= f.label :assigned_to_id, 'Assignee'%>
+                <%= link_to fa_icon('plus-circle')%><br>
+                <% if @assignee.present?%>
+                    <% @assignee.each do |assignee| %>
+                        <%= f.select(:assigned_to_id, options_from_collection_for_select(@assignable_users, :id, :full_name, assignee.id),  include_blank: "All", class: 'form-control') %>
+                        <%= f.hidden_field :assignment_id, value: assignee.id %>
+                        <%= (link_to fa_icon('trash-alt'), 
+                                [assignee.task, assignee],
+                                title: 'Remove',
+                                method: :delete,
+                                data: { confirm: 'Are you sure you want to remove this assignment?' },
+                                :remote => true, :class =>'delete_task_assignment' ) if @task.persisted? %><br>
+                    <%end%>
+                <% else %>
+                    <%= f.select(:assigned_to_id, options_from_collection_for_select(@assignable_users, :id, :full_name), include_blank: "All", class: 'form-control') %>
+                <% end %>
             <% end %>
         </p>
     </div>
+    <!-- DONE-->
+
     <div class="mb-3">
         <% @task.file_attachments.each do |file_attachment|%>
             <% if (file_attachment.file).present? %>
                 <a href="<%= file_attachment.file.url %>" target="_blank"><%= image_tag(file_attachment.file.url, size:'32') if !file_attachment.blank? %></a>
-                <%if @task.persisted?%>
-                    <%= link_to fa_icon('trash-alt'), 
-                            [file_attachment.task, file_attachment],
-                            title: 'Remove',
-                            method: :delete,
-                            data: { confirm: 'Are you sure you want to remove this attachment?' } %><br>
-                <%end%>
+                <%= link_to fa_icon('trash-alt'), 
+                        [file_attachment.task, file_attachment],
+                        title: 'Remove',
+                        method: :delete,
+                        data: { confirm: 'Are you sure you want to remove this attachment?' },
+                        :remote => true, :class =>'delete_file_attachment'  if @task.persisted? %><br>
             <%end%>
         <% end %>
         <%= form.fields_for :file_attachments_attributes do |fa| %>
@@ -70,5 +85,5 @@
     $(".btn").click(function() {
         $('#task-form').slideUp(350);
         $('#task-info-small').show();
-  })
+    })
 </script>

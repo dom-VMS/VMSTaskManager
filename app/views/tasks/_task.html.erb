@@ -124,8 +124,15 @@
 <h2><%= @task.title %>  <%= @task.priority.nil? ? "" : task_priority(@task) %> </h2>
 <p><h5><small><%= fa_icon('clock')%> Created By: <%= task_created_by_name(@task)%>, <%= time_ago_in_words(@task.created_at) %> ago</small></h5></p>
 
-<p><strong>Task Type:</strong> <%= TaskType.find(@task.task_type_id).name unless @task.task_type_id.blank?%></p>
-<p><strong>Assignee:</strong> <%= @assignee.blank? ? "All" : @assignee.full_name  %><br></p>   
+<p><strong>Project:</strong> <%= TaskType.find(@task.task_type_id).name unless @task.task_type_id.blank?%></p>
+<p>
+    <strong>Assignee(s):</strong><br> 
+    <% unless (@assignee.blank? || @assignee.nil?) %>
+        <% @assignee.each do |assignee| %>
+            <%= (User.find_by_id(assignee.assigned_to_id)).full_name unless assignee.assigned_to_id.nil? %><br>
+        <% end %>
+    <%end%>
+</p>   
 <p><strong>Description:</strong> <%=sanitize @task.description %></p> 
 <div id="task-form" style="display:none;"></div>
 <div id="task-info-small">
