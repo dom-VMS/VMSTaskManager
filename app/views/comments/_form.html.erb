@@ -5,7 +5,7 @@
     <%= form.label :body, 'Comment' %><br>
     <%= form.text_area :body, class: 'form-control', placeholder: "Give us some details." %>
   </p>
-  <%= form.fields_for :file_attachments_attributes do |fa| %>
+  <%= form.fields_for :file_attachments_attributes, remote: true do |fa| %>
       <p>
           <%= fa.label :file, 'Attach a File to Comment' %>
           <%= fa.file_field :file %>

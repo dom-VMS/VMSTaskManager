@@ -5,6 +5,8 @@ class CommentsController < ApplicationController
         if !(attachment_params[:file_attachments_attributes]).nil?
           @comment.file_attachments.create(:task_id => attachment_params[:task], :file => attachment_params[:file_attachments_attributes][:file])
         end
+        flash[:notice] = "Comment was successfully created."
+        
 
         redirect_to task_path(@task)
     end

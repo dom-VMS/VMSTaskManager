@@ -69,7 +69,7 @@
                         :remote => true, :class =>'delete_file_attachment'  if @task.persisted? %><br>
             <%end%>
         <% end %>
-        <%= form.fields_for :file_attachments_attributes do |fa| %>
+        <%= form.fields_for :file_attachments_attributes, remote: true do |fa| %>
             <p>
                 <%= fa.label :file, 'File attachments ' %>
                 <%= fa.file_field :file %>
