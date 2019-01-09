@@ -104,3 +104,10 @@ a.custom-card:hover {
     background: #007bff;
     cursor: pointer;
 }
+
+.list-group-item-linkable:hover {
+    color: #555;
+    text-decoration: none;
+    background-color: #f5f5f5;
+    cursor: pointer;
+}

@@ -9,6 +9,8 @@ module TasksHelper
             return ('<span class="badge badge-warning">High</span>').html_safe
         elsif task.priority == 4 
             return ('<span class="badge badge-danger">Urgent</span>').html_safe
+        else 
+            return ""
         end 
     end
 
