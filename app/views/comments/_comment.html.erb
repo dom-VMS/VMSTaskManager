@@ -2,13 +2,9 @@
     <h4><%= comment.commenter %><small> <%= time_ago_in_words(comment.created_at)%> ago</small></h4>
     <p>
         <%= sanitize comment.body  %>
-        <% comment.file_attachments.each do |file_attachment|%>
-            <% if (file_attachment.file).present? %>
-                <a href="<%= file_attachment.file.url %>" target="_blank"><%= image_tag(file_attachment.file.url, size:'32') if !file_attachment.blank? %></a>
-            <%end%>
-        <% end %>
-    </p>       
-    <br>
+        <% comment.attachments.each_with_index do |attachment, index|%>
+            <br><a href="<%= attachment.url %>" target="_blank"><%= image_tag(attachment.url, size:'32') if !attachment.blank? %></a>
+        <%end%>
     <% unless @task_type_option.nil?%>
         <% if @task_type_option.can_delete %>
             <p>
@@ -18,4 +14,6 @@
             </p>
         <% end %>
     <% end %>
+    </p>       
+    <br>
 </div>

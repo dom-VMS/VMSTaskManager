@@ -18,7 +18,7 @@ Rails.application.routes.draw do
     resources :comments, :only => [:create, :destroy]
     resources :logged_labors
     resources :file_attachments, :only => [:create, :destroy]
-    resources :task_assignments
+    resources :attachments, :only => [:create, :destroy]
   end
 
   # Tasks and Tickets

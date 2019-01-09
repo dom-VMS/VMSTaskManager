@@ -50,10 +50,10 @@ class TasksController < ApplicationController
             end
         end
         @task = Task.new(params)
+        add_file_attachment(attachment_params[:attachments]) unless attachment_params.empty?
         if @task.save!
             @task_assignment = TaskAssignment.create(task_id: @task.id, assigned_to_id: assignment_params_new[:assigned_to_id])
-            @task_assignment.save!
-            add_file_attachment
+            flash[:error] = "Failed to assign user" unless @task_assignment.save!
             flash[:notice] = "Successfully created task."
             redirect_to @task
         else
@@ -67,8 +67,8 @@ class TasksController < ApplicationController
         get_current_user_task_type_options 
         @task_type = TaskType.find_by_id(@task.task_type_id)
         get_assignable_users
-        @task_assignment = @task.task_assignments
-        add_file_attachment
+        @task_assignment = TaskAssignment.where("task_id = #{params[:id]}")
+        add_file_attachment(attachment_params[:attachments]) unless attachment_params.empty?
         if @task.update_attributes(edit_task_params)
             set_task_assignments
             flash[:notice] = "Task updated!"
@@ -77,7 +77,9 @@ class TasksController < ApplicationController
             end
         else
             flash[:notice] = "Something went wrong." 
-            format.html { render :new }       
+            respond_to do |format|
+                format.html { render :new } 
+            end      
         end
     end
     
@@ -87,11 +89,9 @@ class TasksController < ApplicationController
         redirect_to task_type_path(@task.task_type_id)
     end
 
-
     def ticket
         @task = Task.new
         @task_type = TaskType.all
-        @task.file_attachments.build
     end
 
     def review
@@ -146,11 +146,11 @@ class TasksController < ApplicationController
       end
 
       def attachment_params
-        params.require(:task).permit(file_attachments_attributes: [:id, :file])
+        params.require(:task).permit({attachments: []})
       end
 
       def review_ticket_params
-        params.require(:task).permit(:id, :isApproved, :isVerified)
+        params.require(:task).permit(:id, :isApproved, :isVerified, :status)
       end
 
       def decline_feedback_params
@@ -173,11 +173,17 @@ class TasksController < ApplicationController
         TaskType.find_by_id(params[:task_type_id])
       end
 
-      # Creates a new file_attachment entry if an attachment has been uploaded.
-      def add_file_attachment
-        if !(attachment_params[:file_attachments_attributes]).nil?
-            @task.file_attachments.create(:task_id => attachment_params[:task], :file => attachment_params[:file_attachments_attributes][:file])
-        end
+      # Adds the uploaded file(s) to the array for attachments
+      def add_file_attachment(new_attachments)
+        attachments = @task.attachments
+        attachments += new_attachments
+        @task.attachments = attachments
+      end
+
+      #
+      def remove_attachment_at_index(index)
+        attachments = @task.attachments # copy the array
+        @task.attachments = attachments.delete_at(index) # delete the target attachment
       end
 
       # Gets the current user's Task_Type_Options
@@ -192,10 +198,8 @@ class TasksController < ApplicationController
 
       # Allows an admin to place a comment in the task that is being declined to describe why it is being rejected.
       def insert_decline_feedback(task)
-        comment = task.comments.create(commenter: decline_feedback_params[:commenter], body: decline_feedback_params[:body])
-        if !(attachment_params[:file_attachments_attributes]).nil?
-            comment.file_attachments.create(:task_id => attachment_params[:task], :file => attachment_params[:file_attachments_attributes][:file])
-        end
+        comment = task.comments.create(commenter: decline_feedback_params[:commenter], body: decline_feedback_params[:body], attachments: attachment_params[:attachments])
+        comment.save!
       end
 
       def set_task_assignments
