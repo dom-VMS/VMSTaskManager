@@ -38,15 +38,14 @@
                                             <%= form.label :body, 'Click Decline Ticket when finished.' %><br>
                                             <%= form.text_area :body, class: 'form-control', placeholder: "Please enter details here." %>
                                         </p>
-                                        <%= form.fields_for :file_attachments_attributes do |fa| %>
-                                            <p>
-                                                <%= fa.label :file, 'Attach a File:' %>
-                                                <%= fa.file_field :file %>
-                                            </p>
-                                        <% end %>
+                                        <p>
+                                            <%= form.label :attachments, 'File attachments' %>
+                                            <%= form.file_field :attachments, multiple: true %>
+                                        </p>
                                         <% commenter = current_user.full_name %>
                                         <%= form.hidden_field 'commenter', :value => commenter %>
                                         <%= form.hidden_field 'isApproved', :value => false %>
+                                        <%= form.hidden_field 'status', :value => 0 %>
                                         <%= form.hidden_field 'id', :value => task.id %>
                                     </div>   
                                     <div class="modal-footer">

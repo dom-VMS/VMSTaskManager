@@ -50,10 +50,10 @@ class TasksController < ApplicationController
             end
         end
         @task = Task.new(params)
+        add_file_attachment(attachment_params[:attachments]) unless attachment_params.empty?
         if @task.save!
             @task_assignment = TaskAssignment.create(task_id: @task.id, assigned_to_id: assignment_params_new[:assigned_to_id])
             flash[:error] = "Failed to assign user" unless @task_assignment.save!
-            add_file_attachment(attachment_params[:file_attachments_attributes])
             flash[:notice] = "Successfully created task."
             redirect_to @task
         else
@@ -69,7 +69,6 @@ class TasksController < ApplicationController
         get_assignable_users
         @task_assignment = TaskAssignment.where("task_id = #{params[:id]}")
         add_file_attachment(attachment_params[:attachments]) unless attachment_params.empty?
-        #remove_attachment_at_index(edit_task_params[:attachments][:id].to_i)
         if @task.update_attributes(edit_task_params)
             @task_assignment.exists? ? @task_assignment.update(assignment_params) : TaskAssignment.create(assignment_params)
             flash[:notice] = "Task updated!"
@@ -78,7 +77,9 @@ class TasksController < ApplicationController
             end
         else
             flash[:notice] = "Something went wrong." 
-            format.html { render :new }       
+            respond_to do |format|
+                format.html { render :new } 
+            end      
         end
     end
     
@@ -90,7 +91,6 @@ class TasksController < ApplicationController
     def ticket
         @task = Task.new
         @task_type = TaskType.all
-        @task.file_attachments.build
     end
 
     def review
@@ -126,7 +126,7 @@ class TasksController < ApplicationController
           render 'edit'
         end
     end
-    
+
     private
       def new_task_params
         params.require(:task).permit(:title, :description, :priority, :status, :percentComplete,  :isApproved, :task_type_id, :created_by_id)
@@ -149,7 +149,7 @@ class TasksController < ApplicationController
       end
 
       def review_ticket_params
-        params.require(:task).permit(:id, :isApproved, :isVerified)
+        params.require(:task).permit(:id, :isApproved, :isVerified, :status)
       end
 
       def decline_feedback_params
@@ -197,9 +197,7 @@ class TasksController < ApplicationController
 
       # Allows an admin to place a comment in the task that is being declined to describe why it is being rejected.
       def insert_decline_feedback(task)
-        comment = task.comments.create(commenter: decline_feedback_params[:commenter], body: decline_feedback_params[:body])
-        if !(attachment_params[:file_attachments_attributes]).nil?
-            comment.file_attachments.create(:task_id => attachment_params[:task], :file => attachment_params[:file_attachments_attributes][:file])
-        end
+        comment = task.comments.create(commenter: decline_feedback_params[:commenter], body: decline_feedback_params[:body], attachments: attachment_params[:attachments])
+        comment.save!
       end
 end
