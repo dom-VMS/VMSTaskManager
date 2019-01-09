@@ -31,8 +31,6 @@
             <%= form.range_field :percentComplete, :in => 0..100, :step => '10', class: 'form-control slider'%>
         </p>
     </div>
-
-    <!-- HERE -->
     <div class="mb-3">
         <p>
             <%= fields_for :task_assignments do |f| %>
@@ -42,12 +40,6 @@
                     <% @assignee.each do |assignee| %>
                         <%= f.select(:assigned_to_id, options_from_collection_for_select(@assignable_users, :id, :full_name, assignee.id),  include_blank: "All", class: 'form-control') %>
                         <%= f.hidden_field :assignment_id, value: assignee.id %>
-                        <%= (link_to fa_icon('trash-alt'), 
-                                [assignee.task, assignee],
-                                title: 'Remove',
-                                method: :delete,
-                                data: { confirm: 'Are you sure you want to remove this assignment?' },
-                                :remote => true, :class =>'delete_task_assignment' ) if @task.persisted? %><br>
                     <%end%>
                 <% else %>
                     <%= f.select(:assigned_to_id, options_from_collection_for_select(@assignable_users, :id, :full_name), include_blank: "All", class: 'form-control') %>
@@ -65,8 +57,8 @@
 
     <div class="mb-3">
        <% @task.attachments.each_with_index do |attachment, index|%>
-            <br><a href="<%= attachment.url %>" target="_blank"><%= image_tag(attachment.url, size:'32') if !attachment.blank? %></a>
-            <%= (link_to fa_icon('trash-alt', text:'Delete'), task_attachment_path(@task, index),
+            <br><%= link_to fa_icon('paperclip', text: "#{attachment.file.filename}"), attachment.url%>
+            <%= (link_to fa_icon('trash-alt 1.5x'), task_attachment_path(@task, index),
                 :method => :delete,
                 data: { confirm: 'Are you sure you want to delete this attachment?' }) %>
         <%end%>
