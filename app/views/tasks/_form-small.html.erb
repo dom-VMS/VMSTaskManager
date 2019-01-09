@@ -50,12 +50,12 @@
     </p>
 
     <div class="mb-3">
-       <% @task.attachments.each do |attachment|%>
-                <br><a href="<%= attachment.url %>" target="_blank"><%= image_tag(attachment.url, size:'32') if !attachment.blank? %></a>
-                <%= (link_to fa_icon('trash-alt', text:'Delete'), task_path(attachment.url),
-                    method: :delete,
-                    data: { confirm: 'Are you sure you want to delete this attachment?' }) %>
-            <%end%>
+       <% @task.attachments.each_with_index do |attachment, index|%>
+            <br><a href="<%= attachment.url %>" target="_blank"><%= image_tag(attachment.url, size:'32') if !attachment.blank? %></a>
+            <%= (link_to fa_icon('trash-alt', text:'Delete'), task_attachment_path(@task, index),
+                :method => :delete,
+                data: { confirm: 'Are you sure you want to delete this attachment?' }) %>
+        <%end%>
     </div>
     <p>
         <%= form.submit 'Save', class: 'btn btn-primary btn-lg ' %>
