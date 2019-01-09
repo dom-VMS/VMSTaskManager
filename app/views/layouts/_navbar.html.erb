@@ -16,7 +16,7 @@
                           class: "nav-link"%>
       </li>
       <li class="nav-item">
-        <%= link_to fa_icon('building 2x', text:'Departments'),
+        <%= link_to fa_icon('building 2x', text:'Projects'),
                           task_types_path,
                           class: "nav-link"%>
       </li>
@@ -53,7 +53,7 @@
         </div>
       </li>
       <% else %>
-        <% if isMaintenanceCanApprove? %>
+        <% if canApprove? %>
         <li class="nav-item">
           <%= link_to fa_icon('user-tag 2x', text:'Review Tickets'),
                             review_path, 
@@ -96,13 +96,8 @@
     </a>
     <form class="form-inline">
       <a class="btn btn-outline-primary" href="/login" role="button">
-      Login
+      Sign In
       </a>
-      <div style="padding-left: 10px;">
-        <a class="btn btn-outline-success" href="/users/new" role="button">
-        Sign Up
-        </a>
-      </div>
     </form>
   </nav>
 <% end %>

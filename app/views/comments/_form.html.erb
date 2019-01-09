@@ -1,16 +1,14 @@
 <!-- Allows user(s) to create comments -->
 
-<%= form_with(model: [ @task, @task.comments.build ]) do |form| %>
+<%= form_with(model: [ @task, @task.comments.build ], remote: true) do |form| %>
   <p>
     <%= form.label :body, 'Comment' %><br>
     <%= form.text_area :body, class: 'form-control', placeholder: "Give us some details." %>
   </p>
-  <%= form.fields_for :file_attachments_attributes do |fa| %>
-      <p>
-          <%= fa.label :file, 'Attach a File to Comment' %>
-          <%= fa.file_field :file %>
-      </p>
-  <% end %>
+  <p>
+    <%= form.label :attachments, 'File attachments' %>
+    <%= form.file_field :attachments, multiple: true %>
+  </p>
 
 
   <% commenter = current_user.full_name %>

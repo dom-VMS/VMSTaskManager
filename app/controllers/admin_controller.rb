@@ -10,6 +10,7 @@ class AdminController < ApplicationController
     end
 
     def task_types
-        @task_type = TaskType.all
+        @task_types = TaskType.all
+        @task_type = TaskType.new
     end
 end

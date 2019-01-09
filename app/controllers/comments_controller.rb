@@ -2,11 +2,11 @@ class CommentsController < ApplicationController
     def create
         @task = Task.find(params[:task_id])
         @comment = @task.comments.create(comment_params)
-        if !(attachment_params[:file_attachments_attributes]).nil?
-          @comment.file_attachments.create(:task_id => attachment_params[:task], :file => attachment_params[:file_attachments_attributes][:file])
-        end
-
-        redirect_to task_path(@task)
+        add_file_attachment(attachment_params[:attachments]) unless attachment_params.empty?
+        @comment.save! ? (flash[:notice] = "Successfully created comment.") : (flash[:error] = "Failed to create comment")
+        respond_to do |format|
+          format.html { redirect_to @task }
+      end
     end
 
     def destroy
@@ -22,6 +22,14 @@ class CommentsController < ApplicationController
         end
 
         def attachment_params
-          params.require(:comment).permit(file_attachments_attributes: [:id, :file])
+          params.require(:comment).permit({attachments: []})
         end
+      protected
+
+      # Adds the uploaded file(s) to the array for attachments
+      def add_file_attachment(new_attachments)
+        attachments = @comment.attachments
+        attachments += new_attachments
+        @comment.attachments = attachments
+      end
 end

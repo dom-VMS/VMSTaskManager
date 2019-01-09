@@ -16,9 +16,9 @@ class TaskAssignment < ApplicationRecord
     return assignee
   end
 
-  def self.get_assignee_object(task)
+  def self.get_assigned_user(task)
     (task.task_assignments).each do |ta|
-      return ta.assigned_to
+      ta.assigned_to
     end
     
   end

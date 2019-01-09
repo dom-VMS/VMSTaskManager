@@ -23,7 +23,7 @@ class TaskTypeOption < ApplicationRecord
   # Some users belong to multiple task_types. Their associated TaskTypeOptions
   # may vary by TaskType. To ensure the current_user is granted their permissions
   # when visiting their TaskType page, call this method to grab that specific
-  # set of TaskTypeOptions for a given current_user. If user does not belong to said
+  # set of TaskTypeOptions for a current_user. If user does not belong to said
   # task_type, then return nil.
   # Params:
   # current_user - current user in the session.

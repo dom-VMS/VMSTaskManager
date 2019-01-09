@@ -11,7 +11,8 @@
             </nav>
             <h1>Users</h1>
             <%= link_to fa_icon('user-plus', text:'Add User'), new_user_path,  class: 'btn btn-primary'%><br><br>
-                <table class="table table-hover table-responsive">
+            <div class="container-fluid">
+                <table class="table table-hover">
                     <thead>
                         <tr>
                             <th>Employee Number</th>
@@ -28,8 +29,8 @@
                         </tr>                
                     </tbody>
                     <% end %>
-            </table>
-            <%= link_to 'Back', admin_path %>
+                </table>
+            </div>
         </div>
         <div class="col-sm-1 bg-light"></div>
     </div>

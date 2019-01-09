@@ -1,0 +1,7 @@
+
+            <% if @assignee.present?%>
+                <%= form.select(:assigned_to_id, options_from_collection_for_select(@assignable_users, :id, :full_name, @assignee.id),  include_blank: "All", class: 'form-control') %>
+                <%= fa_icon('plus-circle') %>
+            <% else %>
+                <%= form.select(:assigned_to_id, options_from_collection_for_select(@assignable_users, :id, :full_name), include_blank: "All", class: 'form-control') %>
+            <% end %>

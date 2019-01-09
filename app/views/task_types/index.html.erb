@@ -1,12 +1,11 @@
 <% if logged_in? %>
-
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="/home/index">Home</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Departments</li>
+        <li class="breadcrumb-item active" aria-current="page">Projects</li>
     </ol>
 </nav>
-<h1 class="text-center">Departments</h1>
+<h1 class="text-center">Projects</h1>
 <div class="container-fluid">
     <div class="row">
     <% @task_type.each do |task_type|%>
@@ -28,3 +27,13 @@
 <% else %>
     <%= render 'errors/not_signed_in' %>
 <% end %>
+
+<script>
+$(function() {
+  // For card rotation
+     $('.btn-rotate').click(function(){
+          $('.card-front').toggleClass(' rotate-card-front');
+          $('.card-back').toggleClass(' rotate-card-back');
+     });
+  });
+</script>

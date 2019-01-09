@@ -2,15 +2,15 @@
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/home/index">Home</a></li>
-            <li class="breadcrumb-item"><a href="/task_types">Departments</a></li>
-            <li class="breadcrumb-item active" aria-current="page"><%=@task_type.name%></li>
+            <li class="breadcrumb-item"><a href="/task_types">Projects</a></li>
+            <li class="breadcrumb-item active" aria-current="page"><%= sanitize @task_type.name %></li>
         </ol>
     </nav>
     <div class="container-fluid">
-        <h1><%= @task_type.name %></h1>
+        <h1><%= sanitize @task_type.name  %></h1>
         <p>
             <strong>Description:</strong>
-            <%= @task_type.description %>
+            <%= sanitize @task_type.description  %>
         </p>
         <% unless @task_type_option.nil? %>
             <% if @task_type_option.can_create %>
@@ -20,76 +20,91 @@
     </div>
     <div class="container-fluid">
         <div class="card-columns">
-            <div class="card">
-                <div class="card-header">
-                    <strong>All Open Tasks</strong>
-                </div>
-                <div class="card-body scroll">
-                    <table class="table table-borderless table-hover table-sm">
-                        <thead>
-                            <tr>
-                                <th alighn="left">Title</th>
-                                <th>Priority</th>
-                            </tr>
-                        </thead>
-                        <% (@tasks).each do |task| %>
-                        <tbody> 
-                            <tr>
-                                <td><%= link_to "#{task.title.truncate_words(5)}", task_path(task)  %></td>
-                                <td><%= task.priority.nil? ? "" : task_priority(task) %></td>
-                            </tr>
-                        </tbody> 
-                        <%end%>
-                    </table>
-                </div>
-            </div>
             <% unless @tasks_assigned_to_user.nil? %>
             <div class="card">
                 <div class="card-header">
-                    <strong>Assigned to you:</strong>
+                    <a data-toggle="collapse" href="#collapse-assigned-to-you" aria-expanded="true" aria-controls="collapse-assigned-to-you" id="heading-assigned-to-you" class="d-block">
+                        <i class="fa fa-chevron-down pull-right"></i>
+                        <strong>Assigned to you:</strong>
+                    </a>
                 </div>
-                <div class="card-body scroll">
-                    <table class="table table-borderless table-hover table-sm">
-                        <thead>
-                            <tr>
-                                <th>Title</th>
-                                <th>Priority</th>
-                            </tr>
-                        </thead>
-                        <% @tasks_assigned_to_user.each do |task| %>
-                        <tbody> 
-                            <tr>
-                                <td><%= link_to "#{task.title.truncate_words(5)}", task_path(task)  %></td>
-                                <td><%= task.priority.nil? ? "" : task_priority(task) %></td>
-                            </tr>
-                        </tbody> 
-                        <% end %>
-                    </table>
+                <div id="collapse-assigned-to-you" class="collapse show" aria-labelledby="heading-assigned-to-you">
+                    <div class="card-body">
+                        <table class="table table-borderless table-hover table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Priority</th>
+                                </tr>
+                            </thead>
+                            <% @tasks_assigned_to_user.each do |task| %>
+                            <tbody> 
+                                <tr data-link="<%= task_path(task)%>">
+                                    <td><%= task.title.empty? ? (link_to task.description.truncate_words(5), task_path(task)) :  (link_to task.title.truncate_words(5), task_path(task)) %></td>
+                                    <td><%= task.priority.nil? ? "" : task_priority(task) %></td>
+                                </tr>
+                            </tbody> 
+                            <% end %>
+                        </table>
+                    </div>
                 </div>
             </div>
             <%end%>
+            <div class="card">
+                <div class="card-header">
+                    <a data-toggle="collapse" href="#collapse-all-tasks" aria-expanded="true" aria-controls="collaps-eall-tasks" id="heading-all-tasks" class="d-block">
+                        <i class="fa fa-chevron-down pull-right"></i>
+                        <strong>All Open Tasks</strong>
+                    <a>
+                </div>
+                <div id="collapse-all-tasks" class="collapse show" aria-labelledby="heading-all-tasks">
+                    <div class="card-body ">
+                        <table class="table table-borderless table-hover table-sm">
+                            <thead>
+                                <tr>
+                                    <th alighn="left">Title</th>
+                                    <th>Priority</th>
+                                </tr>
+                            </thead>
+                            <% (@tasks).each do |task| %>
+                            <tbody> 
+                                <tr data-link="<%= task_path(task)%>">
+                                    <td><%= task.title.empty? ? (link_to task.description.truncate_words(5), task_path(task)) :  (link_to task.title.truncate_words(5), task_path(task)) %></td>
+                                    <td><%= task.priority.nil? ? "" : task_priority(task) %></td>
+                                </tr>
+                            </tbody> 
+                            <%end%>
+                        </table>
+                    </div>
+                </div>
+            </div>
             <% unless (@task_type.tasks.where('status = 3')).empty? %>
             <div class="card">
                 <div class="card-header">
-                    <strong>Recently Completed</strong>
+                    <a data-toggle="collapse" href="#collapse-recently-complete" aria-expanded="true" aria-controls="collapse-recently-complete" id="heading-recently-complete" class="d-block">
+                        <i class="fa fa-chevron-down pull-right"></i>
+                        <strong>Recently Completed</strong>
+                    </a>
                 </div>
-                <div class="card-body scroll">
-                    <table class="table table-borderless table-hover table-sm">
-                        <thead>
-                            <tr>
-                                <th>Title</th>
-                                <th>Priority</th>
-                            </tr>
-                        </thead>
-                        <% (@tasks_recently_complete).each do |task| %>
-                        <tbody> 
-                            <tr>
-                                <td><%= link_to "#{task.title.truncate_words(5)}", task_path(task)  %></td>
-                                <td><%= task.priority.nil? ? "" : task_priority(task) %></td>
-                            </tr>
-                        </tbody> 
-                        <%end%>
-                    </table><br>
+                <div id="collapse-recently-complete" class="collapse show" aria-labelledby="heading-recently-complete">
+                    <div class="card-body">
+                        <table class="table table-borderless table-hover table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Priority</th>
+                                </tr>
+                            </thead>
+                            <% (@tasks_recently_complete).each do |task| %>
+                            <tbody> 
+                                <tr data-link="<%= task_path(task)%>">
+                                    <td><%= task.title.empty? ? (link_to task.description.truncate_words(5), task_path(task)) :  (link_to task.title.truncate_words(5), task_path(task)) %></td>
+                                    <td><%= task.priority.nil? ? "" : task_priority(task) %></td>
+                                </tr>
+                            </tbody> 
+                            <%end%>
+                        </table><br>
+                    </div>
                 </div>
             </div>
             <%end%>
@@ -99,3 +114,9 @@
 <% else %>
      <%= render 'errors/not_signed_in' %>
 <% end %>
+
+<script>
+    $("tr[data-link]").click(function() {
+    window.location = $(this).data("link")
+  })
+</script>
