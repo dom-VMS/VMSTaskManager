@@ -180,12 +180,6 @@ class TasksController < ApplicationController
         @task.attachments = attachments
       end
 
-      #
-      def remove_attachment_at_index(index)
-        attachments = @task.attachments # copy the array
-        @task.attachments = attachments.delete_at(index) # delete the target attachment
-      end
-
       # Gets the current user's Task_Type_Options
       def get_current_user_task_type_options
         @task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task.task_type_id) unless !current_user.present?
@@ -202,6 +196,7 @@ class TasksController < ApplicationController
         comment.save!
       end
 
+      # I don't even know tbh
       def set_task_assignments
         if @task_assignment.exists? 
             puts "THIS IS @task_assignment: #{@task_assignment.to_json}"

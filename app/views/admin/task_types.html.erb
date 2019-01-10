@@ -5,8 +5,10 @@
             <li class="breadcrumb-item active" aria-current="page">Groups</li>
         </ol>
     </nav>
-    <%= link_to fa_icon('plus-circle', text: 'Add Project'), new_task_type_path, class: 'btn btn-primary' %><br><br> 
-    <h1 class="text-center">Projects</h1>
+    <div class="container-fluid">
+        <%= link_to fa_icon('plus-circle', text: 'Add Project'), new_task_type_path, class: 'btn btn-primary' %><br> 
+        <h1 class="text-center">Projects</h1><br>
+    </div>
     <div class="container-fluid">
         <div class="row">
         <% @task_types.each do |task_type|%>
@@ -16,7 +18,7 @@
                     <strong><%= task_type.name %></strong>
                     </div>
                     <div class="card-body text-center">
-                        <p class="card-text"><%= task_type.description %></p>
+                        <p class="card-text"><%= task_type.description.truncate_words(10) %></p>
                         <%= link_to "View Tasks", task_type_path(task_type), class: "btn btn-primary text-center"%>
                         <%= link_to "Edit", edit_task_type_path(task_type), class: "btn btn-secondary"%>
                     </div>
