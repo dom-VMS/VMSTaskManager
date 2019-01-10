@@ -15,7 +15,7 @@
                  <strong><%= task_type.name %></strong>
                 </div>
                 <div class="card-body text-center">
-                    <p class="card-text"><%= task_type.description %></p>
+                    <p class="card-text"><%= task_type.description.truncate_words(10) %></p>
                     <%= link_to "View Tasks", task_type_path(task_type), class: "btn btn-primary text-center"%>
                 </div>
             </div>

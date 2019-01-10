@@ -16,10 +16,10 @@
                 </a>
             </div>
             <div id="collapse-assigned-to-you-<%=task_type.id %>" class="collapse show" aria-labelledby="heading-assigned-to-you-<%=task_type.id %>">
-                <div class="card-body">
+                <div class="card-body-custom">
                     <% (@task.where(task_type_id: task_type.id)).each do |task|%>
                     <div class="list-group list-group-flush">
-                        <div class="list-group-item d-flex justify-content-between align-items-center list-group-item-linkable" data-link="<%= task_path(task)%>">
+                        <div class="list-group-item py-2 d-flex justify-content-between align-items-center list-group-item-linkable" data-link="<%= task_path(task)%>">
                             <%= task.title.empty? ? (link_to task.description.truncate_words(5), task_path(task)) : (link_to task.title.truncate_words(5), task_path(task)) %>
                             <%= task_priority(task) %>
                         </div>
@@ -38,11 +38,7 @@
 <script>
   $(document).ready(function() {
     $('.list-group-item-linkable').on('click', function() {
-        // same window/tab:
         window.location.href = $(this).data('link');
-
-        // new window/tab:
-        //window.open($(this).data('link'));
     });
 
     $('.list-group-item-linkable a, .list-group-item-linkable button')

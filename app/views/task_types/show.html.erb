@@ -20,6 +20,7 @@
     </div>
     <div class="container-fluid">
         <div class="card-columns">
+            <!-- Tasks Assigned to User -->
             <% unless @tasks_assigned_to_user.nil? %>
             <div class="card">
                 <div class="card-header">
@@ -29,10 +30,10 @@
                     </a>
                 </div>
                 <div id="collapse-assigned-to-you" class="collapse show" aria-labelledby="heading-assigned-to-you">
-                    <div class="card-body">
+                    <div class="card-body-custom">
                     <% @tasks_assigned_to_user.each do |task| %>
                         <div class="list-group list-group-flush">
-                            <div class="list-group-item d-flex justify-content-between align-items-center list-group-item-linkable" data-link="<%= task_path(task)%>">
+                            <div class="list-group-item py-2 d-flex justify-content-between align-items-center list-group-item-linkable" data-link="<%= task_path(task)%>">
                                 <%= task.title.empty? ? (link_to task.description.truncate_words(5), task_path(task)) : (link_to task.title.truncate_words(5), task_path(task)) %>
                                 <%= task_priority(task) %>
                             </div>
@@ -42,6 +43,7 @@
                 </div>
             </div>
             <%end%>
+            <!-- All Tasks Available -->
             <div class="card">
                 <div class="card-header">
                     <a data-toggle="collapse" href="#collapse-all-tasks" aria-expanded="true" aria-controls="collaps-eall-tasks" id="heading-all-tasks" class="d-block">
@@ -50,10 +52,10 @@
                     </a>
                 </div>
                 <div id="collapse-all-tasks" class="collapse show" aria-labelledby="heading-all-tasks">
-                    <div class="card-body ">
+                    <div class="card-body-custom">
                     <% @tasks.each do |task| %>
                         <div class="list-group list-group-flush">
-                            <div class="list-group-item d-flex justify-content-between align-items-center list-group-item-linkable" data-link="<%= task_path(task)%>">
+                            <div class="list-group-item py-2 d-flex justify-content-between align-items-center list-group-item-linkable" data-link="<%= task_path(task)%>">
                                 <%= task.title.empty? ? (link_to task.description.truncate_words(5), task_path(task)) : (link_to task.title.truncate_words(5), task_path(task)) %>
                                 <%= task_priority(task) %>
                             </div>
@@ -62,6 +64,7 @@
                     </div>
                 </div>
             </div>
+            <!-- Recently Completed Tasks -->
             <% unless (@task_type.tasks.where('status = 3')).empty? %>
             <div class="card">
                 <div class="card-header">
@@ -71,10 +74,10 @@
                     </a>
                 </div>
                 <div id="collapse-recently-complete" class="collapse show" aria-labelledby="heading-recently-complete">
-                    <div class="card-body">
+                    <div class="card-body-custom">
                         <% (@tasks_recently_complete).each do |task| %>
                         <div class="list-group list-group-flush">
-                            <div class="list-group-item d-flex justify-content-between align-items-center list-group-item-linkable" data-link="<%= task_path(task)%>">
+                            <div class="list-group-item py-2 d-flex justify-content-between align-items-center list-group-item-linkable" data-link="<%= task_path(task)%>">
                                 <%= task.title.empty? ? (link_to task.description.truncate_words(5), task_path(task)) : (link_to task.title.truncate_words(5), task_path(task)) %>
                                 <%= task_priority(task) %>
                             </div>
