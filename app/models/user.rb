@@ -4,6 +4,7 @@ class User < ApplicationRecord
     has_many :task_type_options, through: :user_groups
     has_many :task_assignments, dependent: :destroy
     has_many :tasks, through: :task_assignments
+    has_many :tasks, through: :task_queues
 
     has_secure_password
 

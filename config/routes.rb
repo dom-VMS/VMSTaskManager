@@ -21,6 +21,8 @@ Rails.application.routes.draw do
     resources :attachments, :only => [:create, :destroy]
   end
 
+  resources :task_queues
+
   # Tasks and Tickets
   get   '/ticket',   to: 'tasks#ticket'
   post  '/ticket',   to: 'tasks#create_ticket' #<-- I don't think this actually goes there
