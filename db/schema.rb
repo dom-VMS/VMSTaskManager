@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190110185421) do
+ActiveRecord::Schema.define(version: 20190116140827) do
 
   create_table "activities", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string "trackable_type"
@@ -98,7 +98,9 @@ ActiveRecord::Schema.define(version: 20190110185421) do
     t.integer "position"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "task_type_id"
     t.index ["task_id"], name: "index_task_queues_on_task_id"
+    t.index ["task_type_id"], name: "index_task_queues_on_task_type_id"
     t.index ["user_id"], name: "index_task_queues_on_user_id"
   end
 
@@ -176,6 +178,7 @@ ActiveRecord::Schema.define(version: 20190110185421) do
   add_foreign_key "task_assignments", "tasks"
   add_foreign_key "task_assignments", "users", column: "assigned_by_id"
   add_foreign_key "task_assignments", "users", column: "assigned_to_id"
+  add_foreign_key "task_queues", "task_types"
   add_foreign_key "task_queues", "tasks"
   add_foreign_key "task_queues", "users"
   add_foreign_key "task_type_options", "task_types"
