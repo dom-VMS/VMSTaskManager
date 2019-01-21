@@ -30,15 +30,12 @@
         <a class="nav-link dropdown-toggle" href="/admin" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           <%= fa_icon('user-cog 2x', text:"Admin") %>
         </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+        <div class="dropdown-menu">
           <%= link_to fa_icon('users 2x', text:"Users"),
                              users_path, 
                              class:  "dropdown-item"%>
           <%= link_to fa_icon('user-tie 2x',text:'Roles'),
                              task_type_options_path, 
-                             class:  "dropdown-item" %>
-          <%= link_to fa_icon('tags 2x', text:'Groups'),
-                             admin_task_types_path, 
                              class:  "dropdown-item" %>
           <%= link_to fa_icon('eye 2x', text:'Activities'),
                              activities_path, 

@@ -8,6 +8,10 @@ class UsersController < ApplicationController
         @user = User.find(params[:id])
         @user_group = @user.user_groups   
         get_task_type_options_from_user_group
+        task_type_ids = TaskType.get_task_types_assigned_to_user(@user)
+        @task_types = TaskType.where(id: [task_type_ids])
+        @task = Task.get_all_tasks_assigned_to_user(@user)
+        
     end
     
     def new

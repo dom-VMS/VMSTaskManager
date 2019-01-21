@@ -1,6 +1,8 @@
 class TaskTypesController < ApplicationController
     def index
         @task_type = TaskType.all
+        #task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task_type.id)
+        #puts "LOOK HERE: \n\n #{task_type_option} \n\n"
     end
     
     def show
@@ -20,7 +22,7 @@ class TaskTypesController < ApplicationController
         task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task_type.id)
         if task_type_option.nil?
             flash[:error] = "Sorry, but you do not have permission to edit #{@task_type.name}."
-            redirect_to admin_task_types_path
+            redirect_to @task_type
         end
     end
 
@@ -41,7 +43,7 @@ class TaskTypesController < ApplicationController
        
         if @task_type.update(task_type_params)
           flash[:success] = "#{@task_type.name} has been updated!"
-          redirect_to '/admin/task_types'
+          redirect_to @task_type
         else
           flash[:danger] = "Oops! Something went wrong. #{@task_type.name} wasn't updated. "
           render 'edit'

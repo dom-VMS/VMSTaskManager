@@ -26,7 +26,7 @@ gem 'bcrypt', '>= 3.1.12'
 # Use Carrierwave for file attachments
 gem 'carrierwave', '~> 1.0'
 # Using Bootstrap for CSS/Front-end
-gem 'bootstrap', '~> 4.1.3'
+gem 'bootstrap', '~> 4.1.3' #v4.2.1 has error with dropdown menu (1/21/2019)
 # Bootstrap dependency
 gem 'jquery-rails'
 # Used for icons
