@@ -4,8 +4,6 @@ Rails.application.routes.draw do
   get 'home/index'
   get 'home/welcome'
   get '/admin',   to: 'admin#index'
-  get '/admin/task_types',   to: 'admin#task_types'
-  get 'admin/task_types',   to: 'task_type#index'
   get 'errors/not_signed_in'
 
   # Sessions
@@ -21,8 +19,6 @@ Rails.application.routes.draw do
     resources :attachments, :only => [:create, :destroy]
   end
 
-  resources :task_queues
-
   # Tasks and Tickets
   get   '/ticket',   to: 'tasks#ticket'
   post  '/ticket',   to: 'tasks#create_ticket' #<-- I don't think this actually goes there
@@ -34,8 +30,8 @@ Rails.application.routes.draw do
   put   '/verify',   to: 'tasks#update_ticket'
 
   resources :logged_labors
-  resources :task_types
-  resources :task_type_options 
+  resources :task_types, :path => "projects"
+  resources :task_type_options , :path => "roles"
   resources :user_groups
   
   resources :users do

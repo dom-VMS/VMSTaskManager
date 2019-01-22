@@ -1,4 +1,7 @@
 class TaskQueue < ApplicationRecord
+  include RailsSortable::Model
+  set_sortable :position
+  
   belongs_to :task
   belongs_to :user
 

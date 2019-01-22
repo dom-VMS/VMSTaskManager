@@ -6,7 +6,7 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="/home/index">Home</a></li>
-                    <li class="breadcrumb-item"><a href="/task_type_options">Roles & Permissions</a></li>
+                    <li class="breadcrumb-item"><%= link_to "Roles & Permissions", task_type_options_path%></li>
                     <li class="breadcrumb-item active"><a><%= @task_type_option.name %> </a></li>
                 </ol>
             </nav>

@@ -1,5 +1,7 @@
 class Task < ApplicationRecord
     include PublicActivity::Model
+    #include RailsSortable::Model
+    #set_sortable :position
     tracked
 
     mount_uploaders :attachments, AttachmentUploader

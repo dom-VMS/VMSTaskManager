@@ -40,7 +40,7 @@ gem 'foreman'
 # Used in Task Queue
 gem 'jquery-ui-rails'
 # Used for Task Queue
-gem 'acts_as_list'
+gem 'rails_sortable'
 
 # Use CoffeeScript for .coffee assets and views
 gem 'coffee-rails', '~> 4.2'

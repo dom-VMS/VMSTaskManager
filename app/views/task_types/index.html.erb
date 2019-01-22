@@ -19,7 +19,6 @@
                 <div class="card-body text-center">
                     <p class="card-text"><%= task_type.description.truncate_words(10) %></p>
                     <%= link_to "View Project", task_type_path(task_type), class: "btn btn-primary text-center"%>
-                    <%= (link_to "View Users", edit_task_type_path(task_type), class: "btn btn-info") if isAdmin? == true %>
                 </div>
             </div>
         </div>
