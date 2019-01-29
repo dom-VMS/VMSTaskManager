@@ -1,7 +1,7 @@
 class LoggedLaborsController < ApplicationController
     def index
         @task = Task.find(params[:task_id])
-        @logged_labors = LoggedLabor.where(:task_id => @task.id)
+        @logged_labors = LoggedLabor.where(task_id:  @task.id)
         @hours_spent = LoggedLabor.hours_spent_on_task(@task)
     end
 

@@ -6,7 +6,7 @@
             <% if isAdmin?%>
                 <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="/home/index">Home</a></li>
+                            <li class="breadcrumb-item"><%= link_to 'Home', home_path %></li>
                             <li class="breadcrumb-item"><a href="/users">Users</a></li>
                             <li class="breadcrumb-item"><a><%=@user.full_name%></a></li>
                         </ol>
@@ -14,7 +14,7 @@
             <% else %>
                 <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="/home/index">Home</a></li>
+                            <li class="breadcrumb-item"><%= link_to 'Home', home_path %></li>
                             <li class="breadcrumb-item"><a><%=@user.full_name%></a></li>
                         </ol>
                 </nav>

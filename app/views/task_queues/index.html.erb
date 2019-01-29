@@ -1,0 +1,31 @@
+<nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><%= link_to 'Home', home_path %></li>
+            <li class="breadcrumb-item"><%= link_to "Projects", task_types_path%></li>
+            <li class="breadcrumb-item"><%= link_to @task_type.name, task_type_path(@task_type)%></li>
+            <li class="breadcrumb-item active" aria-current="page"><%= sanitize @user.l_name %>'s Queue</li>
+        </ol>
+    </nav>
+<div class="container-fluid">
+    <h1><%=@user.full_name%>'s Queue</h1>
+    <h2><strong>Project:</strong> <%= @task_type.name%></h2>
+</div>
+<div class='container-fluid'>
+<% unless @queue.empty?%>
+    <% (@queue).each do |queue|%>
+        <% task = Task.find_by_id(queue.task_id)%>
+        <div class="list-group sortable col-sm-12 col-md-12 col-lg-10 col-xl-10 ">
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="badge badge-primary"><%= queue.position%></span>
+                </div>
+                <div>
+                    <%= task.title.empty? ? (link_to task.description.truncate_words(5), task_path(task)) : (link_to task.title.truncate_words(5), task_path(task)) %>
+                </div>
+            </li>
+        </div> 
+    <%end%>
+<% else %>
+    Queue is empty.
+<%end%>
+</div>

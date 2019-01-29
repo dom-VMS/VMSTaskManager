@@ -108,3 +108,37 @@ a.custom-card:hover {
 .card-body-custom {
     padding: none;
 }
+
+/* Horizonatally-Scrollable Pills */
+.pillable .nav-pills {
+    overflow-x: auto;
+    overflow-y:hidden;
+    flex-wrap: nowrap;
+ }
+
+ /* Horizonatally-Scrollable Tabs */
+.htab {
+    white-space: nowrap; 
+    overflow: hidden;
+
+    .nav-tabs {
+        overflow-x: auto;
+        overflow-y:hidden;
+        flex-wrap: nowrap;
+        border-bottom-width: 0px;
+    }
+
+    .nav-item{
+        border-bottom-color: rgb(222, 226, 230);
+        border-bottom-width: 2px;
+        border-left-width: 0px;
+        border-right-width: 0px;
+    }
+
+    .active{
+        border-left-width: 1px;
+        border-right-width: 1px;
+        border-bottom-color: rgb(255, 255, 255);
+        border-bottom-width: small;
+    }
+ }

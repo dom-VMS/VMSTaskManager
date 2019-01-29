@@ -2,9 +2,11 @@ class User < ApplicationRecord
     has_many :logged_labors
     has_many :user_groups, dependent: :destroy
     has_many :task_type_options, through: :user_groups
+    has_many :tasks, through: :task_queues
+
+    #has_many :through Association (users x task_assignments x tasks)
     has_many :task_assignments, dependent: :destroy
     has_many :tasks, through: :task_assignments
-    has_many :tasks, through: :task_queues
 
     has_secure_password
 
@@ -16,7 +18,6 @@ class User < ApplicationRecord
                 format: {with: VALID_EMAIL_REGEX}
 
     validates_presence_of :employee_number
-
     validates :password, presence: true, length: { minimum: 3 }
 
     def full_name

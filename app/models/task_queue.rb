@@ -4,6 +4,7 @@ class TaskQueue < ApplicationRecord
   
   belongs_to :task
   belongs_to :user
+  belongs_to :task_type
 
   def self.retrieve_tasks(user, task_type)
     tasks = []

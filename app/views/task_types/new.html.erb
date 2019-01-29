@@ -1,7 +1,7 @@
 <% if logged_in? %>
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="/home/index">Home</a></li>
+        <li class="breadcrumb-item"><%= link_to 'Home', home_path %></li>
         <li class="breadcrumb-item"><%= link_to 'Projects', task_types_path %></li>
         <li class="breadcrumb-item active" aria-current="page">Add Project</li>
     </ol>

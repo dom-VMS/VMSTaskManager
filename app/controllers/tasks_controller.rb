@@ -67,7 +67,7 @@ class TasksController < ApplicationController
         get_current_user_task_type_options 
         @task_type = TaskType.find_by_id(@task.task_type_id)
         get_assignable_users
-        @task_assignment = TaskAssignment.where("task_id = #{params[:id]}")
+        @task_assignment = TaskAssignment.where(task_id: params[:id])
         add_file_attachment(attachment_params[:attachments]) unless attachment_params.empty?
         if @task.update_attributes(edit_task_params)
             set_task_assignments
@@ -121,7 +121,7 @@ class TasksController < ApplicationController
                 redirect_to verify_path
             else
                 flash[:notice] = "Something went wrong"
-                render 'home/index'
+                redirect_to home_path
             end
         else
           render 'edit'

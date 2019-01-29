@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   get 'activities/index'
 
-  get 'home/index'
+  get '/home', to: 'home#index'
   get 'home/welcome'
   get '/admin',   to: 'admin#index'
   get 'errors/not_signed_in'
@@ -30,7 +30,9 @@ Rails.application.routes.draw do
   put   '/verify',   to: 'tasks#update_ticket'
 
   resources :logged_labors
-  resources :task_types, :path => "projects"
+  resources :task_types, :path => "projects" do
+    resources :task_queues, :only => [:index, :update]
+  end
   resources :task_type_options , :path => "roles"
   resources :user_groups
   

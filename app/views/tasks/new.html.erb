@@ -1,7 +1,7 @@
 <% if logged_in? %>
 <nav aria-label="breadcrumb">
   <ol class="breadcrumb">
-    <li class="breadcrumb-item"><a href="/home/index">Home</a></li>
+    <li class="breadcrumb-item"><%= link_to 'Home', home_path %></li>
     <li class="breadcrumb-item"><a href="/task_types">Projects</a></li>
     <li class="breadcrumb-item"><%= link_to @task_type.name, task_type_path(@task_type)%></li>
     <li class="breadcrumb-item active" aria-current="page">New Task</li>
@@ -13,7 +13,7 @@
   </div>
     <%= render 'form' %>
 
-    <%= link_to 'Back', home_index_path %>
+    <%= link_to 'Back', home_path %>
 </div>
 <% else %>
      <%= render 'errors/not_signed_in' %>

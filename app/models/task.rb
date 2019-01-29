@@ -6,15 +6,18 @@ class Task < ApplicationRecord
 
     mount_uploaders :attachments, AttachmentUploader
 
+    belongs_to :task_type
     has_many :comments, dependent: :destroy
     has_many :logged_labors, dependent: :destroy
-    has_many :task_assignments, dependent: :destroy
-    has_many :users, through: :task_assignments
-    has_many :file_attachments, dependent: :destroy   
+    has_many :file_attachments, dependent: :destroy  
     has_and_belongs_to_many :users, through: :task_queues
-    accepts_nested_attributes_for :file_attachments, :task_assignments
 
-    has_one :task_type
+    #has_many :through Association (users x task_assignments x tasks)
+    has_many :task_assignments, dependent: :destroy 
+    has_many :users, through: :task_assignments
+
+    accepts_nested_attributes_for :file_attachments, :task_assignments
+    
     #validates :title, presence: true
     #validates :created_by_id_exists
     validates_presence_of :task_type_id

@@ -2,7 +2,7 @@ class AdminController < ApplicationController
     def index
         if logged_in?
             unless isAdmin?
-                redirect_to home_index_path
+                redirect_to home_path
             end
         else
             render partial: 'errors/not_signed_in'
