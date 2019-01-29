@@ -2,6 +2,9 @@ class User < ApplicationRecord
     has_many :logged_labors
     has_many :user_groups, dependent: :destroy
     has_many :task_type_options, through: :user_groups
+
+    #has_many :through Association (users x task_queues x tasks)
+    has_many :task_queues, dependent: :destroy
     has_many :tasks, through: :task_queues
 
     #has_many :through Association (users x task_assignments x tasks)

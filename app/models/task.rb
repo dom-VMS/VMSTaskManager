@@ -10,7 +10,10 @@ class Task < ApplicationRecord
     has_many :comments, dependent: :destroy
     has_many :logged_labors, dependent: :destroy
     has_many :file_attachments, dependent: :destroy  
-    has_and_belongs_to_many :users, through: :task_queues
+
+    #has_many :through Association (users x task_queues x tasks)
+    has_many :task_queues, dependent: :destroy
+    has_many :users, through: :task_queues
 
     #has_many :through Association (users x task_assignments x tasks)
     has_many :task_assignments, dependent: :destroy 
