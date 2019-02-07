@@ -1,3 +1,4 @@
+<!-- Decline Ticket Modal -->
 <div class="modal fade" id="declineTicketModal" tabindex="-1" role="dialog" aria-labelledby="declineTicketModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -14,12 +15,10 @@
                     <%= form.label :body, 'Click Decline Ticket when finished.' %><br>
                     <%= form.text_area :body, class: 'form-control', placeholder: "Please enter details here." %>
                 </p>
-                <%= form.fields_for :file_attachments_attributes do |fa| %>
-                    <p>
-                        <%= fa.label :file, 'Attach a File:' %>
-                        <%= fa.file_field :file %>
-                    </p>
-                <% end %>
+                <p>
+                    <%= form.label :attachments, 'File attachments' %>
+                    <%= form.file_field :attachments, multiple: true %>
+                </p>
                 <% commenter = current_user.full_name %>
                 <%= form.hidden_field 'commenter', :value => commenter %>
                 <%= form.hidden_field 'isApproved', :value => false %>
@@ -33,5 +32,5 @@
             </div>
             <% end %>
         </div>
-    </div>   
-</div>   
+    </div> 
+</div>

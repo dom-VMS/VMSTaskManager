@@ -1,0 +1,36 @@
+<!-- Decline Task Modal -->
+<div class="modal fade" id="declineTaskModal" tabindex="-1" role="dialog" aria-labelledby="declineTaskModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="declineTasKModalLabel">Decline Task</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <%= form_with(model: @task, url: {action: "update_ticket"}) do |form| %>
+            <div class="modal-body">
+                <h4>Why is this task is being declined?</h4>
+                <p>
+                    <%= form.label :body, 'Click Decline Completion when finished.' %><br>
+                    <%= form.text_area :body, class: 'form-control', placeholder: "Please enter details here." %>
+                </p>
+                <p>
+                    <%= form.label :attachments, 'File attachments' %>
+                    <%= form.file_field :attachments, multiple: true %>
+                </p>
+                <% commenter = current_user.full_name %>
+                <%= form.hidden_field 'status', :value => 0 %>
+                <%= form.hidden_field 'isVerified', :value => false %>
+                <%= form.hidden_field 'id', :value => @task.id %>
+            </div>   
+            <div class="modal-footer">
+                <%= button_tag type: 'submit', class: "btn btn-lg btn-danger", id: "register-button" do %>
+                    <%= fa_icon('times-circle', text: 'Decline Completion')%>
+                <% end %>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            </div>
+            <% end %>
+        </div>
+    </div>   
+</div>

@@ -10,11 +10,11 @@
     <h1><%=@user.full_name%>'s Queue</h1>
     <h2><strong>Project:</strong> <%= @task_type.name%></h2>
 </div>
-<div class='container-fluid'>
-<% unless @queue.empty?%>
-    <% (@queue).each do |queue|%>
-        <% task = Task.find_by_id(queue.task_id)%>
+<div class='container-fluid' id='user-queue'>
+    <% unless @queue.empty?%>
         <div class="list-group sortable col-sm-12 col-md-12 col-lg-10 col-xl-10 ">
+        <% (@queue).each do |queue|%>
+            <% task = Task.find_by_id(queue.task_id)%>
             <li class="list-group-item d-flex justify-content-between align-items-center">
                 <div>
                     <span class="badge badge-primary"><%= queue.position%></span>
@@ -22,10 +22,47 @@
                 <div>
                     <%= task.title.empty? ? (link_to task.description.truncate_words(5), task_path(task)) : (link_to task.title.truncate_words(5), task_path(task)) %>
                 </div>
+            </li>    
+        <%end%>
+            <li class="list-group-item list-group-item-action list-group-item-light text-center">
+                <button type="button" class="btn btn-light" data-toggle="modal" data-target="#addToQueueModal">
+                    <%= fa_icon('plus-circle', text: 'Add task to queue')%>
+                </button>  
             </li>
+            <!--Modal -->
+            <div class="modal fade" id="addToQueueModal" tabindex="-1" role="dialog" aria-labelledby="addToQueueModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="addToQueueModalLabel">Add to Queue</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <%= form_with(model: @task_queue, url: {action: "create"}) do |form| %>
+                        <div class="modal-body">
+                            <h4>Select a task to add:</h4>
+                            <%= form.label :task_id, 'Task'%><br>
+                            <%= form.select(:task_id, options_from_collection_for_select(@tasks, :id, :title), include_blank: "Select Task", class: 'form-control')%>
+                            
+                            <%= form.hidden_field 'user_id', :value => @user.id %>
+                            <%= form.hidden_field 'task_type_id', :value => @task_type.id %>
+                        </div>   
+                        <div class="modal-footer">
+                            <%= button_tag type: 'submit', class: "btn btn-success", id: "register-button" do %>
+                                <%= fa_icon('plus-circle', text: 'Add Task')%>
+                            <% end %>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        </div>
+                        <% end %>
+                    </div>
+                </div>   
+            </div>   
         </div> 
-    <%end%>
 <% else %>
     Queue is empty.
 <%end%>
+</div>
+<div class='container-fluid' id='all-tasks-assigned-to-user'>
+    <%#= render 'tasks/assigned_to_user'%>
 </div>

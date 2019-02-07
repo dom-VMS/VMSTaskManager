@@ -19,7 +19,7 @@ class TaskTypesController < ApplicationController
     def edit
         @task_type = find_task_type
         task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task_type.id)
-        if task_type_option.nil?
+        if task_type_option.nil? || task_type_option.isAdmin == false
             flash[:error] = "Sorry, but you do not have permission to edit #{@task_type.name}."
             redirect_to @task_type
         end

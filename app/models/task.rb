@@ -11,11 +11,11 @@ class Task < ApplicationRecord
     has_many :logged_labors, dependent: :destroy
     has_many :file_attachments, dependent: :destroy  
 
-    #has_many :through Association (users x task_queues x tasks)
+    #has_many :through association (users x task_queues x tasks)
     has_many :task_queues, dependent: :destroy
     has_many :users, through: :task_queues
 
-    #has_many :through Association (users x task_assignments x tasks)
+    #has_many :through association (users x task_assignments x tasks)
     has_many :task_assignments, dependent: :destroy 
     has_many :users, through: :task_assignments
 
@@ -39,12 +39,12 @@ class Task < ApplicationRecord
     # Retrieve all open tasks
     def self.get_open_tasks
         Task.where(isVerified: nil).
-            where.not(percentComplete: 100).
-            where.not(isApproved: [nil, false]).
-            order("created_at DESC")
+             where.not(percentComplete: 100).
+             where.not(isApproved: [nil, false]).
+             order("created_at DESC")
     end
 
-    # Retrieve all open tasks that the current User is permitted to work on.
+    # Retrieve all open tasks that the current user is permitted to work on.
     def self.get_all_tasks_user_can_see(user)
         tasks = []
         tto = user.task_type_options
@@ -53,10 +53,10 @@ class Task < ApplicationRecord
         else
             task_types = tto.pluck(:task_type_id)
             return (Task.where(isVerified: nil).
-                        where.not(percentComplete: 100).
-                        where.not(isApproved: [nil, false]).
-                        where(task_type_id: [task_types]).
-                        order("created_at DESC"))
+                         where.not(percentComplete: 100).
+                         where.not(isApproved: [nil, false]).
+                         where(task_type_id: [task_types]).
+                         order("created_at DESC"))
         end
     end
 
@@ -77,7 +77,7 @@ class Task < ApplicationRecord
         end
     end
 
-    # Retrieve all open tasks that the current User is permitted to approve.
+    # Retrieve all open tasks that the current user is permitted to approve.
     def self.get_all_tickets_user_can_approve(user)
         tto = user.task_type_options
         if tto.empty?
@@ -109,7 +109,7 @@ class Task < ApplicationRecord
         AND (t.isVerified = 0 OR t.isVerified IS NULL)
         AND t.percentComplete != 100
         AND (NOT(t.isApproved = 0 OR t.isApproved is NULL))
-        AND (ta.assigned_to_id = 5 OR ta.assigned_to_id IS NULL)
+        AND (ta.assigned_to_id = #{user.id} OR ta.assigned_to_id IS NULL)
     ORDER BY ISNULL(tq.position), tq.position ASC;
 =end
         user_task_types = tto.pluck(:task_type_id) #Returns projects the user belongs to.
@@ -132,11 +132,12 @@ class Task < ApplicationRecord
         user_task_types = tto.pluck(:task_type_id)
         if user_task_types.include? task_type.id
             task_assigment_relation = TaskAssignment.where(assigned_to_id: [user.id, nil])
-            task_type_relation = Task.joins(:task_assignments).where(task_type_id: task_type.id).
-                                                        where(isVerified: [nil, false]).
-                                                        where.not(percentComplete: 100).
-                                                        where.not(isApproved: [nil, false]).
-                                                        order("created_at DESC")
+            task_type_relation = Task.joins(:task_assignments).
+                                      where(task_type_id: task_type.id).
+                                      where(isVerified: [nil, false]).
+                                      where.not(percentComplete: 100).
+                                      where.not(isApproved: [nil, false]).
+                                      order("created_at DESC")
 
             return task_type_relation.merge(task_assigment_relation)
         else 

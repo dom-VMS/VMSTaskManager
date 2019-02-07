@@ -15,7 +15,7 @@
         <% unless @task_type_option.nil? %>
             <% if @task_type_option.can_create %>
                 <%= link_to fa_icon('plus-circle', text:'New Task'), new_task_path(:task_type_id => params[:id]), class: "btn btn-primary" %>
-                <%= (link_to fa_icon('edit', text: 'Edit'), edit_task_type_path(@task_type), class: "btn btn-secondary") if isAdmin? == true %><br><br>
+                <%= (link_to fa_icon('edit', text: 'Edit'), edit_task_type_path(@task_type), class: "btn btn-secondary") if @task_type_option.isAdmin %><br><br>
 
             <% end %>
         <% end %>
@@ -38,7 +38,7 @@
                             <% @tasks_assigned_to_user.each do |task| %>
                                 <div class="list-group list-group-flush">
                                     <div class="list-group-item py-2 d-flex justify-content-between align-items-center list-group-item-linkable" data-link="<%= task_path(task)%>">
-                                        <%= task.title.empty? ? (link_to task.description.truncate_words(5), task_path(task)) : (link_to task.title.truncate_words(5), task_path(task)) %>
+                                        <%= task.title.nil? ? (link_to task.description.truncate_words(5), task_path(task)) : (link_to task.title.truncate_words(5), task_path(task)) %>
                                         <%= task_priority(task) %>
                                     </div>
                                 </div> 
@@ -50,7 +50,7 @@
                         <% @tasks.each do |task| %>
                             <div class="list-group list-group-flush">
                                 <div class="list-group-item py-2 d-flex justify-content-between align-items-center list-group-item-linkable" data-link="<%= task_path(task)%>">
-                                    <%= task.title.empty? ? (link_to task.description.truncate_words(5), task_path(task)) : (link_to task.title.truncate_words(5), task_path(task)) %>
+                                    <%= task.title.nil? ? (link_to task.description.truncate_words(5), task_path(task)) : (link_to task.title.truncate_words(5), task_path(task)) %>
                                     <%= task_priority(task) %>
                                 </div>
                             </div> 
@@ -62,7 +62,7 @@
                             <% (@tasks_recently_complete).each do |task| %>
                                 <div class="list-group list-group-flush">
                                     <div class="list-group-item py-2 d-flex justify-content-between align-items-center list-group-item-linkable" data-link="<%= task_path(task)%>">
-                                        <%= task.title.empty? ? (link_to task.description.truncate_words(5), task_path(task)) : (link_to task.title.truncate_words(5), task_path(task)) %>
+                                        <%= task.title.nil? ? (link_to task.description.truncate_words(5), task_path(task)) : (link_to task.title.truncate_words(5), task_path(task)) %>
                                         <%= task_priority(task) %>
                                     </div>
                                 </div> 
@@ -85,7 +85,7 @@
                                 <tr>
                                     <td><%= link_to user.full_name, user_path(user) %></td>
                                     <td><%= user_task_type_option(user) %></td>
-                                    <td><%= link_to 'View Queue', task_type_task_queues_path(:task_type_id => params[:id], :user => user.id), class: "btn btn-primary" %></td>
+                                    <td><%= link_to 'View Queue', task_type_user_task_queues_path(@task_type.id, user.id), class: "btn btn-primary" %></td>
                                 </tr>
                             </tbody>
                             <%end%>

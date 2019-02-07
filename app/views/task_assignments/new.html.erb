@@ -1,0 +1,19 @@
+<h1> Assign a user  </h1>
+   <%= form_with model: [@task, @task.task_assignments.build], local: true do |form| %>
+            <div class="modal-body">
+                <h4>Select a user</h4>
+                <p>
+                    <%= form.label :assigned_to_id, 'Assignee'%>
+                    <%= form.select(:assigned_to_id, options_from_collection_for_select(@assignable_users, :id, :full_name), include_blank: "All", class: 'form-control') %>
+                </p>
+                <%= form.hidden_field 'assigned_by_id', :value => current_user.id%>
+                <%= form.hidden_field 'task_id', :value => @task.id%>
+            </div>   
+            <div class="modal-footer">
+                <%= button_tag type: 'submit', class: "btn btn-lg btn-success", id: "assign-user-button" do %>
+                    <%= fa_icon('plus-circle', text: 'Assign User')%>
+                <% end %>
+                <button type="button" class="btn btn-lg btn-secondary" data-dismiss="modal">Cancel</button>
+            </div>
+            <% end %>
+        </div>

@@ -32,18 +32,17 @@ class TasksController < ApplicationController
     end
 
     def edit
-        get_current_user_task_type_options    
-        @assignee = TaskAssignment.get_assigned_user(@task);
         @task_type = TaskType.find_by_id(@task.task_type_id)
+        get_current_user_task_type_options   
+        @assignee = TaskAssignment.get_assigned_user(@task);
         get_assignable_users
     end
 
     def create
-        params = new_task_params 
-        
+        params = task_params 
         unless logged_in?
             if (User.find_by_employee_number(params[:created_by_id])).present?  
-                params[:created_by_id] = User.find_by_employee_number(new_task_params[:created_by_id]).id         
+                params[:created_by_id] = User.find_by_employee_number(task_params[:created_by_id]).id         
             else 
                 flash[:error] = "The employee number you have entered does not exsist."
                 render 'ticket'
@@ -52,8 +51,8 @@ class TasksController < ApplicationController
         @task = Task.new(params)
         add_file_attachment(attachment_params[:attachments]) unless attachment_params.empty?
         if @task.save!
-            @task_assignment = TaskAssignment.create(task_id: @task.id, assigned_to_id: assignment_params_new[:assigned_to_id])
-            flash[:error] = "Failed to assign user" unless @task_assignment.save!
+            set_task_assignments unless assignment_params.empty?
+            #flash[:error] = "Failed to assign user" unless @task_assignment.save!
             flash[:notice] = "Successfully created task."
             redirect_to @task
         else
@@ -67,10 +66,9 @@ class TasksController < ApplicationController
         get_current_user_task_type_options 
         @task_type = TaskType.find_by_id(@task.task_type_id)
         get_assignable_users
-        @task_assignment = TaskAssignment.where(task_id: params[:id])
         add_file_attachment(attachment_params[:attachments]) unless attachment_params.empty?
-        if @task.update_attributes(edit_task_params)
-            set_task_assignments
+        if @task.update_attributes(task_params)
+            #set_task_assignments unless task_params[:task_assignments_attributes].empty?
             flash[:notice] = "Task updated!"
             respond_to do |format|
                 format.html { redirect_to @task }
@@ -78,7 +76,7 @@ class TasksController < ApplicationController
         else
             flash[:notice] = "Something went wrong." 
             respond_to do |format|
-                format.html { render :new } 
+                format.html { render :edit } 
             end      
         end
     end
@@ -95,11 +93,28 @@ class TasksController < ApplicationController
     end
 
     def review
-        @task = Task.get_all_tickets_user_can_approve(current_user)
+        tto = current_user.task_type_options
+        unless tto.empty?
+            ttoHash = tto.pluck(:task_type_id, :can_approve).to_h
+            task_types = ttoHash.select { |key, value| value == true }
+            @task_types = TaskType.where(id: task_types.keys)
+            @task = Task.where(isApproved: [nil]).
+                        where(task_type_id: [@task_types]).
+                        order("updated_at DESC")
+        end
     end
 
     def verify
-        @task = Task.get_all_tasks_user_can_verify(current_user)
+        tto = current_user.task_type_options
+        unless tto.empty?
+            ttoHash = tto.pluck(:task_type_id, :can_verify).to_h
+            task_types = ttoHash.select { |key, value| value == true }
+            @task_types = TaskType.where(id: task_types.keys)
+            @task = Task.where(isVerified: [nil, false]).
+                        where(status: 3).
+                        where(task_type_id: [@task_types]).
+                        order("updated_at DESC")
+        end
     end
 
     def update_ticket
@@ -129,16 +144,13 @@ class TasksController < ApplicationController
     end
 
     private
-      def new_task_params
-        params.require(:task).permit(:title, :description, :priority, :status, :percentComplete,  :isApproved, :task_type_id, :created_by_id)
-      end
 
-      def edit_task_params
-        params.require(:task).permit(:title, :description, :priority, :status, :percentComplete,  :isApproved)
+      def task_params
+        params.require(:task).permit(:title, :description, :priority, :status, :percentComplete,  :isApproved, :task_type_id, :created_by_id, task_assignments_attributes:[:id, :assigned_to_id, :assigned_by_id])
       end
 
       def assignment_params
-        params.require(:task).permit(:task_id, task_assignments: [:assignment_id, :assigned_to_id, :assigned_by_id])
+        params.require(:task_assignments).permit(:id, :assigned_to_id, :assigned_by_id)
       end
 
       def assignment_params_new
@@ -180,7 +192,7 @@ class TasksController < ApplicationController
         @task.attachments = attachments
       end
 
-      #
+      # Removes a file, from the array of files, at the index the user clicks.
       def remove_attachment_at_index(index)
         attachments = @task.attachments # copy the array
         @task.attachments = attachments.delete_at(index) # delete the target attachment
@@ -202,15 +214,10 @@ class TasksController < ApplicationController
         comment.save!
       end
 
+      # Set task_assignment for a given task. If an assignment already exists, update. Else, create.
       def set_task_assignments
-        if @task_assignment.exists? 
-            puts "THIS IS @task_assignment: #{@task_assignment.to_json}"
-            @task_assignment.each do |task_assignment|
-                puts "NOW WE ARE INSIDE THE LOOP: #{task_assignment.to_json}"
-                puts assignment_params
-                task_assignment.update(assignment_params) 
-            end
-        else
+        @task_assignment = TaskAssignment.where(task_id: params[:id])
+        unless @task_assignment.exists?
             TaskAssignment.create(:task_id => @task.id, :assigned_to_id => assignment_params[:assigned_to_id])
         end
       end
