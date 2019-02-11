@@ -41,6 +41,8 @@ gem 'foreman'
 gem 'jquery-ui-rails'
 # Used for Task Queue
 gem 'rails_sortable'
+# Used for mobile 'Drag & Drop'
+#gem 'touchpunch-rails'
 
 # Use CoffeeScript for .coffee assets and views
 gem 'coffee-rails', '~> 4.2'

@@ -4,7 +4,9 @@ class TaskQueuesController < ApplicationController
   before_action :get_queue, only: [:index, :edit]
 
   def index
-    @tasks = @task_type.tasks.where.not(status: 3).or(@task_type.tasks.where(status: nil).where(isApproved: true)).order("created_at DESC")
+    task_type = TaskType.find_by_id(task_queue_params[:task_type_id])
+    user = User.find_by_id(task_queue_params[:user_id])
+    @tasks = Task.get_tasks_assigned_to_user_for_task_type(task_type, user)
   end
   
   def create
