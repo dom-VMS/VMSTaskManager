@@ -36,6 +36,7 @@ class TasksController < ApplicationController
         get_current_user_task_type_options   
         @assignee = TaskAssignment.get_assigned_user(@task);
         get_assignable_users
+        #session[:return_to] ||= request.referer
     end
 
     def create

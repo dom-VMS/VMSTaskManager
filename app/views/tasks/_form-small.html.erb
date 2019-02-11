@@ -49,13 +49,17 @@
         <p>
             <strong>Assignee(s): </strong>
             <%= link_to fa_icon('plus-circle'), new_task_task_assignment_path(@task) %><br>
-            <%#= render 'task_assignments/assign_user_modal'%>
             <%= form.fields_for :task_assignments do |f| %>
-                <%= f.select(:assigned_to_id, options_from_collection_for_select(@assignable_users, :id, :full_name, f.object.assigned_to_id),  include_blank: "All", class: 'form-control', multiple: true) %>
+                <% if @assignee.count >= 2%>
+                    <%= f.select(:assigned_to_id, options_from_collection_for_select(@assignable_users, :id, :full_name, f.object.assigned_to_id), class: 'form-control', multiple: true) %>
+                <% else %>
+                    <%= f.select(:assigned_to_id, options_from_collection_for_select(@assignable_users, :id, :full_name, f.object.assigned_to_id),  include_blank: "All", class: 'form-control', multiple: true) %>
+                <% end %>
                 <%= f.hidden_field :assigned_by_id, value: current_user.id %>
                 <%= (link_to fa_icon('trash-alt 1.5x'), task_task_assignment_path(@task, f.object.id),
-                                                        :method => :delete,
-                                                        data: { confirm: "Are you sure you want to remove user from task?" })%><br>    
+                                                        method: :delete,
+                                                        data: { confirm: "Are you sure you want to remove user from task?" },
+                                                        remote: true) unless f.object == @assignee.first %><br>    
             <% end %>
         </p>
     </div>

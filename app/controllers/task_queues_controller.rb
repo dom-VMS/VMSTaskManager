@@ -8,8 +8,13 @@ class TaskQueuesController < ApplicationController
   end
   
   def create
-    position = get_last_position + 1
-    task_queue = TaskQueue.new(task_queue_params.merge(:position => position))
+    get_queue
+    if @queue.empty?
+      task_queue = TaskQueue.new(task_queue_params.merge(:position => 0))
+    else
+      position = get_last_position + 1
+      task_queue = TaskQueue.new(task_queue_params.merge(:position => position))
+    end
     if task_queue.save!
       flash[:notice] = "Successfully added task to queue."
       redirect_to task_type_user_task_queues_path(task_queue_params[:task_type_id], task_queue_params[:user_id])

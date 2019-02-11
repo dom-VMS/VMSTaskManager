@@ -10,8 +10,10 @@ class TaskAssignmentsController < ApplicationController
     def create
         @task = Task.find_by_id(assignment_params[:task_id])
         TaskAssignment.create(assignment_params[:task_assignment])
+        flash[:notice] = "Successfully added assignee."
         respond_to do |format|
-            format.html { redirect_to @task}
+            format.html { redirect_to task_path(@task)}
+            format.js {render "tasks/form-small"}
         end
     end
 
@@ -19,10 +21,12 @@ class TaskAssignmentsController < ApplicationController
         @task = Task.find(params[:task_id])
         @assigment = @task.task_assignments.find(params[:id])
         @assigment.destroy
+        flash[:notice] = "Successfully removed assignee."
         
         respond_to do |format|
-            format.html { redirect_to @task}
-         end
+            format.html { redirect_to task_path(@task)}
+            #format.js { render :file => "/tasks/edit.js.erb" }         
+        end
     end
 
     private

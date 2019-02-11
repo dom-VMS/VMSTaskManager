@@ -1,10 +1,18 @@
 <% if logged_in? %>
 <div class="container">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><%= link_to 'Home', home_path %></li>
+            <li class="breadcrumb-item"><%= link_to "Projects", task_types_path %></li>
+            <li class="breadcrumb-item"><%= link_to TaskType.find(@task.task_type_id).name, task_type_path(@task.task_type_id)%></li>
+            <li class="breadcrumb-item"><%= link_to "Task # #{@task.id}", task_path(@task)%></li>
+            <li class="breadcrumb-item active" aria-current="page">Log Time</li>
+        </ol>
+    </nav>
     <div class="py-4 text-center">
         <h1>Log time<h1>
         <p class="lead"> Task #<%= @task.id %></p>
     </div>
-
     <%= render 'form' %>
 </div>
 <% else %>
