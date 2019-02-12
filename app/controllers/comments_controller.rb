@@ -6,7 +6,7 @@ class CommentsController < ApplicationController
         @comment.save! ? (flash[:notice] = "Successfully created comment.") : (flash[:error] = "Failed to create comment")
         respond_to do |format|
           format.html { redirect_to @task }
-      end
+        end
     end
 
     def destroy

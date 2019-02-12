@@ -1,16 +1,16 @@
 class TaskQueuesController < ApplicationController
   before_action :find_user
   before_action :find_task_type
-  before_action :get_queue, only: [:index, :edit]
+  before_action :get_queue, only: [:index, :create]
 
   def index
+    validate_current_user_can_view
     task_type = TaskType.find_by_id(task_queue_params[:task_type_id])
     user = User.find_by_id(task_queue_params[:user_id])
     @tasks = Task.get_tasks_assigned_to_user_for_task_type(task_type, user)
   end
   
   def create
-    get_queue
     if @queue.empty?
       task_queue = TaskQueue.new(task_queue_params.merge(:position => 0))
     else
@@ -21,14 +21,23 @@ class TaskQueuesController < ApplicationController
       flash[:notice] = "Successfully added task to queue."
       redirect_to task_type_user_task_queues_path(task_queue_params[:task_type_id], task_queue_params[:user_id])
     else
-      flash[:danger] = "Failed to add task to queue."
+      flash[:error] = "Failed to add task to queue."
       redirect_to task_type_user_task_queues_path(task_queue_params[:task_type_id], task_queue_params[:user_id])
+    end
+  end
+
+  def destroy
+    get_queue_item
+    @queue.destroy
+    respond_to do |format|
+      flash[:notice] = "Successfully removed task from queue."
+      format.html { redirect_to task_type_user_task_queues_path(@task_type.id, @user.id) }
     end
   end
 
   private
   def task_queue_params
-    params.permit(:task_type_id, :user_id, :task_id)
+    params.permit(:task_type_id, :user_id, :task_id, :id)
   end
 
   def find_user
@@ -41,6 +50,28 @@ class TaskQueuesController < ApplicationController
 
   def get_queue
     @queue = TaskQueue.where(user_id: task_queue_params[:user_id], task_type_id: task_queue_params[:task_type_id]).order(:position)
+  end
+
+  def get_queue_item
+    @queue = TaskQueue.find_by_id(task_queue_params[:id])
+  end
+
+  def validate_current_user_can_view
+    @task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task_type.id)
+    unless @task_type_option.nil? 
+      if !(@task_type_option.isAdmin || current_user.id == @user.id)
+        respond_to do |format|
+          flash[:error] = "Sorry, but you are not permitted to view or edit this user's queue."
+          format.html { redirect_to task_type_path(@task_type) }
+        end
+        
+      end
+    else
+      respond_to do |format|
+        flash[:error] = "Sorry, but you are not permitted to view or edit this user's queue."
+        format.html { redirect_to task_type_path(@task_type) }
+      end
+    end
   end
   
   def get_last_position

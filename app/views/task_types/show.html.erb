@@ -85,7 +85,7 @@
                                 <tr>
                                     <td><%= link_to user.full_name, user_path(user) %></td>
                                     <td><%= user_task_type_option(user) %></td>
-                                    <td><%= link_to 'View Queue', task_type_user_task_queues_path(@task_type.id, user.id), class: "btn btn-primary" %></td>
+                                    <td><%= (link_to 'View Queue', task_type_user_task_queues_path(@task_type.id, user.id), class: "btn btn-primary")%></td>
                                 </tr>
                             </tbody>
                             <%end%>
@@ -105,9 +105,6 @@
         $('.list-group-item-linkable').on('click', function() {
             // same window/tab:
             window.location.href = $(this).data('link');
-
-            // new window/tab:
-            //window.open($(this).data('link'));
         });
 
         $('.list-group-item-linkable a, .list-group-item-linkable button')
