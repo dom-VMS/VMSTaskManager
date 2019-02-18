@@ -1,7 +1,7 @@
 class LoggedLaborsController < ApplicationController
     def index
         @task = Task.find(params[:task_id])
-        @logged_labors = LoggedLabor.where(task_id:  @task.id)
+        @logged_labors = LoggedLabor.where(task_id:  @task.id).order('updated_at DESC')
         @hours_spent = LoggedLabor.hours_spent_on_task(@task)
     end
 
@@ -27,7 +27,7 @@ class LoggedLaborsController < ApplicationController
             flash[:success] = "Labor entry added."
             redirect_to task_path(@task)
         else
-            flash[:error] = "Labor Entry Failed!"
+            flash[:error] = "Labor entry failed."
             render 'new'
         end
         
@@ -44,6 +44,6 @@ class LoggedLaborsController < ApplicationController
 
     private
         def logged_labor_params
-          params.require(:logged_labor).permit(:user_id, :description, :time_spent, :task_id)
+          params.require(:logged_labor).permit(:user_id, :description, :time_spent, :task_id, :updated_at)
         end
 end

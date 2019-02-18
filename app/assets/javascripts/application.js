@@ -20,3 +20,6 @@
 //= require jquery_ujs
 //= require jquery-ui/widgets/sortable
 //= require rails_sortable
+//= require jquery-ui
+//= require jquery-ui/widgets/mouse
+//= require jquery-ui/widgets/datepicker

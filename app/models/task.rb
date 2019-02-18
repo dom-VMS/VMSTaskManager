@@ -36,7 +36,7 @@ class Task < ApplicationRecord
         return assignable_users
     end
 
-    # Retrieve all open tasks
+    # Retrieve all open tasks. (Tasks that have not been marked as complete)
     def self.get_open_tasks
         Task.where(isVerified: nil).
              where.not(percentComplete: 100).
@@ -117,7 +117,7 @@ class Task < ApplicationRecord
         task_joins_task_assignments = Task.joins(:task_assignments).select("tasks.*, task_assignments.assigned_to_id, task_queues.position").
                                                                     where(task_type_id: [user_task_types]).
                                                                     where(isVerified: [nil, false]).
-                                                                    where("task_assignments.assigned_to_id = #{user.id} OR task_assignments.assigned_to_id IS NULL").
+                                                                    where("task_assignments.assigned_to_id = #{user.id}").
                                                                     where.not(percentComplete: 100).
                                                                     where.not(isApproved: [nil, false]).
                                                                     order("ISNULL(task_queues.position), task_queues.position ASC;")
@@ -131,7 +131,7 @@ class Task < ApplicationRecord
 
         user_task_types = tto.pluck(:task_type_id)
         if user_task_types.include? task_type.id
-            task_assigment_relation = TaskAssignment.where(assigned_to_id: [user.id, nil])
+            task_assigment_relation = TaskAssignment.where(assigned_to_id: user.id)
             task_type_relation = Task.joins(:task_assignments).
                                       where(task_type_id: task_type.id).
                                       where(isVerified: [nil, false]).

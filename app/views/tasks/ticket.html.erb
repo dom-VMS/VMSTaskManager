@@ -18,6 +18,8 @@
                 </ul>
             </div>
         <% end %>
+
+        <!-- Form -->
         <% if logged_in?%>
             <%= form.hidden_field 'created_by_id', :value => current_user.id %>
         <% else %>
@@ -51,6 +53,9 @@
             </p>
         </div>
         <hr class="mb-4">
+        <%= form.fields_for :task_assignments do |f| %>
+            <%= f.hidden_field :assigned_to_id, value: nil %>
+        <% end %>
         <%= form.hidden_field 'isApproved', :value => nil %>
         <%= form.submit 'Submit Request', class: 'btn btn-primary btn-lg btn-block'%>
         <% end %>

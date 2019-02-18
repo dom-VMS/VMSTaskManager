@@ -15,10 +15,10 @@
     </div>
   <% end %>
   <div class="mb-3">
-    <!--<p>
-      <%= form.label :date %><br>
-      <%#= form.text_field :date, 'data-behaviour' => 'datepicker' %>    
-    </p>-->
+    <p>
+      <%= form.label :updated_at, 'Date' %><br>
+      <%= form.text_field :updated_at, data:{ provide:'datepicker' }, id: 'datepicker', class: 'form-control datepicker w-50' %>    
+    </p>
     
     <p>
       <%= form.label :time_spent %><br>
@@ -43,5 +43,8 @@
 <% end %>
 
 <script type="text/javascript">
-  $('[data-behaviour~=datepicker]').datepicker();
+  $(function() {
+    $('.datepicker').datepicker({dateFormat: 'yy-mm-dd ', timeFormat: 'hh:mm:ss ', ampm: true});
+    $(".datepicker").datepicker("setDate", new Date());
+  });
 </script>

@@ -22,7 +22,7 @@ class TaskQueuesController < ApplicationController
       redirect_to task_type_user_task_queues_path(task_queue_params[:task_type_id], task_queue_params[:user_id])
     else
       flash[:error] = "Failed to add task to queue."
-      redirect_to task_type_user_task_queues_path(task_queue_params[:task_type_id], task_queue_params[:user_id])
+      redirect_back(fallback_location: task_type_user_task_queues_path(task_queue_params[:task_type_id], task_queue_params[:user_id]))
     end
   end
 
@@ -31,7 +31,7 @@ class TaskQueuesController < ApplicationController
     @queue.destroy
     respond_to do |format|
       flash[:notice] = "Successfully removed task from queue."
-      format.html { redirect_to task_type_user_task_queues_path(@task_type.id, @user.id) }
+      format.html { redirect_back(fallback_location: task_type_user_task_queues_path(@task_type.id, @user.id))}
     end
   end
 
@@ -62,14 +62,13 @@ class TaskQueuesController < ApplicationController
       if !(@task_type_option.isAdmin || current_user.id == @user.id)
         respond_to do |format|
           flash[:error] = "Sorry, but you are not permitted to view or edit this user's queue."
-          format.html { redirect_to task_type_path(@task_type) }
+          format.html { redirect_back(fallback_location: task_type_path(@task_type)) }
         end
-        
       end
     else
       respond_to do |format|
         flash[:error] = "Sorry, but you are not permitted to view or edit this user's queue."
-        format.html { redirect_to task_type_path(@task_type) }
+        format.html { redirect_back(fallback_location: task_type_path(@task_type)) }
       end
     end
   end

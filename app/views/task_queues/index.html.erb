@@ -1,3 +1,7 @@
+<%#= javascript_include_tag :jquery %>
+<%#= javascript_include_tag :jquery-ui %>
+<%#= javascript_include_tag :jquery.ui.touch-punch %>
+
 <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><%= link_to 'Home', home_path %></li>
@@ -51,5 +55,7 @@
         $(function() {
             $('.sortable').railsSortable();
         });
+
+        $('list-group-item').draggable();
     </script>
 <% end %>
