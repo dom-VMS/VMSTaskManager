@@ -7,7 +7,7 @@
     </ol>
 </nav>
 <h1>
-    VMS Task #<%= @task.id %> <%= task_badges(@task)%></h1>
+    Task #<%= @task.id %> <%= task_badges(@task)%></h1>
     <% if @task.isApproved.nil? %>
         <% unless @task_type_option.nil? %>
             <p>

@@ -3,7 +3,7 @@
     <p>
         <%= sanitize comment.body  %>
         <% comment.attachments.each_with_index do |attachment, index|%>
-            <br><a href="<%= attachment.url %>" target="_blank"><%= image_tag(attachment.url, size:'32') if !attachment.blank? %></a>
+            <br><%= link_to fa_icon('paperclip', text: "#{attachment.file.filename}"), attachment.url%>
         <%end%>
     <% unless @task_type_option.nil?%>
         <% if @task_type_option.can_delete %>

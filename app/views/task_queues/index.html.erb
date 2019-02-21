@@ -1,61 +1,67 @@
-<%#= javascript_include_tag :jquery %>
-<%#= javascript_include_tag :jquery-ui %>
-<%#= javascript_include_tag :jquery.ui.touch-punch %>
-
 <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><%= link_to 'Home', home_path %></li>
-            <li class="breadcrumb-item"><%= link_to "Projects", task_types_path%></li>
-            <li class="breadcrumb-item"><%= link_to @task_type.name, task_type_path(@task_type)%></li>
-            <li class="breadcrumb-item active" aria-current="page"><%= sanitize @user.f_name %>'s Queue</li>
-        </ol>
-    </nav>
+    <ol class="breadcrumb" style="margin-bottom: 0px;">
+        <li class="breadcrumb-item"><%= link_to 'Home', home_path %></li>
+        <li class="breadcrumb-item"><%= link_to "Projects", task_types_path%></li>
+        <li class="breadcrumb-item"><%= link_to @task_type.name, task_type_path(@task_type)%></li>
+        <li class="breadcrumb-item active" aria-current="page"><%= sanitize @user.f_name %>'s Queue</li>
+    </ol>
+</nav>
 <div class="container-fluid">
-    <h1><%=@user.full_name%>'s Queue</h1>
-    <h2><strong>Project:</strong> <%= @task_type.name%></h2>
-    <i>Drag and drop tasks to re-order their position. Refresh the page when you are done.</i>
-    <br><br>
-</div>
-<div class='container-fluid' id='user-queue'>
-    <div class="list-group col-sm-12 col-md-12 col-lg-10 col-xl-10 sortable ">
-    <% unless @queue.empty?%>
-        <% (@queue).each_with_sortable_id do |queue, sortable_id|%>
-            <% task = Task.find_by_id(queue.task_id)%>
-            <li class="list-group-item d-flex justify-content-between"  id="<%= sortable_id %>">
-                <div>
-                    <span class="badge badge-primary"><%= queue.position + 1%></span>
+    <div class="row content">
+        <div class="col-sm-1 bg-light"></div>
+        <div class="container-fluid col-sm-10">
+            <div class="container-fluid">
+                <h1><%=@user.full_name%>'s Queue</h1>
+                <h2><strong>Project:</strong> <%= @task_type.name%></h2>
+                <i>Drag and drop tasks to re-order their position. Refresh the page when you are done.</i>
+                <br><br>
+            </div>
+            <div class='container-fluid' id='user-queue'>
+                <div class="list-group col-sm-12 col-md-12 col-lg-10 col-xl-10 sortable ">
+                <% unless @queue.empty?%>
+                    <% (@queue).each_with_sortable_id do |queue, sortable_id|%>
+                        <% task = Task.find_by_id(queue.task_id)%>
+                        <li class="list-group-item d-flex justify-content-between"  id="<%= sortable_id %>">
+                            <div>
+                                <span class="badge badge-primary"><%= queue.position + 1%></span>
+                            </div>
+                            <div>
+                                <%= task.title.nil? ? (link_to task.description.truncate_words(10), task_path(task)) : (link_to task.title.truncate_words(10), task_path(task)) %>  
+                            </div>
+                            <div>
+                                <%= (link_to fa_icon('trash'), task_type_user_task_queue_path(@task_type, @user, queue),
+                                                                    method: :delete,
+                                                                    data: { confirm: "Are you sure you want to remove this task from the queue?" },
+                                                                    remote: true)  if @task_type_option.isAdmin?%><br> 
+                            </div>
+                        </li> 
+                    <% end %>
+                <% end %>
                 </div>
-                <div>
-                    <%= task.title.nil? ? (link_to task.description.truncate_words(10), task_path(task)) : (link_to task.title.truncate_words(10), task_path(task)) %>  
+                <% if @task_type_option.isAdmin?%>
+                <div class="list-group col-sm-12 col-md-12 col-lg-10 col-xl-10 ">
+                    <li class="list-group-item list-group-item-action list-group-item-light text-center">
+                        <button type="button" class="btn btn-light" data-toggle="modal" data-target="#addToQueueModal">
+                            <%= fa_icon('plus-circle', text: 'Add task to queue')%>
+                        </button>  
+                    </li>
+                    <!--Modal -->
+                    <%= render 'task_queues/add_to_queue_modal'%>
                 </div>
-                <div>
-                    <%= (link_to fa_icon('trash'), task_type_user_task_queue_path(@task_type, @user, queue),
-                                                        method: :delete,
-                                                        data: { confirm: "Are you sure you want to remove this task from the queue?" },
-                                                        remote: true)  if @task_type_option.isAdmin?%><br> 
-                </div>
-            </li> 
-        <% end %>
-    <% end %>
+                <% end %>
+            </div>
+        </div>
+        <div class="col-sm-1 bg-light"></div>
     </div>
-    <% if @task_type_option.isAdmin?%>
-    <div class="list-group col-sm-12 col-md-12 col-lg-10 col-xl-10 ">
-        <li class="list-group-item list-group-item-action list-group-item-light text-center">
-            <button type="button" class="btn btn-light" data-toggle="modal" data-target="#addToQueueModal">
-                <%= fa_icon('plus-circle', text: 'Add task to queue')%>
-            </button>  
-        </li>
-        <!--Modal -->
-        <%= render 'task_queues/add_to_queue_modal'%>
-    </div>
-    <% end %>
 </div>
 <% if @task_type_option.isAdmin?%>
     <script>
         $(function() {
             $('.sortable').railsSortable();
         });
-
-        $('list-group-item').draggable();
+        $(document).on('dragstart', function() {
+            detectTap = true; //detects all touch events
+            alert("A Touch!!");
+        });
     </script>
 <% end %>

@@ -23,8 +23,12 @@
     <div class="container-fluid"><br>
         <nav class="htab text-center">
             <div class="nav nav-tabs nav-justified" id="nav-tab" role="tablist" >
+            <%  unless @tasks_assigned_to_user.nil? %>
                 <a class="nav-item nav-link active" id="nav-assigned-to-you-tab" data-toggle="tab" href="#nav-assigned-to-you" role="tab" aria-controls="nav-assigned-to-you" aria-selected="true">Assigned to You</a>
                 <a class="nav-item nav-link" id="nav-all-tasks-tab" data-toggle="tab" href="#nav-all-tasks" role="tab" aria-controls="nav-all-tasks" aria-selected="false" >All Tasks</a>
+            <% else %>
+                <a class="nav-item nav-link active" id="nav-all-tasks-tab" data-toggle="tab" href="#nav-all-tasks" role="tab" aria-controls="nav-all-tasks" aria-selected="true" >All Tasks</a>
+            <% end%>
                 <a class="nav-item nav-link" id="nav-recently-complete-tab" data-toggle="tab" href="#nav-recently-complete" role="tab" aria-controls="nav-recently-complete" aria-selected="false">Recently Complete</a>
                 <a class="nav-item nav-link" id="nav-users-tab" data-toggle="tab" href="#nav-users" role="tab" aria-controls="nav-users" aria-selected="false">Users</a>
             </div>
@@ -33,20 +37,24 @@
             <div class="col-12 ">
                 <div class="tab-content" id="nav-tabContent">
                     <!-- Tasks Assigned to User -->
+                    <% unless @tasks_assigned_to_user.nil? %>
                     <div class="tab-pane fade show active" id="nav-assigned-to-you" role="tabpanel" aria-labelledby="nav-assigned-to-you-tab">
-                        <% unless @tasks_assigned_to_user.nil? %>
-                            <% @tasks_assigned_to_user.each do |task| %>
-                                <div class="list-group list-group-flush">
-                                    <div class="list-group-item py-2 d-flex justify-content-between align-items-center list-group-item-linkable" data-link="<%= task_path(task)%>">
-                                        <%= task.title.nil? ? (link_to task.description.truncate_words(5), task_path(task)) : (link_to task.title.truncate_words(5), task_path(task)) %>
-                                        <%= task_priority(task) %>
-                                    </div>
-                                </div> 
-                            <%end%>
+                        <% @tasks_assigned_to_user.each do |task| %>
+                            <div class="list-group list-group-flush">
+                                <div class="list-group-item py-2 d-flex justify-content-between align-items-center list-group-item-linkable" data-link="<%= task_path(task)%>">
+                                    <%= task.title.nil? ? (link_to task.description.truncate_words(5), task_path(task)) : (link_to task.title.truncate_words(5), task_path(task)) %>
+                                    <%= task_priority(task) %>
+                                </div>
+                            </div> 
                         <%end%>
                     </div>
+                    <%end%>
                     <!-- All Tasks Available -->
+                    <% if @tasks_assigned_to_user.nil? %>
+                    <div class="tab-pane fade show active" id="nav-all-tasks" role="tabpanel" aria-labelledby="nav-all-tasks-tab">
+                    <% else %>
                     <div class="tab-pane fade" id="nav-all-tasks" role="tabpanel" aria-labelledby="nav-all-tasks-tab">
+                    <%end%>
                         <% @tasks.each do |task| %>
                             <div class="list-group list-group-flush">
                                 <div class="list-group-item py-2 d-flex justify-content-between align-items-center list-group-item-linkable" data-link="<%= task_path(task)%>">
