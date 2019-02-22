@@ -21,7 +21,9 @@ class User < ApplicationRecord
                 format: {with: VALID_EMAIL_REGEX}
 
     validates_presence_of :employee_number
-    validates :password, presence: true, length: { minimum: 3 }
+    validates :password, presence: true, length: { :within => 3..40 }, on: :create 
+    validates :password, allow_blank: true, length: { :within => 3..40 }, on: :update 
+
 
     def full_name
         name = "#{f_name} #{l_name}"

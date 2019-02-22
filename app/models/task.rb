@@ -120,7 +120,7 @@ class Task < ApplicationRecord
                                                                     where("task_assignments.assigned_to_id = #{user.id}").
                                                                     where.not(percentComplete: 100).
                                                                     where.not(isApproved: [nil, false]).
-                                                                    order("ISNULL(task_queues.position), task_queues.position ASC;")
+                                                                    order(Arel.sql("ISNULL(task_queues.position), task_queues.position ASC;"))
         return task_joins_task_assignments.merge(task_assignment_joins_task_queue)
     end
 
