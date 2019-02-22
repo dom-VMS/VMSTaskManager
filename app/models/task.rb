@@ -60,7 +60,7 @@ class Task < ApplicationRecord
         end
     end
 
-    # Retrieve all open tasks that the current User is permitted to approve.
+    # Retrieve all open tasks that a User is permitted to verify.
     def self.get_all_tasks_user_can_verify(user)
         tto = user.task_type_options
         if tto.empty?
