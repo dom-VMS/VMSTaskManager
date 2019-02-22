@@ -1,4 +1,3 @@
-require 'date'
 
 class TasksController < ApplicationController
   before_action :all_tasks, only: [:index, :update]
@@ -186,12 +185,6 @@ class TasksController < ApplicationController
       @task.attachments = attachments
     end
 
-<<<<<<< HEAD
-      # Gets the current user's Task_Type_Options
-      def get_current_user_task_type_options
-        @task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task.task_type_id) unless !current_user.present?
-      end
-=======
     # Removes a file, from the array of files, at the index the user clicks.
     def remove_attachment_at_index(index)
       attachments = @task.attachments # copy the array
@@ -213,7 +206,6 @@ class TasksController < ApplicationController
       comment = task.comments.create(commenter: decline_feedback_params[:commenter], body: decline_feedback_params[:body], attachments: attachment_params[:attachments])
       comment.save!
     end
->>>>>>> master
 
     # Set task_assignment for a given task. If an assignment already exists, update. Else, create.
     def set_task_assignments
@@ -234,19 +226,6 @@ class TasksController < ApplicationController
       end
     end
 
-<<<<<<< HEAD
-      # I don't even know tbh
-      def set_task_assignments
-        if @task_assignment.exists? 
-            puts "THIS IS @task_assignment: #{@task_assignment.to_json}"
-            @task_assignment.each do |task_assignment|
-                puts "NOW WE ARE INSIDE THE LOOP: #{task_assignment.to_json}"
-                puts assignment_params
-                task_assignment.update(assignment_params) 
-            end
-        else
-            TaskAssignment.create(:task_id => @task.id, :assigned_to_id => assignment_params[:assigned_to_id])
-=======
     # Used in Task.create. It is for when a Ticket is made & the person making the ticket is not signed in.
     def find_created_by_user
       unless logged_in?
@@ -255,7 +234,6 @@ class TasksController < ApplicationController
         else 
             flash[:error] = "The employee number you have entered does not exsist."
             render 'ticket'
->>>>>>> master
         end
       end
     end
