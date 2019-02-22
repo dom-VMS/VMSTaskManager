@@ -1,8 +1,8 @@
 <% if logged_in? %>
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/home/index">Home</a></li>
-            <li class="breadcrumb-item"><a href="/task_types">Projects</a></li>
+            <li class="breadcrumb-item"><%= link_to 'Home', home_path %></li>
+            <li class="breadcrumb-item"><%= link_to "Projects", task_types_path%></li>
             <li class="breadcrumb-item active" aria-current="page"><%= sanitize @task_type.name %></li>
         </ol>
     </nav>
@@ -14,99 +14,110 @@
         </p>
         <% unless @task_type_option.nil? %>
             <% if @task_type_option.can_create %>
-                <%= link_to fa_icon('plus-circle', text:'New Task'), new_task_path(:task_type_id => params[:id]), class: "btn btn-primary" %><br><br>
+                <%= link_to fa_icon('plus-circle', text:'New Task'), new_task_path(:task_type_id => params[:id]), class: "btn btn-primary" %>
+                <%= (link_to fa_icon('edit', text: 'Edit'), edit_task_type_path(@task_type), class: "btn btn-secondary") if @task_type_option.isAdmin %><br><br>
+
             <% end %>
         <% end %>
     </div>
-    <div class="container-fluid">
-        <div class="card-columns">
-            <!-- Tasks Assigned to User -->
-            <% unless @tasks_assigned_to_user.nil? %>
-            <div class="card">
-                <div class="card-header">
-                    <a data-toggle="collapse" href="#collapse-assigned-to-you" aria-expanded="true" aria-controls="collapse-assigned-to-you" id="heading-assigned-to-you" class="d-block">
-                        <i class="fa fa-chevron-down pull-right"></i>
-                        <strong>Assigned to you:</strong>
-                    </a>
-                </div>
-                <div id="collapse-assigned-to-you" class="collapse show" aria-labelledby="heading-assigned-to-you">
-                    <div class="card-body-custom">
-                    <% @tasks_assigned_to_user.each do |task| %>
-                        <div class="list-group list-group-flush">
-                            <div class="list-group-item py-2 d-flex justify-content-between align-items-center list-group-item-linkable" data-link="<%= task_path(task)%>">
-                                <%= task.title.empty? ? (link_to task.description.truncate_words(5), task_path(task)) : (link_to task.title.truncate_words(5), task_path(task)) %>
-                                <%= task_priority(task) %>
-                            </div>
-                        </div> 
-                    <%end%>
-                    </div>
-                </div>
+    <div class="container-fluid"><br>
+        <nav class="htab text-center">
+            <div class="nav nav-tabs nav-justified" id="nav-tab" role="tablist" >
+            <%  unless @tasks_assigned_to_user.nil? %>
+                <a class="nav-item nav-link active" id="nav-assigned-to-you-tab" data-toggle="tab" href="#nav-assigned-to-you" role="tab" aria-controls="nav-assigned-to-you" aria-selected="true">Assigned to You</a>
+                <a class="nav-item nav-link" id="nav-all-tasks-tab" data-toggle="tab" href="#nav-all-tasks" role="tab" aria-controls="nav-all-tasks" aria-selected="false" >All Tasks</a>
+            <% else %>
+                <a class="nav-item nav-link active" id="nav-all-tasks-tab" data-toggle="tab" href="#nav-all-tasks" role="tab" aria-controls="nav-all-tasks" aria-selected="true" >All Tasks</a>
+            <% end%>
+                <a class="nav-item nav-link" id="nav-recently-complete-tab" data-toggle="tab" href="#nav-recently-complete" role="tab" aria-controls="nav-recently-complete" aria-selected="false">Recently Complete</a>
+                <a class="nav-item nav-link" id="nav-users-tab" data-toggle="tab" href="#nav-users" role="tab" aria-controls="nav-users" aria-selected="false">Users</a>
             </div>
-            <%end%>
-            <!-- All Tasks Available -->
-            <div class="card">
-                <div class="card-header">
-                    <a data-toggle="collapse" href="#collapse-all-tasks" aria-expanded="true" aria-controls="collaps-eall-tasks" id="heading-all-tasks" class="d-block">
-                        <i class="fa fa-chevron-down pull-right"></i>
-                        <strong>All Open Tasks</strong>
-                    </a>
-                </div>
-                <div id="collapse-all-tasks" class="collapse show" aria-labelledby="heading-all-tasks">
-                    <div class="card-body-custom">
-                    <% @tasks.each do |task| %>
-                        <div class="list-group list-group-flush">
-                            <div class="list-group-item py-2 d-flex justify-content-between align-items-center list-group-item-linkable" data-link="<%= task_path(task)%>">
-                                <%= task.title.empty? ? (link_to task.description.truncate_words(5), task_path(task)) : (link_to task.title.truncate_words(5), task_path(task)) %>
-                                <%= task_priority(task) %>
-                            </div>
-                        </div> 
-                    <%end%>
-                    </div>
-                </div>
-            </div>
-            <!-- Recently Completed Tasks -->
-            <% unless (@task_type.tasks.where('status = 3')).empty? %>
-            <div class="card">
-                <div class="card-header">
-                    <a data-toggle="collapse" href="#collapse-recently-complete" aria-expanded="true" aria-controls="collapse-recently-complete" id="heading-recently-complete" class="d-block">
-                        <i class="fa fa-chevron-down pull-right"></i>
-                        <strong>Recently Completed</strong>
-                    </a>
-                </div>
-                <div id="collapse-recently-complete" class="collapse show" aria-labelledby="heading-recently-complete">
-                    <div class="card-body-custom">
-                        <% (@tasks_recently_complete).each do |task| %>
-                        <div class="list-group list-group-flush">
-                            <div class="list-group-item py-2 d-flex justify-content-between align-items-center list-group-item-linkable" data-link="<%= task_path(task)%>">
-                                <%= task.title.empty? ? (link_to task.description.truncate_words(5), task_path(task)) : (link_to task.title.truncate_words(5), task_path(task)) %>
-                                <%= task_priority(task) %>
-                            </div>
-                        </div> 
+        </nav><br>
+        <div class="row">
+            <div class="col-12 ">
+                <div class="tab-content" id="nav-tabContent">
+                    <!-- Tasks Assigned to User -->
+                    <% unless @tasks_assigned_to_user.nil? %>
+                    <div class="tab-pane fade show active" id="nav-assigned-to-you" role="tabpanel" aria-labelledby="nav-assigned-to-you-tab">
+                        <% @tasks_assigned_to_user.each do |task| %>
+                            <div class="list-group list-group-flush">
+                                <div class="list-group-item py-2 d-flex justify-content-between align-items-center list-group-item-linkable" data-link="<%= task_path(task)%>">
+                                    <%= task.title.nil? ? (link_to task.description.truncate_words(5), task_path(task)) : (link_to task.title.truncate_words(5), task_path(task)) %>
+                                    <%= task_priority(task) %>
+                                </div>
+                            </div> 
                         <%end%>
                     </div>
+                    <%end%>
+                    <!-- All Tasks Available -->
+                    <% if @tasks_assigned_to_user.nil? %>
+                    <div class="tab-pane fade show active" id="nav-all-tasks" role="tabpanel" aria-labelledby="nav-all-tasks-tab">
+                    <% else %>
+                    <div class="tab-pane fade" id="nav-all-tasks" role="tabpanel" aria-labelledby="nav-all-tasks-tab">
+                    <%end%>
+                        <% @tasks.each do |task| %>
+                            <div class="list-group list-group-flush">
+                                <div class="list-group-item py-2 d-flex justify-content-between align-items-center list-group-item-linkable" data-link="<%= task_path(task)%>">
+                                    <%= task.title.nil? ? (link_to task.description.truncate_words(5), task_path(task)) : (link_to task.title.truncate_words(5), task_path(task)) %>
+                                    <%= task_priority(task) %>
+                                </div>
+                            </div> 
+                        <%end%>
+                    </div>
+                    <!-- Recently Completed Tasks -->
+                    <div class="tab-pane fade" id="nav-recently-complete" role="tabpanel" aria-labelledby="nav-recently-complete-tab">
+                        <% unless (@task_type.tasks.where(status: 3)).empty? %>
+                            <% (@tasks_recently_complete).each do |task| %>
+                                <div class="list-group list-group-flush">
+                                    <div class="list-group-item py-2 d-flex justify-content-between align-items-center list-group-item-linkable" data-link="<%= task_path(task)%>">
+                                        <%= task.title.nil? ? (link_to task.description.truncate_words(5), task_path(task)) : (link_to task.title.truncate_words(5), task_path(task)) %>
+                                        <%= task_priority(task) %>
+                                    </div>
+                                </div> 
+                            <%end%>
+                        <%end%>
+                    </div>
+                    <!-- Users -->
+                    <div class="tab-pane fade" id="nav-users" role="tabpanel" aria-labelledby="nav-users-tab">
+                        <table class="table text-center">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Role</th>
+                                    <th scope="col">Queue</th>
+                                </tr>
+                            <thead>
+                            <% unless @users.empty? %>
+                            <% (@users).each do |user| %>   
+                            <tbody>
+                                <tr>
+                                    <td><%= link_to user.full_name, user_path(user) %></td>
+                                    <td><%= user_task_type_option(user) %></td>
+                                    <td><%= (link_to 'View Queue', task_type_user_task_queues_path(@task_type.id, user.id), class: "btn btn-primary")%></td>
+                                </tr>
+                            </tbody>
+                            <%end%>
+                            <%end%>  
+                        </table> 
+                    </div>
                 </div>
             </div>
-            <%end%>
         </div>
-    </div>
     </div>
 <% else %>
      <%= render 'errors/not_signed_in' %>
 <% end %>
 
 <script>
-$(document).ready(function() {
-    $('.list-group-item-linkable').on('click', function() {
-        // same window/tab:
-        window.location.href = $(this).data('link');
+    $(document).ready(function() {
+        $('.list-group-item-linkable').on('click', function() {
+            // same window/tab:
+            window.location.href = $(this).data('link');
+        });
 
-        // new window/tab:
-        //window.open($(this).data('link'));
+        $('.list-group-item-linkable a, .list-group-item-linkable button')
+        .on('click', function(e) {
+            e.stopPropagation();
+        });
     });
-
-    $('.list-group-item-linkable a, .list-group-item-linkable button')
-    .on('click', function(e) {
-        e.stopPropagation();
-    });
-});
 </script>

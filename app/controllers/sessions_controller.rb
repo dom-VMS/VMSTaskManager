@@ -7,7 +7,7 @@ class SessionsController < ApplicationController
         if user && user.authenticate(params[:session][:password])
             #Log the user in and redirect to home.
             log_in user
-            redirect_to home_index_path
+            redirect_to home_path
         else
             #Create an error message
             flash[:danger] = 'Invalid employee #/password combination'

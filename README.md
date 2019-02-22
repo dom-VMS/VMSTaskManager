@@ -1,6 +1,6 @@
-# VMS Task Management
+# VMS Task Manager
 
-An web application for Varland Metal Service employees to Create, View, and Updates tasks.
+A web application designed for Varland Metal Service employees to file, view, and updates tasks.
 
 Technical Details
 
@@ -9,5 +9,10 @@ Technical Details
 * MySQL version - 8.0.12 Homebrew
 
 * Gems
-  - Devise
   - Carrierwave
+  - Bootstrap
+  - JQuery
+  - Fontawesome-rails
+  - Bcrypt
+
+

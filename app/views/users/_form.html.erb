@@ -35,6 +35,11 @@
             <%= form.text_field :email, class: 'form-control' %>
         </p>
 
+        <p> 
+            <%= form.label :password, 'Password'%>
+            <%= form.password_field :password, class: 'form-control', placeholder: "Password"  %>
+        </p>
+
         <% if @user.persisted?%>
             <strong>Roles/Permissions</strong>
                 <% if @task_type_option.nil? || @user_group.nil?%>

@@ -1,0 +1,28 @@
+<div class="modal fade" id="addToQueueModal" tabindex="-1" role="dialog" aria-labelledby="addToQueueModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addToQueueModalLabel">Add to Queue</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <%= form_with(model: @task_queue, url: {action: "create"}) do |form| %>
+            <div class="modal-body">
+                <h4>Select a task to add:</h4>
+                <%= form.label :task_id, 'Task'%><br>
+                <%= form.select(:task_id, options_from_collection_for_select(@tasks, :id, :title), include_blank: "Select Task", class: 'form-control')%>
+                
+                <%= form.hidden_field 'user_id', :value => @user.id %>
+                <%= form.hidden_field 'task_type_id', :value => @task_type.id %>
+            </div>   
+            <div class="modal-footer">
+                <%= button_tag type: 'submit', class: "btn btn-success", id: "register-button" do %>
+                    <%= fa_icon('plus-circle', text: 'Add Task')%>
+                <% end %>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            </div>
+            <% end %>
+        </div>
+    </div>   
+</div>

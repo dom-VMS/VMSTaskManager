@@ -1,12 +1,14 @@
 <% if logged_in? %>
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="/home/index">Home</a></li>
+        <li class="breadcrumb-item"><%= link_to 'Home', home_path %></li>
         <li class="breadcrumb-item active" aria-current="page">Projects</li>
     </ol>
 </nav>
-<h1 class="text-center">Projects</h1>
 <div class="container-fluid">
+    <%= (link_to fa_icon('plus-circle', text: 'Add Project'), new_task_type_path, class: 'btn btn-primary') if isAdmin? == true %>
+    <h1 class="text-center">Projects</h1><br><br>
+
     <div class="row">
     <% @task_type.each do |task_type|%>
         <div class="col-sm-4">
@@ -16,7 +18,7 @@
                 </div>
                 <div class="card-body text-center">
                     <p class="card-text"><%= task_type.description.truncate_words(10) %></p>
-                    <%= link_to "View Tasks", task_type_path(task_type), class: "btn btn-primary text-center"%>
+                    <%= link_to "View Project", task_type_path(task_type), class: "btn btn-primary text-center"%>
                 </div>
             </div>
         </div>

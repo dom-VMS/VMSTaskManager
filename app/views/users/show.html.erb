@@ -6,7 +6,7 @@
             <% if isAdmin?%>
                 <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="/home/index">Home</a></li>
+                            <li class="breadcrumb-item"><%= link_to 'Home', home_path %></li>
                             <li class="breadcrumb-item"><a href="/users">Users</a></li>
                             <li class="breadcrumb-item"><a><%=@user.full_name%></a></li>
                         </ol>
@@ -14,7 +14,7 @@
             <% else %>
                 <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="/home/index">Home</a></li>
+                            <li class="breadcrumb-item"><%= link_to 'Home', home_path %></li>
                             <li class="breadcrumb-item"><a><%=@user.full_name%></a></li>
                         </ol>
                 </nav>
@@ -22,6 +22,7 @@
             <nav>
                 <div class="nav nav-tabs" id="nav-tab" role="tablist">
                     <a class="nav-item nav-link active" id="nav-user-tab" data-toggle="tab" href="#nav-user" role="tab" aria-controls="nav-user" aria-selected="true">User</a>
+                    <a class="nav-item nav-link" id="nav-tasks-tab" data-toggle="tab" href="#nav-tasks" role="tab" aria-controls="nav-tasks" aria-selected="true">Tasks</a>
                     <a class="nav-item nav-link" id="nav-roles-tab" data-toggle="tab" href="#nav-roles" role="tab" aria-controls="nav-roles" aria-selected="false">Roles</a>
                     <a class="nav-item nav-link" id="nav-edit-tab" data-toggle="tab" href="#nav-contact" role="tab" aria-controls="nav-contact" aria-selected="false">Activity</a>
                 </div>
@@ -41,7 +42,13 @@
                         <strong>Email:</strong>
                         <%= @user.email %>
                     </p>
-                    <%= link_to 'Edit', edit_user_path(@user)%>
+                    <%= link_to fa_icon('edit', text: 'Edit'), edit_user_path(@user)%>
+                </div>
+                <div class="tab-pane fade" id="nav-tasks" role="tabpanel" aria-labelledby="nav-tasks-tab">
+                    <div class="container-fluid">
+                    <br><h2>Assigned to <%=@user.f_name%>:</h2><br>
+                        <%= render 'tasks/assigned_to_user'%>
+                    </div><br>
                 </div>
                 <div class="tab-pane fade" id="nav-roles" role="tabpanel" aria-labelledby="nav-roles-tab">
                     <% if @task_type_option.nil? || @user_group.nil?%>
@@ -77,7 +84,7 @@
                                 <th>Date</th>
                             </tr>
                         </thead>
-                        <% @user.logged_labors.each do |activity|%>
+                        <% (@user.logged_labors.order('created_at DESC')).each do |activity|%>
                         <tbody>
                             <tr>
                                 <td><%= link_to "#{Task.find_by_id(activity.task_id).title}", task_path(activity.task_id) %></td>
@@ -98,3 +105,23 @@
 <% else %>
      <%= render 'errors/not_signed_in' %>
 <% end %>
+<script>
+    $(document).ready(function() {
+    $('.list-group-item-linkable').on('click', function() {
+        // same window/tab:
+        window.location.href = $(this).data('link');
+
+        // new window/tab:
+        //window.open($(this).data('link'));
+    });
+
+    $('.list-group-item-linkable a, .list-group-item-linkable button')
+    .on('click', function(e) {
+        e.stopPropagation();
+    });
+
+    $(function() {
+  $('.sortable').railsSortable();
+});
+});
+</script>
