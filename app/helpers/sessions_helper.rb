@@ -25,34 +25,16 @@ module SessionsHelper
 
     # Checks if the user is an Admin in any department
     def isAdmin?
-        tto = current_user.task_type_options
-        admin = tto.pluck(:isAdmin)
-        if admin.include?(true)
-            return true
-        else
-            return false
-        end
+        return current_user.task_type_options.pluck(:isAdmin).any? == true
     end
 
     # Checks if the current user can verify task completion for any department.
     def canVerify?
-        tto = current_user.task_type_options
-        verify = tto.pluck(:can_verify)
-        if verify.include?(true)
-            return true
-        else
-            return false
-        end
+        return current_user.task_type_options.pluck(:can_verify).any? == true
     end
 
     # Checks if the current user can approve tickets for any department.
     def canApprove?
-        tto = current_user.task_type_options
-        approve = tto.pluck(:can_approve)
-        if approve.include?(true)
-            return true
-        else
-            return false
-        end
+        return current_user.task_type_options.pluck(:can_approve).any? == true
     end
 end

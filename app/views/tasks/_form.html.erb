@@ -46,11 +46,22 @@
     </div>
     <div class="mb-3">
         <p>
-            <%= form.label :assigned_to_id, 'Assignee'%><br>
-            <% if @assignee.present?%>
-                <%= form.select(:assigned_to_id, options_from_collection_for_select(@assignable_users, :id, :full_name, @assignee.id),  include_blank: "All", class: 'form-control') %>
-            <% else %>
-                <%= form.select(:assigned_to_id, options_from_collection_for_select(@assignable_users, :id, :full_name), include_blank: "All", class: 'form-control') %>
+            <strong>Assignee(s): </strong><br>
+            <%= form.fields_for :task_assignments do |f| %>
+                <%unless @assignee.nil?%>
+                    <% if @assignee.empty? %>
+                        <%= f.select(:assigned_to_id, options_from_collection_for_select(@assignable_users, :id, :full_name), include_blank: "Select User", class: 'form-control') %>
+                    <% else %>
+                        <%= f.select(:assigned_to_id, options_from_collection_for_select(@assignable_users, :id, :full_name, f.object.assigned_to_id), include_blank: "Select User", class: 'form-control', multiple: true) %>
+                    <% end %>
+                    <%= f.hidden_field :assigned_by_id, value: current_user.id %>
+                    <%= (link_to fa_icon('trash-alt 1.5x'), task_task_assignment_path(@task, f.object.id),
+                                                            method: :delete,
+                                                            data: { confirm: "Are you sure you want to remove user from task?" },
+                                                            remote: true) unless f.object == @assignee.first %><br>  
+                <% else %>
+                     <%= f.select(:assigned_to_id, options_from_collection_for_select(@assignable_users, :id, :full_name), include_blank: "Select User", class: 'form-control') %>
+                <%end%> 
             <% end %>
         </p>
     </div>
@@ -72,7 +83,7 @@
         <%end%>
     </div>
 
-    <%= form.hidden_field 'task_type_id', :value => params[:task_type_id] %>
+    <%= form.hidden_field 'task_type_id', :value => @task_type.id %>
     <%= form.hidden_field 'task_id', :value => params[:id] %>
     <%= form.hidden_field 'isApproved', :value => true %>
     <%= form.hidden_field 'created_by_id', :value => current_user.id %>

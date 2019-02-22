@@ -17,10 +17,7 @@ class TaskAssignment < ApplicationRecord
   end
 
   def self.get_assigned_user(task)
-    (task.task_assignments).each do |ta|
-      ta.assigned_to
-    end
-    
+    TaskAssignment.where(task_id: task.id) 
   end
 
   def self.get_assigner(task)

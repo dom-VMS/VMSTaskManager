@@ -16,11 +16,15 @@
   <% end %>
   <div class="mb-3">
     <p>
+      <%= form.label :updated_at, 'Date' %><br>
+      <%= form.text_field :updated_at, data:{ provide:'datepicker' }, id: 'datepicker', class: 'form-control datepicker w-50' %>    
+    </p>
+    
+    <p>
       <%= form.label :time_spent %><br>
       <%= form.text_field :time_spent, class: 'form-control', placeholder: "Hours" %>
     </p>
-  </div>
-  <div class="mb-3">
+  
     <p>
       <%= form.label :description %><br>
       <%= form.text_area :description, class: 'form-control',  placeholder: "Briefly explain what you did during this time." %>
@@ -37,3 +41,10 @@
   </p>
   <p>
 <% end %>
+
+<script type="text/javascript">
+  $(function() {
+    $('.datepicker').datepicker({dateFormat: 'yy-mm-dd ', timeFormat: 'hh:mm:ss ', ampm: true});
+    $(".datepicker").datepicker("setDate", new Date());
+  });
+</script>

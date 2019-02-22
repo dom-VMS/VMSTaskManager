@@ -1,11 +1,10 @@
-<% if logged_in? && isAdmin? %> 
 <div class="container-fluid">
     <div class="row content">
         <div class="col-sm-1 bg-light"></div>
         <div class="col-sm-10">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/home/index">Home</a></li>
+                    <li class="breadcrumb-item"><%= link_to 'Home', home_path %></li>
                     <li class="breadcrumb-item"><a>Users</a></li>
                 </ol>
             </nav>
@@ -35,6 +34,3 @@
         <div class="col-sm-1 bg-light"></div>
     </div>
 </div>
-<% else %>
-     <%= render 'errors/not_signed_in' %>
-<% end %>

@@ -2,19 +2,15 @@
 
 <% if logged_in? %>
  <nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-dark">
-    <a class="navbar-brand" href="/home/index">
+    <a class="navbar-brand" href="/home">
       <%= image_tag "logo.png", alt: "Varland Metal Service" %> 
-    </a>  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    </a>  
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
-      <li class="nav-item">
-        <%= link_to fa_icon('tasks 2x', text:'Tasks'),
-                          tasks_path,
-                          class: "nav-link"%>
-      </li>
       <li class="nav-item">
         <%= link_to fa_icon('building 2x', text:'Projects'),
                           task_types_path,
@@ -30,15 +26,12 @@
         <a class="nav-link dropdown-toggle" href="/admin" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           <%= fa_icon('user-cog 2x', text:"Admin") %>
         </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+        <div class="dropdown-menu">
           <%= link_to fa_icon('users 2x', text:"Users"),
                              users_path, 
                              class:  "dropdown-item"%>
           <%= link_to fa_icon('user-tie 2x',text:'Roles'),
                              task_type_options_path, 
-                             class:  "dropdown-item" %>
-          <%= link_to fa_icon('tags 2x', text:'Groups'),
-                             admin_task_types_path, 
                              class:  "dropdown-item" %>
           <%= link_to fa_icon('eye 2x', text:'Activities'),
                              activities_path, 

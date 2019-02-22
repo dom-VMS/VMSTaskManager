@@ -2,8 +2,9 @@ class TaskType < ApplicationRecord
     include PublicActivity::Model
     tracked
 
-    has_many :tasks
-    has_many :task_type_options
+    has_many :tasks, dependent: :destroy
+    has_many :task_type_options, dependent: :destroy
+    has_many :task_queues, dependent: :destroy
 
     validates :name, presence: true
 
@@ -16,5 +17,13 @@ class TaskType < ApplicationRecord
 
         user_task_types = tto.pluck(:task_type_id)
         return user_task_types
+    end
+
+    def self.get_users(task_type)
+        task_type_options = task_type.task_type_options
+        tto_id = task_type_options.map(&:id)
+        ug = UserGroup.where(task_type_option_id: [tto_id])
+        user_ids = ug.map(&:user_id)
+        return User.where(id: [user_ids])
     end
 end

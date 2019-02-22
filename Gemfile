@@ -7,7 +7,7 @@ end
 
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 5.1.6'
+gem 'rails', '~> 5.2.2'
 # Use mysql as the database for Active Record
 gem 'mysql2', '>= 0.3.18', '< 0.6.0'
 # Use Puma as the app server
@@ -26,7 +26,7 @@ gem 'bcrypt', '>= 3.1.12'
 # Use Carrierwave for file attachments
 gem 'carrierwave', '~> 1.0'
 # Using Bootstrap for CSS/Front-end
-gem 'bootstrap', '~> 4.1.3'
+gem 'bootstrap', '~> 4.3.1' #v4.1.3 (2/21/2019)
 # Bootstrap dependency
 gem 'jquery-rails'
 # Used for icons
@@ -35,6 +35,12 @@ gem "font-awesome-rails"
 gem 'public_activity'
 # Used for AJAX support (respond_to:)
 gem 'responders'
+# Used in Task Queue
+gem 'jquery-ui-rails'
+# Used for Task Queue
+gem 'rails_sortable'
+# Needed update, had issues
+#gem 'ffi', '~> 1.10'
 
 # Use CoffeeScript for .coffee assets and views
 gem 'coffee-rails', '~> 4.2'

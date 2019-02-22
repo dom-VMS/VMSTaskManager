@@ -9,6 +9,8 @@ module TasksHelper
             return ('<span class="badge badge-warning">High</span>').html_safe
         elsif task.priority == 4 
             return ('<span class="badge badge-danger">Urgent</span>').html_safe
+        else 
+            return ""
         end 
     end
 
@@ -29,6 +31,20 @@ module TasksHelper
         else
             User.find_by_id(task.created_by_id).full_name
         end 
+    end
+
+    def task_badges(task)
+        if task.isApproved.nil?
+            return ('<span class="badge badge-warning">Awaiting Approval</span>').html_safe
+        elsif task.isApproved == false 
+            return ('<span class="badge badge-danger">Ticket Denied</span>').html_safe
+        elsif task.isVerified == true 
+            return ('<span class="badge badge-success">Task Complete</span>').html_safe
+        elsif task.status != 3 && task.isVerified == false 
+            return ('<span class="badge badge-warning">Rework Required</span>').html_safe
+        elsif task.status == 3 && task.isVerified != true 
+            return ('<span class="badge badge-secondary">Awaiting Verification</span>').html_safe
+        end
     end
 
 end

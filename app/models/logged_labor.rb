@@ -6,7 +6,7 @@ class LoggedLabor < ApplicationRecord
 
   def self.hours_spent_on_task(task)
     calculatedTime = 0
-    (LoggedLabor.where(:task_id => task.id)).each do |logged_labor|
+    (LoggedLabor.where(task_id: task.id)).each do |logged_labor|
       calculatedTime = calculatedTime + logged_labor.time_spent
     end
 

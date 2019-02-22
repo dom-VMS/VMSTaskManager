@@ -5,8 +5,8 @@
         <div class="col-sm-10">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/home/index">Home</a></li>
-                    <li class="breadcrumb-item"><a href="/task_type_options">Roles & Permissions</a></li>
+                    <li class="breadcrumb-item"><%= link_to 'Home', home_path %></li>
+                    <li class="breadcrumb-item"><%= link_to "Roles & Permissions", task_type_options_path%></li>
                     <li class="breadcrumb-item active"><a><%= @task_type_option.name %> </a></li>
                 </ol>
             </nav>
@@ -67,7 +67,7 @@
                                 </tr>
                                 <% @user.each do |user| %>
                                 <tr> 
-                                    <td><%= user.full_name %></td>
+                                    <td><%= link_to user.full_name, user_path(user) %></td>
                                 </tr>
                                 <% end %>
                             </table>
