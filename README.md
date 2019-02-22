@@ -4,8 +4,8 @@ A web application designed for Varland Metal Service employees to file, view, an
 
 Technical Details
 
-* Ruby version - 2.3.7
-* Rails version - 5.2.1
+* Ruby version - 2.5.0
+* Rails version - 5.2.2
 * MySQL version - 8.0.12 Homebrew
 
 * Gems
