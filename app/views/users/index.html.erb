@@ -8,8 +8,40 @@
                     <li class="breadcrumb-item"><a>Users</a></li>
                 </ol>
             </nav>
-            <h1>Users</h1>
-            <%= link_to fa_icon('user-plus', text:'Add User'), new_user_path,  class: 'btn btn-primary'%><br><br>
+            <!--Large to XL Screen Size-->
+            <div class="container-fluid d-none d-lg-block">
+                <div class="row">
+                    <div class="col-6">
+                        <h1>Users</h1>
+                        <%= link_to fa_icon('user-plus', text:'Add User'), new_user_path,  class: 'btn btn-primary'%>
+                    </div>
+                    <div class="col-6">
+                        <%= form_tag(users_path, method: :get, class: 'form-inline float-right') do %>
+                            <%= text_field_tag(:search, params[:search], class: 'form-control float-right', placeholder: 'Search for User') %>
+                            <%= submit_tag ("Search"), class: 'btn btn-primary float-right'%>
+                        <% end %>
+                    </div>
+                </div>
+            </div>
+            <!--Any size screen less than large-->
+            <div class="container-fluid d-lg-none">
+                <div class="row">
+                    <h1>Users</h1>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <%= link_to fa_icon('user-plus', text:'Add User'), new_user_path,  class: 'btn btn-primary'%>
+                    </div>
+                    <br><br>
+                    <div class="col-6">
+                        <%= form_tag(users_path, method: :get, class: 'form-inline') do %>
+                            <%= text_field_tag(:search, params[:search], class: 'form-control float-right', placeholder: 'Search for User') %>
+                            <%#= submit_tag ("Search"), class: 'btn btn-primary float-right'%>
+                        <% end %>
+                    </div>
+                </div>
+            </div>
+            <br>
             <div class="container-fluid">
                 <table class="table table-hover">
                     <thead>

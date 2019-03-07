@@ -26,4 +26,12 @@ class TaskType < ApplicationRecord
         user_ids = ug.map(&:user_id)
         return User.where(id: [user_ids])
     end
+
+    def self.search(search)
+        unless search.empty?
+            TaskType.where('name LIKE ?', "%#{sanitize_sql_like(search)}%")
+        else
+            TaskType.all
+        end
+    end
 end

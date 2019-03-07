@@ -3,7 +3,16 @@ class UsersController < ApplicationController
 
     def index
       current_user = User.find_by_id(session[:current_user_id])
-      @users = User.all.order(:employee_number)
+      if search_params[:search]
+        @users = User.search(search_params[:search])
+        if @users.nil? || @users.empty?
+          @users = User.all.order(:employee_number)
+          flash[:notice] = "Sorry, we couldn't find what you are searching for."
+        end
+      else
+        @users = User.all.order(:employee_number)
+      end
+
     end
 
     def show
@@ -64,6 +73,10 @@ class UsersController < ApplicationController
 
       def edit_user_params
         params.require(:user).permit(:employee_number, :f_name, :l_name, :email, :hourly_rate)
+      end
+
+      def search_params
+        params.permit(:search)
       end
 
       def get_task_type_options_from_user_group

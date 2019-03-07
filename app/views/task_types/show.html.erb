@@ -6,21 +6,77 @@
             <li class="breadcrumb-item active" aria-current="page"><%= sanitize @task_type.name %></li>
         </ol>
     </nav>
-    <div class="container-fluid">
-        <h1><%= sanitize @task_type.name  %></h1>
-        <p>
-            <strong>Description:</strong>
-            <%= sanitize @task_type.description  %>
-        </p>
-        <% unless @task_type_option.nil? %>
-            <% if @task_type_option.can_create %>
-                <%= link_to fa_icon('plus-circle', text:'New Task'), new_task_path(:task_type_id => params[:id]), class: "btn btn-primary" %>
-                <%= (link_to fa_icon('edit', text: 'Edit'), edit_task_type_path(@task_type), class: "btn btn-secondary") if @task_type_option.isAdmin %><br><br>
+    <!--Large to XL Screen Size-->
+    <div class="container-fluid d-none d-lg-block">
+        <div class="row">
+            <div class="col-6">
+                <h1><%= sanitize @task_type.name  %></h1>
+                <p>
+                    <strong>Description:</strong>
+                    <%= sanitize @task_type.description  %>
+                </p>
+                <% unless @task_type_option.nil? %>
+                    <% if @task_type_option.can_create %>
+                        <%= link_to fa_icon('plus-circle', text:'New Task'), new_task_path(:task_type_id => params[:id]), class: "btn btn-primary" %>
+                        <%= (link_to fa_icon('edit', text: 'Edit'), edit_task_type_path(@task_type), class: "btn btn-secondary") if @task_type_option.isAdmin %><br><br>
 
-            <% end %>
-        <% end %>
+                    <% end %>
+                <% end %>
+            </div>
+            <div class="col-6">
+                <%= form_tag(task_type_path(@task_type), method: :get, class: 'form-inline float-right') do %>
+                    <%= text_field_tag(:search, params[:search], class: 'form-control', placeholder: 'Search for Task') %>
+                    <%= submit_tag ("Search"), class: 'btn btn-primary'%>
+                <% end %>
+                <br>
+            </div>
+        </div>
+    </div>
+    <!--Any size screen less than large-->
+    <div class="container-fluid d-lg-none">
+        <div class="row">
+            <div class="container-fluid">
+                <h1><%= sanitize @task_type.name  %></h1>
+                <p>
+                    <strong>Description:</strong>
+                    <%= sanitize @task_type.description  %>
+                </p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-5">
+                <% unless @task_type_option.nil? %>
+                    <% if @task_type_option.can_create %>
+                        <%= link_to fa_icon('plus-circle', text:'New Task'), new_task_path(:task_type_id => params[:id]), class: "btn btn-primary" %>
+                        <%= (link_to fa_icon('edit', text: 'Edit'), edit_task_type_path(@task_type), class: "btn btn-secondary") if @task_type_option.isAdmin %><br><br>
+
+                    <% end %>
+                <% end %>
+            </div>
+            <div class="col-7">
+                <%= form_tag(task_type_path(@task_type), method: :get, class: 'form-inline float-right') do %>
+                    <%= text_field_tag(:search, params[:search], class: 'form-control', placeholder: 'Search for Task') %>
+                    <%#= submit_tag ("Search"), class: 'btn btn-primary float-right'%>
+                <% end %>
+                <br>
+            </div>
+        </div>
     </div>
     <div class="container-fluid"><br>
+        <!-- Search Results -->
+        <% unless @tasks_search.nil?%>
+            <h2>Search Results:</h2>
+            <% @tasks_search.each do |task| %>
+                <div class="list-group list-group-flush">
+                    <div class="list-group-item py-2 d-flex justify-content-between align-items-center list-group-item-linkable" data-link="<%= task_path(task)%>">
+                        <%= task.title.nil? ? (link_to task.description.truncate_words(5), task_path(task)) : (link_to task.title.truncate_words(5), task_path(task)) %>
+                        <%= task_priority(task) %>
+                    </div>
+                </div> 
+            <%end%>
+            <br>
+        <%end%>
+        <!-- Nav-tabs -->
         <nav class="htab text-center">
             <div class="nav nav-tabs nav-justified" id="nav-tab" role="tablist" >
             <%  unless @tasks_assigned_to_user.nil? %>

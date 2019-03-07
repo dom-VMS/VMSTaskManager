@@ -143,6 +143,14 @@ class Task < ApplicationRecord
         else 
             return nil
         end
-    end 
+    end
+
+    def self.search_with_task_type(search, task_type)
+        unless search.empty?
+            Task.where(task_type_id: task_type).where('title LIKE ?', "%#{sanitize_sql_like(search)}%")
+        else
+            Task.where(task_type_id: task_type)
+        end
+    end
 
 end

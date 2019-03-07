@@ -5,10 +5,38 @@
         <li class="breadcrumb-item active" aria-current="page">Projects</li>
     </ol>
 </nav>
-<div class="container-fluid">
-    <%= (link_to fa_icon('plus-circle', text: 'Add Project'), new_task_type_path, class: 'btn btn-primary') if isAdmin? == true %>
-    <h1 class="text-center">Projects</h1><br><br>
+<div class="container-fluid d-none d-lg-block">
+    <div class="row">
+         <!--Large to XL Screen Size-->
+        <div class="col-lg-9 col-xl-9 float-left ">
+            <%= (link_to fa_icon('plus-circle', text: 'Add Project'), new_task_type_path, class: 'btn btn-primary ') if isAdmin? == true %>
+        </div>
+        <div class="col-lg-3 col-xl-3 float-right">
+            <%= form_tag(task_types_path, method: :get, class: 'form-inline') do %>
+                <%= text_field_tag(:search, params[:search], class: 'form-control', placeholder: 'Search for Project') %>
+                <%= submit_tag ("Search"), class: 'btn btn-primary float-right'%>
+            <% end %>
+        </div>
+    </div>
+</div>
+<div class="container-fluid d-lg-none">
+    <div class="row">
+        <!--Any size screen less than large-->
+        <div class="col-6">
+            <%= (link_to fa_icon('plus-circle', text: 'Add Project'), new_task_type_path, class: 'btn btn-sm btn-primary float-left') if isAdmin? == true %>
+        </div>
+        <div class=" col-6">
+            <%= form_tag(task_types_path, method: :get, class: 'form-inline float-right') do %>
+                <%= text_field_tag(:search, params[:search], class: 'form-control', placeholder: 'Search for Project') %>
+                <%#= submit_tag ("Search"), class: 'btn btn-sm btn-primary float-right'%>
+            <% end %>
+        </div>
+    </div>
+</div>
 
+<br><h1 class="text-center">Projects</h1><br>
+
+<div class="container-fluid">
     <div class="row">
     <% @task_type.each do |task_type|%>
         <div class="col-sm-4">
