@@ -6,8 +6,9 @@ class TaskTypeOptionsController < ApplicationController
 
     def show
         @task_type_option = TaskTypeOption.find(params[:id])
-        @task_type_name = (TaskType.find_by_id(@task_type_option.task_type_id)).name
+        @task_type = TaskType.find_by_id(@task_type_option.task_type_id)
         @user = TaskTypeOption.get_associated_users(@task_type_option)
+        @current_user_task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task_type.id)
     end
 
     def new

@@ -11,7 +11,7 @@
                 </ol>
             </nav>
             <h1> <%= "#{@task_type_option.name}" %> Configurations </h1>
-            <p><h5><small><strong>Department:</strong> <%= sanitize @task_type_name  %></small></h5></p>
+            <p><h5><small><strong>Department:</strong> <%= sanitize @task_type.name  %></small></h5></p>
             <hr>
             <div class="row">
                 <div class="col-md-8">
@@ -72,16 +72,20 @@
                                 <% end %>
                             </table>
                         <% end %><br>
-                        <%= link_to fa_icon('user-plus', text:'Assign User'), new_user_group_path(:task_type_option_id => params[:id]), class:'btn btn-primary' %><br>
+                        <% unless @current_user_task_type_option.nil? %>
+                            <%= link_to fa_icon('user-plus', text:'Assign User'), new_user_group_path(:task_type_option_id => params[:id]), class:'btn btn-primary' if @current_user_task_type_option.isAdmin %><br>
+                        <% end %>
                         <br>
                     <% end %>
                 </div>
             </div>
             <hr>
-            <%= link_to fa_icon('edit', text:'Edit'), edit_task_type_option_path(@task_type_option)%><br>
-            <%= link_to fa_icon('trash-alt', text:'Delete'), task_type_option_path(@task_type_option),
-                                method: :delete,
-                                data: { confirm: 'Are you sure you want to delete this role?' }%><br>
+            <% unless @current_user_task_type_option.nil? %>
+                <%= link_to fa_icon('edit', text:'Edit'), edit_task_type_option_path(@task_type_option) if @current_user_task_type_option.isAdmin %><br>
+                <%= link_to fa_icon('trash-alt', text:'Delete'), task_type_option_path(@task_type_option),
+                                    method: :delete,
+                                    data: { confirm: 'Are you sure you want to delete this role?' } if @current_user_task_type_option.isAdmin %><br>
+            <% end %>
         </div>
         <div class="col-sm-1 bg-light"></div>
     </div>
