@@ -69,7 +69,7 @@
             <% @tasks_search.each do |task| %>
                 <div class="list-group list-group-flush">
                     <div class="list-group-item py-2 d-flex justify-content-between align-items-center list-group-item-linkable" data-link="<%= task_path(task)%>">
-                        <%= task.title.nil? ? (link_to task.description.truncate_words(5), task_path(task)) : (link_to task.title.truncate_words(5), task_path(task)) %>
+                        <%= task.title.nil? ? (link_to task.description.truncate_words(15), task_path(task)) : (link_to task.title.truncate_words(15), task_path(task)) %>
                         <%= task_priority(task) %>
                     </div>
                 </div> 
@@ -98,7 +98,7 @@
                         <% @tasks_assigned_to_user.each do |task| %>
                             <div class="list-group list-group-flush">
                                 <div class="list-group-item py-2 d-flex justify-content-between align-items-center list-group-item-linkable" data-link="<%= task_path(task)%>">
-                                    <%= task.title.nil? ? (link_to task.description.truncate_words(5), task_path(task)) : (link_to task.title.truncate_words(5), task_path(task)) %>
+                                    <%= task.title.nil? ? (link_to task.description.truncate_words(15), task_path(task)) : (link_to task.title.truncate_words(15), task_path(task)) %>
                                     <%= task_priority(task) %>
                                 </div>
                             </div> 
@@ -114,7 +114,7 @@
                         <% @tasks.each do |task| %>
                             <div class="list-group list-group-flush">
                                 <div class="list-group-item py-2 d-flex justify-content-between align-items-center list-group-item-linkable" data-link="<%= task_path(task)%>">
-                                    <%= task.title.nil? ? (link_to task.description.truncate_words(5), task_path(task)) : (link_to task.title.truncate_words(5), task_path(task)) %>
+                                    <%= task.title.nil? ? (link_to task.description.truncate_words(15), task_path(task)) : (link_to task.title.truncate_words(15), task_path(task)) %>
                                     <%= task_priority(task) %>
                                 </div>
                             </div> 
@@ -126,7 +126,7 @@
                             <% (@tasks_recently_complete).each do |task| %>
                                 <div class="list-group list-group-flush">
                                     <div class="list-group-item py-2 d-flex justify-content-between align-items-center list-group-item-linkable" data-link="<%= task_path(task)%>">
-                                        <%= task.title.nil? ? (link_to task.description.truncate_words(5), task_path(task)) : (link_to task.title.truncate_words(5), task_path(task)) %>
+                                        <%= task.title.nil? ? (link_to task.description.truncate_words(15), task_path(task)) : (link_to task.title.truncate_words(15), task_path(task)) %>
                                         <%= task_priority(task) %>
                                     </div>
                                 </div> 
