@@ -12,7 +12,7 @@ class TaskTypeOptionsController < ApplicationController
     end
 
     def new
-        @task_type = TaskType.find_by_id(params[:task_type])
+        @task_type = TaskType.find_by_id(params[:task_type_id])
         current_task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task_type.id)
         unless @task_type.task_type_options.empty?
             if current_task_type_option.nil?

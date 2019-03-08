@@ -73,7 +73,7 @@
                             </table>
                         <% end %><br>
                         <% unless @current_user_task_type_option.nil? %>
-                            <%= link_to fa_icon('user-plus', text:'Assign User'), new_user_group_path(:task_type_option_id => params[:id]), class:'btn btn-primary' if @current_user_task_type_option.isAdmin %><br>
+                            <%= link_to fa_icon('user-plus', text:'Assign User'), new_task_type_option_user_group_path(@task_type_option), class:'btn btn-primary' if @current_user_task_type_option.isAdmin %><br>
                         <% end %>
                         <br>
                     <% end %>

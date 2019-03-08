@@ -31,7 +31,7 @@
                                 <% end %>
                             </div>
                             <div class="card-footer text-muted">
-                                <%= link_to fa_icon('plus-circle', text: "New #{task_type.name} Role"), new_task_type_option_path(@task_type_option, :task_type => task_type), class: 'btn btn-primary' %>
+                                <%= link_to fa_icon('plus-circle', text: "New #{task_type.name} Role"), new_task_type_task_type_option_path(task_type, @task_type_option), class: 'btn btn-primary' %>
                             </div>
                         </div>
                     </div>

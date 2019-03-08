@@ -12,7 +12,7 @@
         <h1>Assign User as  <%="#{@task_type_option.name}" %></h1>
     </div>
 
-    <%= form_with model: @user_group, local: true do |form| %>
+    <%= form_with model: [@task_type_option, @task_type_option.user_groups.build], local: true do |form| %>
         
         <p>
             <%= form.label :user_id, 'Select User' %>
