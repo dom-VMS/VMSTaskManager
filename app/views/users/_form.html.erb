@@ -55,7 +55,6 @@
                         <% @user.user_groups.each do |user_group|%>  
                         <tbody> 
                             <tr>
-                                <tr>
                                 <td><%= user_group.task_type_option.task_type.name%>
                                 <td><%= user_group.task_type_option.name%></td>
                                 <% if isAdmin? %>

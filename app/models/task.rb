@@ -1,3 +1,5 @@
+require 'my_utilities'
+
 class Task < ApplicationRecord
     include PublicActivity::Model
     #include RailsSortable::Model
@@ -147,7 +149,11 @@ class Task < ApplicationRecord
 
     def self.search_with_task_type(search, task_type)
         unless search.empty?
-            Task.where(task_type_id: task_type).where('title LIKE ?', "%#{sanitize_sql_like(search)}%")
+            if regex_is_number? search
+                Task.where(task_type_id: task_type).where(id: search)
+            else
+                Task.where(task_type_id: task_type).where('title LIKE ?', "%#{sanitize_sql_like(search)}%")
+            end
         else
             Task.where(task_type_id: task_type)
         end
