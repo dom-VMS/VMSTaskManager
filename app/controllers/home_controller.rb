@@ -1,4 +1,5 @@
 class HomeController < ApplicationController
+  #include Pagy::Backend
   def index
     if logged_in?
       task_type_ids = TaskType.get_task_types_assigned_to_user(current_user)

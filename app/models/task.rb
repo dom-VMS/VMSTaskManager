@@ -2,8 +2,7 @@ require 'my_utilities'
 
 class Task < ApplicationRecord
     include PublicActivity::Model
-    #include RailsSortable::Model
-    #set_sortable :position
+    #include Filterable 
     tracked
 
     mount_uploaders :attachments, AttachmentUploader

@@ -78,8 +78,8 @@
         <nav class="htab text-center">
             <div class="nav nav-tabs nav-justified" id="nav-tab" role="tablist" >
             <%  unless @tasks_assigned_to_user.nil? %>
-                <a class="nav-item nav-link active" id="nav-assigned-to-you-tab" data-toggle="tab" href="#nav-assigned-to-you" role="tab" aria-controls="nav-assigned-to-you" aria-selected="true">Assigned to You <span class="badge badge-light right"><%= @tasks_assigned_to_user.count %></span></a>
-                <a class="nav-item nav-link" id="nav-all-tasks-tab" data-toggle="tab" href="#nav-all-tasks" role="tab" aria-controls="nav-all-tasks" aria-selected="false"> All Tasks <span class="badge badge-light right"><%= @tasks.count %></span></a>
+                <a class="nav-item nav-link <%='active' unless params[:active_tab] == 'all_tasks' %>" id="nav-assigned-to-you-tab" data-toggle="tab" href="#nav-assigned-to-you" role="tab" aria-controls="nav-assigned-to-you" aria-selected="true">Assigned to You <span class="badge badge-light right"><%= @tasks_assigned_to_user.count %></span></a>
+                <a class="nav-item nav-link <%='active' if params[:active_tab] == 'all_tasks' %>" id="nav-all-tasks-tab" data-toggle="tab" href="#nav-all-tasks" role="tab" aria-controls="nav-all-tasks" aria-selected="false"> All Tasks <span class="badge badge-light right"><%= @tasks.count %></span></a>
             <% else %>
                 <a class="nav-item nav-link active" id="nav-all-tasks-tab" data-toggle="tab" href="#nav-all-tasks" role="tab" aria-controls="nav-all-tasks" aria-selected="true"> All Tasks  <span class="badge badge-light right"><%= @tasks.count %></span></a>
             <% end%>
@@ -92,7 +92,7 @@
                 <div class="tab-content" id="nav-tabContent">
                     <!-- Tasks Assigned to User -->
                     <% unless @tasks_assigned_to_user.nil? %>
-                    <div class="tab-pane fade show active" id="nav-assigned-to-you" role="tabpanel" aria-labelledby="nav-assigned-to-you-tab">
+                    <div class="tab-pane <%='active' unless params[:active_tab] == 'all_tasks' %>" id="nav-assigned-to-you" role="tabpanel" aria-labelledby="nav-assigned-to-you-tab">
                         <% @tasks_assigned_to_user.each do |task| %>
                             <div class="list-group list-group-flush">
                                 <div class="list-group-item py-2 d-flex justify-content-between align-items-center list-group-item-linkable" data-link="<%= task_path(task)%>">
@@ -107,7 +107,7 @@
                     <% if @tasks_assigned_to_user.nil? %> <!-- If there is no task assigned to the user, make this the active tab -->
                     <div class="tab-pane fade show active" id="nav-all-tasks" role="tabpanel" aria-labelledby="nav-all-tasks-tab">
                     <% else %>
-                    <div class="tab-pane fade" id="nav-all-tasks" role="tabpanel" aria-labelledby="nav-all-tasks-tab">
+                    <div class="tab-pane <%='active' if params[:active_tab] == 'all_tasks' %>" id="nav-all-tasks" role="tabpanel" aria-labelledby="nav-all-tasks-tab">
                     <%end%>
                         <% @tasks.each do |task| %>
                             <div class="list-group list-group-flush">
@@ -117,6 +117,7 @@
                                 </div>
                             </div> 
                         <%end%>
+                        <%== pagy_bootstrap_nav(@pagy_all_tasks) %>
                     </div>
                     <!-- Recently Completed Tasks -->
                     <div class="tab-pane fade" id="nav-recently-complete" role="tabpanel" aria-labelledby="nav-recently-complete-tab">
