@@ -36,6 +36,13 @@ class UsersController < ApplicationController
 
     def edit
       @user = User.find(params[:id])
+      unless verify_if_current_user_can_edit(@user, current_user)
+        respond_to do |format|
+          flash[:error] = "You are not permitted to edit this user's info."
+          format.html { redirect_back(fallback_location: user_path(@user)) }
+        end
+      end
+      puts "\n\nverify_if_current_user_can_edit: #{verify_if_current_user_can_edit(@user, current_user)}\n\n"
       @user_group = @user.user_groups   
       get_task_type_options_from_user_group
     end
@@ -87,7 +94,21 @@ class UsersController < ApplicationController
       end
 
     protected
+      # Grabs user based on id
       def find_user
         @user = User.find(params[:id])
+      end
+
+      # Verifies if the current_user may edit a given @user information
+      def verify_if_current_user_can_edit(user, current_user)
+        return true if (current_user == user) # If current_user is @user, they may edit @user.
+        return false if current_user.task_type_options.nil? #If current_user has no roles, they may not edit @user.
+        if isAdmin?
+          task_types = current_user.task_type_options.where(isAdmin: true).pluck(:task_type_id)
+          task_types.each do |current_user_task_type| #Return true if any task_types current_user is an admin for.
+            return true if (user.task_type_options.pluck(:task_type_id).any? {|user_task_type| user_task_type == current_user_task_type})
+          end
+        end
+        return false #If all tests fail, return false.
       end
 end

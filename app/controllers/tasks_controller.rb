@@ -18,10 +18,10 @@ class TasksController < ApplicationController
   
   def new
     @task_type = find_task_type  
-    current_task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task_type.id)
+    current_task_type_option = @task_type.nil? ? current_user.task_type_options : TaskTypeOption.get_task_type_specific_options(current_user, @task_type.id)
     if current_task_type_option.nil?
         flash[:error] = "Sorry, but you do not have permission to create #{@task_type.name} task."
-        redirect_to new_task_path
+        redirect_to  new_task_type_task_path(@task_type)
     else
         @task = Task.new
         @task_assignment = @task.task_assignments.build

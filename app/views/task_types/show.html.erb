@@ -2,7 +2,7 @@
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><%= link_to 'Home', home_path %></li>
-            <li class="breadcrumb-item"><%= link_to "Projects", task_types_path%></li>
+            <li class="breadcrumb-item"><%= link_to "Projects", task_types_path %></li>
             <li class="breadcrumb-item active" aria-current="page"><%= sanitize @task_type.name %></li>
         </ol>
     </nav>
@@ -17,7 +17,7 @@
                 </p>
                 <% unless @task_type_option.nil? %>
                     <% if @task_type_option.can_create %>
-                        <%= link_to fa_icon('plus-circle', text:'New Task'), new_task_path(:task_type_id => params[:id]), class: "btn btn-primary" %>
+                        <%= link_to fa_icon('plus-circle', text:'New Task'), new_task_type_task_path(@task_type), class: "btn btn-primary" %>
                         <%= (link_to fa_icon('edit', text: 'Edit'), edit_task_type_path(@task_type), class: "btn btn-secondary") if @task_type_option.isAdmin %><br><br>
                     <% end %>
                 <% end %>
@@ -46,7 +46,7 @@
             <div class="col-5">
                 <% unless @task_type_option.nil? %>
                     <% if @task_type_option.can_create %>
-                        <%= link_to fa_icon('plus-circle', text:'New Task'), new_task_path(:task_type_id => params[:id]), class: "btn btn-primary" %>
+                        <%= link_to fa_icon('plus-circle', text:'New Task'), new_task_type_task_path(@task_type), class: "btn btn-primary" %>
                         <%= (link_to fa_icon('edit', text: 'Edit'), edit_task_type_path(@task_type), class: "btn btn-secondary", style: "margin-top: 5px") if @task_type_option.isAdmin %><br><br>
                     <% end %>
                 <% end %>
