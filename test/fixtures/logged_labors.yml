@@ -1,13 +1,13 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  task: one
-  user: one
-  time_spent: 9.99
-  description: MyText
+  task: three
+  user: dom
+  time_spent: 9.0
+  description: Logged labor for task 3
 
 two:
-  task: two
-  user: two
-  time_spent: 9.99
-  description: MyText
+  task: one
+  user: john
+  time_spent: 0.75
+  description: This is a logged labor for task 1.

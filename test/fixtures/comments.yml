@@ -1,11 +1,11 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  commenter: MyString
-  body: MyText
-  task: one
+  commenter: dom
+  body: This is my comment
+  task: three
 
 two:
-  commenter: MyString
-  body: MyText
-  task: two
+  commenter: john
+  body: This is also a comment
+  task: one

@@ -16,12 +16,7 @@ class UsersController < ApplicationController
     end
 
     def show
-      unless isAdmin? == true || current_user.id == @user.id
-        respond_to do |format|
-          flash[:error] = "Sorry, but you are not permitted to access this user's info."
-          format.html { redirect_back(fallback_location: users_path) }
-        end
-      end
+      @can_edit = verify_if_current_user_can_edit(@user, current_user)
       @user_group = @user.user_groups   
       get_task_type_options_from_user_group
       task_type_ids = TaskType.get_task_types_assigned_to_user(@user)
