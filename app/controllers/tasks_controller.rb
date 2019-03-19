@@ -1,6 +1,8 @@
 class TasksController < ApplicationController
+  skip_before_action :require_login, only: [:ticket, :create]
   before_action :all_tasks, only: [:index, :update]
   before_action :find_task, only: [:show, :edit, :update, :destroy]
+
 
   def index
     task_type_ids = TaskType.get_task_types_assigned_to_user(current_user)
@@ -39,16 +41,33 @@ class TasksController < ApplicationController
 
   def create
     params = task_params 
-    find_created_by_user
-    @task = Task.new(params)
-    add_file_attachment(attachment_params[:attachments]) unless attachment_params.empty?
-    if @task.save!
-      #set_task_assignments 
-      flash[:notice] = "Successfully created task."
-      redirect_to @task
-    else
-        flash[:error] = "Task creation failed"
+    if logged_in?
+      @task = Task.new(params)
+      add_file_attachment(attachment_params[:attachments]) unless attachment_params.empty?
+      if @task.save!
+        flash[:notice] = "Successfully created task."
+        redirect_to @task
+      else
+        flash[:error] = "Task creation failed. "
         render 'new'
+      end  
+    else #This task is a ticket
+      employee_number = params[:created_by_id]
+      if User.find_by_employee_number(employee_number).nil?
+        flash[:error] = "The employee number you entered does not exsist."
+        redirect_to ticket_path
+      else
+        params[:created_by_id] = User.find_by_employee_number(employee_number).id
+        @task = Task.new(params)
+        add_file_attachment(attachment_params[:attachments]) unless attachment_params.empty?
+        if @task.save!
+          flash[:notice] = "Successfully created ticket."
+          redirect_to root_path
+        else
+          flash[:error] = "Ticket creation failed. "
+          redirect_to ticket_path
+        end
+      end
     end
   end
 
@@ -59,7 +78,6 @@ class TasksController < ApplicationController
     get_assignable_users
     add_file_attachment(attachment_params[:attachments]) unless attachment_params.empty?
     if @task.update_attributes(task_params)
-        #set_task_assignments unless task_params[:task_assignments_attributes].empty?
         flash[:notice] = "Task updated!"
         respond_to do |format|
             format.html { redirect_to @task }
@@ -136,7 +154,6 @@ class TasksController < ApplicationController
   end
 
   private
-
     def task_params
       params.require(:task).permit(:title, :description, :priority, :status, :percentComplete,  :isApproved, :task_type_id, :created_by_id, task_assignments_attributes:[:id, :assigned_to_id, :assigned_by_id])
     end
@@ -221,18 +238,6 @@ class TasksController < ApplicationController
         respond_to do |format|
           flash[:error] = "Sorry, but you are not permitted to edit this task."
           format.html { redirect_back(fallback_location: task_path(@task)) }
-        end
-      end
-    end
-
-    # Used in Task.create. It is for when a Ticket is made & the person making the ticket is not signed in.
-    def find_created_by_user
-      unless logged_in?
-        if (User.find_by_employee_number(params[:created_by_id])).present?  
-            params[:created_by_id] = User.find_by_employee_number(task_params[:created_by_id]).id         
-        else 
-            flash[:error] = "The employee number you have entered does not exsist."
-            render 'ticket'
         end
       end
     end

@@ -25,6 +25,7 @@ class Task < ApplicationRecord
     #validates :title, presence: true
     #validates :created_by_id_exists
     validates_presence_of :task_type_id
+    validates :created_by_id, numericality: true
 
     tracked owner: Proc.new{ |controller, model| controller.current_user }
 

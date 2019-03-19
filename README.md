@@ -15,7 +15,7 @@ Development branch: https://github.com/dom-VMS/VMSTaskManager/tree/development
 - Ruby version - 2.5.0
 - Rails version - 5.2.1
 - MySQL version - 8.0.12 Homebrew
-- Bootstrap - 4.1.3
+- Bootstrap - 4.3.1
 
 ## Project Description
 Varland Metal Service (VMS) is a small electroplating facility located in Cincinnati, Ohio. This project is to support the Maintenance department at VMS as they begin to bring the current Maintenance System out of the legacy system into a modern, web-based platform. The *Task Manager* section is an application where projects and their related tasks may be created and assigned to users. The ability to update information, log time, and have re-occuring tasks will all be implemented in the final solution.

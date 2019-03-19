@@ -30,8 +30,6 @@ Rails.application.routes.draw do
   patch '/verify',   to: 'tasks#update_ticket'
   put   '/verify',   to: 'tasks#update_ticket'
 
-  
-
   resources :task_types, :path => "projects" do
     resources :user, :only => [] do 
       resources :task_queues
