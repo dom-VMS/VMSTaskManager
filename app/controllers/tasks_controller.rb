@@ -51,23 +51,8 @@ class TasksController < ApplicationController
         flash[:error] = "Task creation failed. "
         render 'new'
       end  
-    else #This task is a ticket
-      employee_number = params[:created_by_id]
-      if User.find_by_employee_number(employee_number).nil?
-        flash[:error] = "The employee number you entered does not exsist."
-        redirect_to ticket_path
-      else
-        params[:created_by_id] = User.find_by_employee_number(employee_number).id
-        @task = Task.new(params)
-        add_file_attachment(attachment_params[:attachments]) unless attachment_params.empty?
-        if @task.save!
-          flash[:notice] = "Successfully created ticket."
-          redirect_to root_path
-        else
-          flash[:error] = "Ticket creation failed. "
-          redirect_to ticket_path
-        end
-      end
+    else 
+      task_creation_for_not_signed_in_user(params)
     end
   end
 
@@ -240,5 +225,27 @@ class TasksController < ApplicationController
           format.html { redirect_back(fallback_location: task_path(@task)) }
         end
       end
+    end
+
+    # A user may file a ticket (i.e. Create a task) while not being signed in.
+    # This function finds the user based on their employee_number, validates the data,
+    # and either creates the task or sends the user back with an error message.
+    def task_creation_for_not_signed_in_user(params)
+      employee_number = params[:created_by_id]
+        if User.find_by_employee_number(employee_number).nil?
+          flash[:error] = "The employee number you entered does not exsist."
+          redirect_to ticket_path
+        else
+          params[:created_by_id] = User.find_by_employee_number(employee_number).id
+          @task = Task.new(params)
+          add_file_attachment(attachment_params[:attachments]) unless attachment_params.empty?
+          if @task.save!
+            flash[:notice] = "Successfully created ticket."
+            redirect_to root_path
+          else
+            flash[:error] = "Ticket creation failed. "
+            redirect_to ticket_path
+          end
+        end
     end
 end
