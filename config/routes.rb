@@ -37,10 +37,10 @@ Rails.application.routes.draw do
     resources :tasks, :only => [:new, :create] 
     resources :task_type_options , :path => "roles", :only => [:new, :create, :destroy] 
   end
-  resources :task_type_options , :path => "roles", :only => [:index, :edit, :update, :show] do
+  resources :task_type_options , :path => "roles", :only => [:index, :edit, :update, :show, :destroy] do
     resources :user_groups, :only => [:new, :create]
   end
-  resources :user_groups, :only => [:delete]
+  resources :user_groups, :only => [:destroy]
   
   resources :users do
     resources :user_groups
