@@ -7,6 +7,10 @@ class Task < ApplicationRecord
 
     mount_uploaders :attachments, AttachmentUploader
 
+    # config/initializers/task_constants.rb
+    attr_accessor :PRIORITY
+    attr_accessor :STATUS
+
     belongs_to :task_type
     has_many :comments, dependent: :destroy
     has_many :logged_labors, dependent: :destroy
