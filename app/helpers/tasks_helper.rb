@@ -1,7 +1,9 @@
 module TasksHelper
     # Takes a task and returns task.priority in a badge.
     def task_priority(task)
-        if task.priority == 1 
+        if task.status == 4 
+            return ('<span class="badge badge-dark">On-Hold</span>').html_safe
+        elsif task.priority == 1 
             return ('<span class="badge badge-light">Low</span>').html_safe
         elsif task.priority == 2 
             return ('<span class="badge badge-primary">Normal</span>').html_safe
@@ -22,6 +24,8 @@ module TasksHelper
             return "In-Progress"
         elsif task.status == 3
             return "Complete"
+        elsif task.status == 4
+            return "On-Hold"
         end
     end
 

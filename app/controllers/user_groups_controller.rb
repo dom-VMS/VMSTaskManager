@@ -38,7 +38,8 @@ class UserGroupsController < ApplicationController
         @user_group = UserGroup.find(params[:id])
         @user_group.destroy
 
-        redirect_to users_path
+        redirect_back(fallback_location: user_path(@user_group.user_id))
+
     end
 
     private 

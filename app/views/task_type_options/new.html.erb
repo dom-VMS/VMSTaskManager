@@ -1,10 +1,15 @@
-<% if logged_in? && isAdmin? %>
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><%= link_to 'Home', home_path %></li>
+        <li class="breadcrumb-item"><%= link_to 'Projects', task_types_path %></li>
+        <li class="breadcrumb-item"><%= link_to @task_type.name, task_type_path(@task_type)%></li>
+        <li class="breadcrumb-item"><%= link_to "Roles & Permissions", task_type_options_path%></li>
+        <li class="breadcrumb-item active"><a>New Role Configuration</a></li>
+    </ol>
+</nav>
 <div class="container">
     <div class="py-4 text-center">
-        <h1> New <%= "#{@task_type_name}"%> Role Configuration </h1>
+        <h1> New <%= "#{@task_type.name}"%> Role Configuration </h1>
     </div>
     <%= render 'form' %>
 </div>
-<% else %>
-     <%= render 'errors/not_signed_in' %>
-<% end %>

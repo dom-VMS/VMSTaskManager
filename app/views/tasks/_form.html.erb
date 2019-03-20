@@ -29,13 +29,13 @@
     <div class="mb-3">
         <p>
             <%= form.label :priority %><br>
-            <%= form.select(:priority, options_for_select([['Low', 1],['Normal', 2],['High', 3],['Urgent', 4]], @task.priority), include_blank: "Select Priority", class: 'form-control') %>
+            <%= form.select(:priority, options_for_select(PRIORITY, @task.priority), include_blank: "Select Priority", class: 'form-control') %>
         </p>
     </div>
     <div class="mb-3">
         <p> 
             <%= form.label :status %><br>
-            <%= form.select(:status, options_for_select([['Incomplete', 1],['In-progress', 2],['Complete', 3]], @task.status), include_blank: "Select Status", class: 'form-control') %>
+            <%= form.select(:status, options_for_select(STATUS, @task.status), include_blank: "Select Status", class: 'form-control') %>
         </p>
     </div>
     <div class="mb-3">

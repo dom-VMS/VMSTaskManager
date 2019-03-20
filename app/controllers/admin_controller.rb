@@ -1,16 +1,13 @@
 class AdminController < ApplicationController
+    
     def index
-        if logged_in?
-            unless isAdmin?
-                redirect_to home_path
-            end
+        unless isAdmin?
+            flash[:error] = "You are not an admin. You may not enter."
+            redirect_back(fallback_location: home_path)
         else
-            render partial: 'errors/not_signed_in'
+            flash[:error] = "You are not an admin. You may not enter."
+            redirect_back(fallback_location: home_path)
         end
     end
 
-    def task_types
-        @task_types = TaskType.all
-        @task_type = TaskType.new
-    end
 end

@@ -1,16 +1,13 @@
-<% if logged_in? %>
 <div class="container-fluid">
   <h1>Welcome,</h1>
   <h1><strong><%= current_user.full_name %></strong></h1>
   <h5><%=Time.now.strftime("%m/%d/%Y") %></h5>
 </div>
 <div class="container-fluid">
-<br><h2>Assigned to you:</h2><br>
-    <%= render 'tasks/assigned_to_user'%>
+  <br>
+  <h2>Assigned to you:</h2><br>
+  <%= render 'tasks/assigned_to_user'%>
 </div><br>
-<% else %>
-  <%= render 'errors/not_signed_in' %>
-<% end %>
 
 <script>
   $(document).ready(function() {

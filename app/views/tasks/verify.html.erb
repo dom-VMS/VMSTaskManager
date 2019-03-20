@@ -44,7 +44,7 @@
                             <div class="row">
                             <% tasks = @task.where(task_type_id: task_type.id) %>
                             <% unless tasks.empty? %>
-                            <% @task.each do |task|%>
+                            <% tasks.each do |task|%>
                                 <div class="col-sm-4">
                                 <%= link_to task_path(task) do %>
                                     <div class="card text-center mb-3">
@@ -52,8 +52,8 @@
                                             <strong>Task #<%= task.id %></strong>  <%= task.priority.nil? ? "" : task_priority(task) %>
                                         </div>
                                         <div class="card-body">
-                                            <h5 class="card-title"><%= link_to task.title.truncate_words(5), task_path(task) %></h5>
-                                            <p class="card-text"><%= task.description.truncate_words(10) %></p> 
+                                            <h5 class="card-title"><%= link_to task.title.truncate_words(15), task_path(task) %></h5>
+                                            <p class="card-text"><%= task.description.truncate_words(15) %></p> 
                                             <%= (link_to fa_icon('check-circle'), review_path(task, :task => {:isVerified => true, :percentComplete => 100, :id => task.id}),
                                                             class: "btn btn-primary btn-lg",
                                                             method: 'put', 
@@ -109,7 +109,8 @@
                                 <h1><strong>No new completed tasks for <%=task_type.name%></strong></h1>
                             <% end %>
                         </div>
-                <% end %>
+                    </div>
+                <%end%>
             </div>
         </div>
     </div> 

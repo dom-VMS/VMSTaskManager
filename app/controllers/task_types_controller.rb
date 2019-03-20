@@ -14,8 +14,12 @@ class TaskTypesController < ApplicationController
     def show
         @task_type = find_task_type
         @task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task_type.id)
-        @tasks = @task_type.tasks.where.not(status: 3).or(@task_type.tasks.where(status: nil).where(isApproved: true)).order("created_at DESC")
-        @tasks_assigned_to_user = Task.get_tasks_assigned_to_user_for_task_type(@task_type, current_user)
+        @pagy_all_tasks, @tasks = pagy(@task_type.tasks.where(isApproved: true).where.not(status: 3).or(@task_type.tasks.where(status: nil).where(isApproved: true)).order("created_at DESC"), 
+                                        page_param: :page_all_tasks, 
+                                        params: { active_tab: 'all_tasks' })
+        @pagy_tasks_assigned_to_user, @tasks_assigned_to_user = pagy(Task.get_tasks_assigned_to_user_for_task_type(@task_type, current_user), 
+                                        page_param: :page_tasks_assigned_to_user, 
+                                        params: { active_tab: 'tasks_assigned_to_user' }) unless @task_type_option.nil?
         @tasks_recently_complete = @task_type.tasks.where(status: 3).where("updated_at > ?", 14.days.ago)
         unless search_params[:search].blank?
             @tasks_search = Task.search_with_task_type(search_params[:search], @task_type)

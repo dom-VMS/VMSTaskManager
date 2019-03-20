@@ -52,7 +52,7 @@
                                                         <strong>Task #<%= task.id %></strong>  <%= task.priority.nil? ? "" : task_priority(task) %>
                                                     </div>
                                                     <div class="card-body" data-link="<%= task_path(task)%>">
-                                                        <h5 class="card-title"><%= task.description.truncate_words(10)  unless task.description.nil?%></h5><br>
+                                                        <h5 class="card-title"><%= task.description.truncate_words(15)  unless task.description.nil?%></h5><br>
                                                         <%= (link_to fa_icon('check-circle'), review_path(task, :task => {:isApproved => true, :id => task.id}), 
                                                                         id: task,
                                                                         class: "btn btn-primary btn-lg",

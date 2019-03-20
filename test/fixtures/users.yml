@@ -1,15 +1,29 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  employee_number: 
-  f_name: MyString
-  l_name: MyString
-  email: MyString
+dom: 
+  employee_number: 834
+  f_name: Domenico
+  l_name: Aracri
+  email: dom.aracri@varland.com
   hourly_rate: 
 
-two:
-  employee_number: 
-  f_name: MyString
-  l_name: MyString
-  email: MyString
+ringo:
+  employee_number: 333
+  f_name: Ringo
+  l_name: Starr
+  email: test@varland.com
+  hourly_rate: 
+
+john:
+  employee_number: 111
+  f_name: John
+  l_name: Lennon
+  email: test@varland.com
+  hourly_rate: 
+
+paul:
+  employee_number: 444
+  f_name: Paul
+  l_name: McCartney
+  email: test@varland.com
   hourly_rate: 

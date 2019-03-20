@@ -1,7 +1,8 @@
-
 class TasksController < ApplicationController
+  skip_before_action :require_login, only: [:ticket, :create]
   before_action :all_tasks, only: [:index, :update]
   before_action :find_task, only: [:show, :edit, :update, :destroy]
+
 
   def index
     task_type_ids = TaskType.get_task_types_assigned_to_user(current_user)
@@ -18,10 +19,10 @@ class TasksController < ApplicationController
   
   def new
     @task_type = find_task_type  
-    current_task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task_type.id)
+    current_task_type_option = @task_type.nil? ? current_user.task_type_options : TaskTypeOption.get_task_type_specific_options(current_user, @task_type.id)
     if current_task_type_option.nil?
         flash[:error] = "Sorry, but you do not have permission to create #{@task_type.name} task."
-        redirect_to new_task_path
+        redirect_to  new_task_type_task_path(@task_type)
     else
         @task = Task.new
         @task_assignment = @task.task_assignments.build
@@ -40,16 +41,18 @@ class TasksController < ApplicationController
 
   def create
     params = task_params 
-    find_created_by_user
-    @task = Task.new(params)
-    add_file_attachment(attachment_params[:attachments]) unless attachment_params.empty?
-    if @task.save!
-      #set_task_assignments 
-      flash[:notice] = "Successfully created task."
-      redirect_to @task
-    else
-        flash[:error] = "Task creation failed"
+    if logged_in?
+      @task = Task.new(params)
+      add_file_attachment(attachment_params[:attachments]) unless attachment_params.empty?
+      if @task.save!
+        flash[:notice] = "Successfully created task."
+        redirect_to @task
+      else
+        flash[:error] = "Task creation failed. "
         render 'new'
+      end  
+    else 
+      task_creation_for_not_signed_in_user(params)
     end
   end
 
@@ -60,7 +63,6 @@ class TasksController < ApplicationController
     get_assignable_users
     add_file_attachment(attachment_params[:attachments]) unless attachment_params.empty?
     if @task.update_attributes(task_params)
-        #set_task_assignments unless task_params[:task_assignments_attributes].empty?
         flash[:notice] = "Task updated!"
         respond_to do |format|
             format.html { redirect_to @task }
@@ -137,7 +139,6 @@ class TasksController < ApplicationController
   end
 
   private
-
     def task_params
       params.require(:task).permit(:title, :description, :priority, :status, :percentComplete,  :isApproved, :task_type_id, :created_by_id, task_assignments_attributes:[:id, :assigned_to_id, :assigned_by_id])
     end
@@ -226,14 +227,24 @@ class TasksController < ApplicationController
       end
     end
 
-    # Used in Task.create. It is for when a Ticket is made & the person making the ticket is not signed in.
-    def find_created_by_user
-      unless logged_in?
-        if (User.find_by_employee_number(params[:created_by_id])).present?  
-            params[:created_by_id] = User.find_by_employee_number(task_params[:created_by_id]).id         
-        else 
-            flash[:error] = "The employee number you have entered does not exsist."
-            render 'ticket'
+    # A user may file a ticket (i.e. Create a task) while not being signed in.
+    # This function finds the user based on their employee_number, validates the data,
+    # and either creates the task or sends the user back with an error message.
+    def task_creation_for_not_signed_in_user(params)
+      employee_number = params[:created_by_id]
+      if User.find_by_employee_number(employee_number).nil?
+        flash[:error] = "The employee number you entered does not exsist."
+        redirect_to ticket_path
+      else
+        params[:created_by_id] = User.find_by_employee_number(employee_number).id
+        @task = Task.new(params)
+        add_file_attachment(attachment_params[:attachments]) unless attachment_params.empty?
+        if @task.save!
+          flash[:notice] = "Successfully created ticket."
+          redirect_to root_path
+        else
+          flash[:error] = "Ticket creation failed. "
+          redirect_to ticket_path
         end
       end
     end

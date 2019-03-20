@@ -41,6 +41,8 @@ gem 'jquery-ui-rails'
 gem 'rails_sortable'
 # Needed update, had issues
 #gem 'ffi', '~> 1.10'
+# Pagy is used for pagination
+gem 'pagy'
 
 # Use CoffeeScript for .coffee assets and views
 gem 'coffee-rails', '~> 4.2'

@@ -10,9 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190116140827) do
+ActiveRecord::Schema.define(version: 2019_01_16_140827) do
 
-  create_table "activities", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+  create_table "activities", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "trackable_type"
     t.bigint "trackable_id"
     t.string "owner_type"
@@ -31,7 +31,7 @@ ActiveRecord::Schema.define(version: 20190116140827) do
     t.index ["trackable_type", "trackable_id"], name: "index_activities_on_trackable_type_and_trackable_id"
   end
 
-  create_table "comments", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+  create_table "comments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "commenter"
     t.text "body"
     t.bigint "task_id"
@@ -41,7 +41,7 @@ ActiveRecord::Schema.define(version: 20190116140827) do
     t.index ["task_id"], name: "index_comments_on_task_id"
   end
 
-  create_table "file_attachments", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+  create_table "file_attachments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "task_id"
     t.bigint "comment_id"
     t.string "file"
@@ -51,7 +51,7 @@ ActiveRecord::Schema.define(version: 20190116140827) do
     t.index ["task_id"], name: "index_file_attachments_on_task_id"
   end
 
-  create_table "logged_labors", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+  create_table "logged_labors", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "task_id"
     t.bigint "user_id"
     t.decimal "time_spent", precision: 10, scale: 2
@@ -62,14 +62,14 @@ ActiveRecord::Schema.define(version: 20190116140827) do
     t.index ["user_id"], name: "index_logged_labors_on_user_id"
   end
 
-  create_table "reoccuring_event_types", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+  create_table "reoccuring_event_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "title"
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "reoccuring_events", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+  create_table "reoccuring_events", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "freq_days"
     t.date "last_date"
     t.date "next_date"
@@ -81,7 +81,7 @@ ActiveRecord::Schema.define(version: 20190116140827) do
     t.index ["task_id"], name: "index_reoccuring_events_on_task_id"
   end
 
-  create_table "task_assignments", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+  create_table "task_assignments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "task_id"
     t.bigint "assigned_to_id"
     t.bigint "assigned_by_id"
@@ -92,7 +92,7 @@ ActiveRecord::Schema.define(version: 20190116140827) do
     t.index ["task_id"], name: "index_task_assignments_on_task_id"
   end
 
-  create_table "task_queues", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+  create_table "task_queues", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "task_id"
     t.bigint "user_id"
     t.integer "position"
@@ -104,7 +104,7 @@ ActiveRecord::Schema.define(version: 20190116140827) do
     t.index ["user_id"], name: "index_task_queues_on_user_id"
   end
 
-  create_table "task_type_options", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+  create_table "task_type_options", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "name"
     t.boolean "can_view"
     t.boolean "can_create"
@@ -122,14 +122,14 @@ ActiveRecord::Schema.define(version: 20190116140827) do
     t.index ["task_type_id"], name: "index_task_type_options_on_task_type_id"
   end
 
-  create_table "task_types", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+  create_table "task_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "name"
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "tasks", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+  create_table "tasks", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "title"
     t.text "description"
     t.integer "priority"
@@ -148,7 +148,7 @@ ActiveRecord::Schema.define(version: 20190116140827) do
     t.index ["task_type_id"], name: "index_tasks_on_task_type_id"
   end
 
-  create_table "user_groups", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+  create_table "user_groups", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "user_id"
     t.bigint "task_type_option_id"
     t.datetime "created_at", null: false
@@ -157,7 +157,7 @@ ActiveRecord::Schema.define(version: 20190116140827) do
     t.index ["user_id"], name: "index_user_groups_on_user_id"
   end
 
-  create_table "users", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+  create_table "users", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "employee_number"
     t.string "f_name"
     t.string "l_name"

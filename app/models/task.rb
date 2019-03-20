@@ -1,10 +1,15 @@
+require 'my_utilities'
+
 class Task < ApplicationRecord
     include PublicActivity::Model
-    #include RailsSortable::Model
-    #set_sortable :position
+    #include Filterable 
     tracked
 
     mount_uploaders :attachments, AttachmentUploader
+
+    # config/initializers/task_constants.rb
+    attr_accessor :PRIORITY
+    attr_accessor :STATUS
 
     belongs_to :task_type
     has_many :comments, dependent: :destroy
@@ -24,6 +29,7 @@ class Task < ApplicationRecord
     #validates :title, presence: true
     #validates :created_by_id_exists
     validates_presence_of :task_type_id
+    validates :created_by_id, numericality: true
 
     tracked owner: Proc.new{ |controller, model| controller.current_user }
 
@@ -93,10 +99,6 @@ class Task < ApplicationRecord
         end
     end
 
-    # Returns all tasks assigned to a current user.
-    def self.get_all_tasks_assigned_to_user(user)
-        tto = user.task_type_options #Grab the current user's role(s).
-        return nil if tto.empty?
 =begin
     SELECT t.*, ta.assigned_to_id, tq.position
     FROM tasks t
@@ -112,6 +114,11 @@ class Task < ApplicationRecord
         AND (ta.assigned_to_id = #{user.id} OR ta.assigned_to_id IS NULL)
     ORDER BY ISNULL(tq.position), tq.position ASC;
 =end
+    # Returns all tasks assigned to a current user.
+    def self.get_all_tasks_assigned_to_user(user)
+        tto = user.task_type_options #Grab the current user's role(s).
+        return nil if tto.empty?
+
         user_task_types = tto.pluck(:task_type_id) #Returns projects the user belongs to.
         task_assignment_joins_task_queue= TaskAssignment.joins("LEFT JOIN task_queues ON task_queues.task_id = task_assignments.task_id AND task_queues.user_id = #{user.id}")
         task_joins_task_assignments = Task.joins(:task_assignments).select("tasks.*, task_assignments.assigned_to_id, task_queues.position").
@@ -147,7 +154,11 @@ class Task < ApplicationRecord
 
     def self.search_with_task_type(search, task_type)
         unless search.empty?
-            Task.where(task_type_id: task_type).where('title LIKE ?', "%#{sanitize_sql_like(search)}%")
+            if regex_is_number? search
+                Task.where(task_type_id: task_type).where(id: search)
+            else
+                Task.where(task_type_id: task_type).where('title LIKE ?', "%#{sanitize_sql_like(search)}%")
+            end
         else
             Task.where(task_type_id: task_type)
         end
