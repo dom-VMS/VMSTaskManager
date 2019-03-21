@@ -4,9 +4,10 @@
     <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
   </head>
   <body>
-    <h1>Ticket #<%= @task.id%> has been created for <%= @task_type.name %></h1>
+    <h1>Ticket #<%= @task.id%> has been rejected</h1>
+    <p>Reviewed By: <%= @rejected_by %></p>
     <p>
-      You are being emailed because you are a project admin.
+      Feedback: "<%= @feedback.html_safe %>"
     </p>
     <p>
       To view this ticket, just follow this link: <%= @url %>.
