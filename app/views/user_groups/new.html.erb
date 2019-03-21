@@ -2,7 +2,7 @@
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><%= link_to 'Home', home_path %></li>
         <li class="breadcrumb-item"><%= link_to "Roles & Permissions", task_type_options_path%></li>
-        <li class="breadcrumb-item"><%= link_to @task_type_option.name, task_type_option_path(@task_type_option)%></li>
+        <li class="breadcrumb-item"><%= link_to @task_type_option.name, task_type_task_type_option_path(@task_type, @task_type_option)%></li>
         <li class="breadcrumb-item active"><a>Assign User</a></li>
     </ol>
 </nav>
@@ -11,7 +11,7 @@
         <h1>Assign User as  <%="#{@task_type_option.name}" %></h1>
     </div>
 
-    <%= form_with model: [@task_type_option, @task_type_option.user_groups.build], local: true do |form| %>
+    <%= form_with model: [@task_type, @task_type_option, @task_type_option.user_groups.build], local: true do |form| %>
         
         <p>
             <%= form.label :user_id, 'Select User' %>

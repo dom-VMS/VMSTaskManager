@@ -33,8 +33,8 @@ class UsersController < ApplicationController
       @user = User.find(params[:id])
       unless verify_if_current_user_can_edit(@user, current_user)
         respond_to do |format|
-          flash[:error] = "You are not permitted to edit this user's info."
-          format.html { redirect_back(fallback_location: user_path(@user)) }
+          #flash[:error] = "You are not permitted to edit this user's info."
+          format.html { redirect_to user_path(@user) }
         end
       end
       @user_group = @user.user_groups   
@@ -60,6 +60,12 @@ class UsersController < ApplicationController
 
     def update
       @user = User.find(params[:id])
+      unless verify_if_current_user_can_edit(@user, current_user)
+        respond_to do |format|
+          flash[:error] = "You are not permitted to update this user's info."
+          format.html { redirect_to user_path(@user) }
+        end
+      end
       
       if @user.update(edit_user_params)
         redirect_to @user

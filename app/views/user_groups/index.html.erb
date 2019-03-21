@@ -10,7 +10,7 @@
         <% @user.user_groups.each do |user_group|%>        
         <tr>
             <tr>
-            <td><%= link_to "#{user_group.task_type_option.name}", task_type_option_path(user_group.task_type_option)%></td>
+            <td><%= link_to "#{user_group.task_type_option.name}", task_type_task_type_option_path(user_group.task_type_option)%></td>
             <td><%= user_group.task_type_option.task_type.name%>
             <td><%= link_to 'Remove', user_group_path(user_group),
                 method: :delete,

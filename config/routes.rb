@@ -34,17 +34,16 @@ Rails.application.routes.draw do
     resources :user, :only => [] do 
       resources :task_queues
     end
-    resources :tasks, :only => [:new, :create] 
-    resources :task_type_options , :path => "roles", :only => [:new, :create, :destroy] 
+    resources :tasks, :only => [:new, :create]
+    resources :task_type_options , :path => "roles" do
+      resources :user_groups, :path => "user-assignment", :only => [:new, :create]
+    end
   end
-  resources :task_type_options , :path => "roles", :only => [:index, :edit, :update, :show, :destroy] do
-    resources :user_groups, :only => [:new, :create]
-  end
-  resources :user_groups, :only => [:destroy]
   
-  resources :users do
-    resources :user_groups
-  end
+  resources :task_type_options , :path => "roles", :only => [:index]
+  resources :user_groups, :path => "user-assignment", :only => [:destroy]
+  
+  resources :users 
   
   root 'home#welcome'
 end
