@@ -5,8 +5,6 @@
 
 Master branch: https://github.com/dom-VMS/VMSTaskManager
 
-Development branch: https://github.com/dom-VMS/VMSTaskManager/tree/development
-
 ## Group Members
 - **Team Lead:** Domenico Aracri (dom.aracri@varland.com)
 - **Advisor:** Toby Varland (toby.varland@varland.com)
