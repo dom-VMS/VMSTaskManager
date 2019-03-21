@@ -1,5 +1,4 @@
 <!-- Create new User form -->
-<% if logged_in? && isAdmin? %>
 <div class="container">
     <div class="py-4 text-center">
         <h1>New User</h1>
@@ -9,6 +8,3 @@
 
     <%= link_to 'Back', users_path %>
 </div>
-<% else %>
-     <%= render 'errors/not_signed_in' %>
-<% end %>

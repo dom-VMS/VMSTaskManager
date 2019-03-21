@@ -13,7 +13,7 @@ Rails.application.routes.draw do
 
   resources :activities
 
-  resources :tasks do
+  resources :tasks, :only => [:create, :destroy, :show, :update, :edit] do
     resources :comments, :only => [:create, :destroy]
     resources :logged_labors, :only => [:index, :new, :create]
     resources :file_attachments, :only => [:create, :destroy]
@@ -23,7 +23,6 @@ Rails.application.routes.draw do
   
   # Tasks and Tickets
   get   '/ticket',   to: 'tasks#ticket'
-  post  '/ticket',   to: 'tasks#create_ticket' #<-- I don't think this actually goes there
   get   '/review',   to: 'tasks#review'
   patch '/review',   to: 'tasks#update_ticket'
   put   '/review',   to: 'tasks#update_ticket'
@@ -31,19 +30,20 @@ Rails.application.routes.draw do
   patch '/verify',   to: 'tasks#update_ticket'
   put   '/verify',   to: 'tasks#update_ticket'
 
-  
-
   resources :task_types, :path => "projects" do
     resources :user, :only => [] do 
       resources :task_queues
     end
+    resources :tasks, :only => [:new, :create]
+    resources :task_type_options , :path => "roles" do
+      resources :user_groups, :path => "user-assignment", :only => [:new, :create]
+    end
   end
-  resources :task_type_options , :path => "roles"
-  resources :user_groups
   
-  resources :users do
-    resources :user_groups
-  end
+  resources :task_type_options , :path => "roles", :only => [:index]
+  resources :user_groups, :path => "user-assignment", :only => [:destroy]
+  
+  resources :users 
   
   root 'home#welcome'
 end

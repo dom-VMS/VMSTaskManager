@@ -1,6 +1,5 @@
 <link rel="stylesheet" href="//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css">
 
-<% if logged_in? %>
 <div class="container">
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
@@ -17,6 +16,3 @@
     </div>
     <%= render 'form' %>
 </div>
-<% else %>
-    <%= render 'errors/not_signed_in' %>
-<% end %>

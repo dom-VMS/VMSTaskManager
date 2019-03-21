@@ -1,9 +1,21 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  name: MyString
-  description: MyText
+maintenance:
+  name: Maintenance
+  description: The Maintenance Department
 
-two:
-  name: MyString
-  description: MyText
+it:
+  name: IT - Task Manager
+  description: The IT Department
+
+tests: 
+  name: Tests
+  description: The project space where I may conduct some of my testing
+
+accounting:
+  name: Accounting
+  description: This is a fake version of the accounting project.
+
+shipping:
+  name: Shipping
+  description: Handles incoming/outgoing of packages to VMS.

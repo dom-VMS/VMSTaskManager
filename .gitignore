@@ -20,3 +20,6 @@
 
 #Ignore public uploads
 public/uploads
+
+#Ignore local_env so that gmail username and password are kept secret.
+config/local_env.yml

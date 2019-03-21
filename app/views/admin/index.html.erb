@@ -1,14 +1,9 @@
-<% if logged_in? && isAdmin? %>
-    <h1>Administration</h1>
-    <h4>Use this page to view/edit data</h4>
 
-    <%= link_to 'Users', users_path %><br>
-    <%= link_to 'Roles', task_type_options_path %><br>
-    <%= link_to 'Projects', task_types_path %><br>
-    <br>
+<h1>Administration</h1>
 
-    <%= link_to 'Back', home_path %>
-<% else %>
-        <%= render 'errors/not_signed_in' %>
-<% end%>
+<%= link_to fa_icon('users', text:"Users"), users_path%><br>
+<%= link_to fa_icon('user-tie',text:'Roles'), task_type_options_path %><br>
+<%= link_to fa_icon('eye', text:'Activities'), activities_path %><br>
+<%= link_to fa_icon('check-circle', text: 'Verify Completion'), verify_path %><br>    
+<%= link_to fa_icon('user-tag', text: 'Review Tickets'), review_path %><br>    
 

@@ -23,7 +23,7 @@
                             <a class="nav-link border border-primary pill-secondary" id="v-pills-<%=task_type.id%>-tab" data-toggle="pill" href="#v-pills-<%=task_type.id%>" role="tab" aria-controls="v-pills-<%=task_type.id%>" aria-selected="true" style="white-space: nowrap; overflow: hidden;"><%=task_type.name%></a>
                         <% end %>    
                     </li>
-                    <% end %>
+                <% end %>
             </ul>
         </nav>
     </div>
@@ -36,16 +36,16 @@
                 <div class="tab-pane fade show" id="v-pills-<%=task_type.id%>" role="tabpanel" aria-labelledby="v-pills-<%=task_type.id%>-tab">
             <%end%>
                 <% (@task.where(task_type_id: task_type.id)).each do |task|%>
-                <div class="list-group list-group-flush sortable">
-                    <% if task.attributes['position'].nil?%>
-                        <div class="list-group-item py-2 d-flex justify-content-between align-items-center list-group-item-linkable" data-link="<%= task_path(task)%>">
-                    <% else %>
-                        <div class="list-group-item py-2 d-flex justify-content-between align-items-center list-group-item-linkable list-group-item-info" data-link="<%= task_path(task)%>">
-                    <%end%>
-                        <%= task.title.empty? ? (link_to task.description.truncate_words(5), task_path(task)) : (link_to task.title.truncate_words(5), task_path(task)) %>
-                        <%= task_priority(task) %>
+                    <div class="list-group list-group-flush sortable">
+                        <% if task.attributes['position'].nil?%>
+                            <div class="list-group-item py-2 d-flex justify-content-between align-items-center list-group-item-linkable" data-link="<%= task_path(task)%>">
+                        <% else %>
+                            <div class="list-group-item py-2 d-flex justify-content-between align-items-center list-group-item-linkable list-group-item-info" data-link="<%= task_path(task)%>">
+                        <%end%>
+                            <%= task.title.blank? ? (link_to ("[##{task.id}]  " + task.description.truncate_words(15)), task_path(task)) : (link_to ("[##{task.id}]  " + task.title.truncate_words(15)), task_path(task)) %>
+                            <%= task_priority(task) %>
+                        </div>
                     </div>
-                </div> 
                 <%end%> 
                 <br>
             </div>

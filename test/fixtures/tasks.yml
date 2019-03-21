@@ -1,15 +1,28 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  title: MyString
-  description: MyText
-  priority: 1
+  title: Urgent Task
+  description: This task is urgent.
+  priority: 4
   status: 1
-  percentComplete: 1
+  percentComplete: 50
+  task_type: maintenance
 
 two:
-  title: MyString
-  description: MyText
-  priority: 1
-  status: 1
-  percentComplete: 1
+  title: High Priority Task
+  description: This task is high priority
+  priority: 3
+  status: 2
+  percentComplete: 0
+  task_type: it
+
+three: 
+  title: "Write Automated Tests for All Models"
+  description: "Rails built in testing feature is great"
+  priority: 3
+  status: 2
+  percentComplete: 30
+  task_type: it
+  isApproved: true
+  isVerified: nil
+  

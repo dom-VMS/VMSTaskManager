@@ -32,4 +32,16 @@ class User < ApplicationRecord
         end
         return name
     end
+
+    def self.search(search)
+        unless search.empty?
+            if regex_is_number? search
+                User.where(employee_number: search)
+            else
+                User.where("CONCAT_WS( ' ', f_name, l_name) LIKE ?", "%#{sanitize_sql_like(search)}%")
+            end
+        else
+            User.all
+        end
+    end
 end

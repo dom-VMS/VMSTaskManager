@@ -1,14 +1,35 @@
 class TaskTypesController < ApplicationController
     def index
-        @task_type = TaskType.all
+        if search_params[:search]
+            @task_type = TaskType.search(search_params[:search])
+            if @task_type.nil? || @task_type.empty?
+                @task_type = TaskType.all
+                flash[:alert] = "Sorry, we couldn't find what you are searching for."
+            end
+        else
+            @task_type = TaskType.all
+        end
     end
     
     def show
         @task_type = find_task_type
         @task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task_type.id)
-        @tasks = @task_type.tasks.where.not(status: 3).or(@task_type.tasks.where(status: nil).where(isApproved: true)).order("created_at DESC")
-        @tasks_assigned_to_user = Task.get_tasks_assigned_to_user_for_task_type(@task_type, current_user)
+        @pagy_all_tasks, @tasks = pagy(@task_type.tasks.where(isApproved: true).where.not(status: 3).or(@task_type.tasks.where(status: nil).where(isApproved: true)).order("created_at DESC"), 
+                                        page_param: :page_all_tasks, 
+                                        params: { active_tab: 'all_tasks' })
+        @pagy_tasks_assigned_to_user, @tasks_assigned_to_user = pagy(Task.get_tasks_assigned_to_user_for_task_type(@task_type, current_user), 
+                                        page_param: :page_tasks_assigned_to_user, 
+                                        params: { active_tab: 'tasks_assigned_to_user' }) unless @task_type_option.nil?
         @tasks_recently_complete = @task_type.tasks.where(status: 3).where("updated_at > ?", 14.days.ago)
+        unless search_params[:search].blank?
+            @tasks_search = Task.search_with_task_type(search_params[:search], @task_type)
+            if @tasks_search.nil? || @tasks_search.empty?
+                @tasks_search = nil
+                flash[:notice] = "Sorry, we couldn't find what you are searching for."
+            end
+        else
+            @tasks_search = nil
+        end
         @users = TaskType.get_users(@task_type)
     end
     
@@ -44,7 +65,7 @@ class TaskTypesController < ApplicationController
           flash[:success] = "#{@task_type.name} has been updated!"
           redirect_to @task_type
         else
-          flash[:danger] = "Oops! Something went wrong. #{@task_type.name} wasn't updated. "
+          flash[:danger] = "Oops! Something went wrong. #{@task_type.name} wasn't updated."
           render 'edit'
         end
     end
@@ -69,7 +90,11 @@ class TaskTypesController < ApplicationController
 
     private
       def task_type_params
-        params.require(:task_type).permit(:task_type_id, :name, :description, :user_id)
+        params.require(:task_type).permit(:task_type_id, :name, :description, :user_id, :search)
+      end
+
+      def search_params
+        params.permit(:search)
       end
 
       def find_task_type
