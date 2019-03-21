@@ -45,6 +45,9 @@ class TasksController < ApplicationController
       @task = Task.new(params)
       add_file_attachment(attachment_params[:attachments]) unless attachment_params.empty?
       if @task.save!
+        if @task.isApproved.nil?
+          send_ticket_email(@task, current_user.id)
+        end
         flash[:notice] = "Successfully created task."
         redirect_to @task
       else
@@ -117,10 +120,12 @@ class TasksController < ApplicationController
     if task.update(review_ticket_params)
         if (review_ticket_params[:isApproved] == "true")
             flash[:notice] = "Ticket Approved! You can now add more information to the task and/or assign someone to this."
+            TaskMailer.with(task: task).ticket_approved.deliver_now#deliver_later
             redirect_to edit_task_path(task)
         elsif (review_ticket_params[:isApproved] == "false")
             insert_decline_feedback(task)
             flash[:notice] = "Ticket Rejected."
+            TaskMailer.with(task: task, rejected_by: decline_feedback_params[:commenter], feedback: decline_feedback_params[:body]).ticket_rejected.deliver_now#deliver_later
             redirect_to review_path
         elsif (review_ticket_params[:isVerified] == "true")
             flash[:notice] = "Task Completion Approved."
@@ -240,6 +245,7 @@ class TasksController < ApplicationController
         @task = Task.new(params)
         add_file_attachment(attachment_params[:attachments]) unless attachment_params.empty?
         if @task.save!
+          send_ticket_email(@task, params[:created_by_id])
           flash[:notice] = "Successfully created ticket."
           redirect_to root_path
         else
@@ -247,5 +253,13 @@ class TasksController < ApplicationController
           redirect_to ticket_path
         end
       end
+    end
+
+    # Sends email to admin and users related to the ticket being filed.
+    def send_ticket_email(task, user)
+      #Send Email to Project Manager(s)
+      TaskMailer.with(task: @task).new_ticket_created_admins.deliver_later
+      #Send Email to the user
+      TaskMailer.with(task: @task, user_id: user).new_ticket_created_user.deliver_later
     end
 end

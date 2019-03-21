@@ -25,12 +25,12 @@
                     <div id="collapse<%=task_type.id%>" class="collapse" aria-labelledby="heading<%=task_type.id%>" data-parent="#accordion">
                         <div class="card-body text-center">
                             <% task_type.task_type_options.each do |task_type_option| %>
-                                <%= link_to task_type_option.name, task_type_option_path(task_type_option.id) %>
+                                <%= link_to task_type_option.name, task_type_task_type_option_path(task_type, task_type_option.id) %>
                                 <br>
                             <% end %>
                         </div>
                         <div class="card-footer text-muted">
-                            <%= link_to fa_icon('plus-circle', text: "New #{task_type.name} Role"), new_task_type_task_type_option_path(task_type, @task_type_option), class: 'btn btn-primary' %>
+                            <%= link_to fa_icon('plus-circle', text: "New #{task_type.name} Role"), new_task_type_task_type_option_path(task_type), class: 'btn btn-primary' %>
                         </div>
                     </div>
                 </div>

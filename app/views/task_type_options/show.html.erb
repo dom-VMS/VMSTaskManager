@@ -69,7 +69,7 @@
                                 <tr> 
                                     <td><%= link_to User.find_by_id(user_group.user_id).full_name, user_path(user_group.user_id) %></td>
                                     <% unless @current_user_task_type_option.nil? %>
-                                        <td><%= link_to fa_icon('trash-alt'), user_user_group_path(user_group.user_id, user_group),
+                                        <td><%= link_to fa_icon('trash-alt'), user_group_path(user_group),
                                             method: :delete,
                                             data: { confirm: "Are you sure you want to remove this role from this user?" } if @current_user_task_type_option.isAdmin%></td><br>
                                     <% end %>
@@ -78,14 +78,14 @@
                             </table>
                         <%# end %><br>
                         <% unless @current_user_task_type_option.nil? %>
-                            <%= link_to fa_icon('user-plus', text:'Assign User'), new_task_type_option_user_group_path(@task_type_option), class:'btn btn-primary' if @current_user_task_type_option.isAdmin %><br>
+                            <%= link_to fa_icon('user-plus', text:'Assign User'), new_task_type_task_type_option_user_group_path(@task_type, @task_type_option), class:'btn btn-primary' if @current_user_task_type_option.isAdmin %><br>
                         <% end %>
                         <br>
             </div>
             <hr>
             <% unless @current_user_task_type_option.nil? %>
-                <%= link_to fa_icon('edit', text:'Edit'), edit_task_type_option_path(@task_type_option) if @current_user_task_type_option.isAdmin %><br>
-                <%= link_to fa_icon('trash-alt', text:'Delete'), task_type_option_path(@task_type_option),
+                <%= link_to fa_icon('edit', text:'Edit'), edit_task_type_task_type_option_path(@task_type, @task_type_option) if @current_user_task_type_option.isAdmin %><br>
+                <%= link_to fa_icon('trash-alt', text:'Delete'), task_type_task_type_option_path(@task_type, @task_type_option),
                                     method: :delete,
                                     data: { confirm: 'Are you sure you want to delete this role?' } if @current_user_task_type_option.isAdmin %><br>
             <% end %>

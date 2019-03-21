@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+  </head>
+  <body>
+    <h1>Ticket #<%= @task.id%> has been filed</h1>
+    <h2>Department: <%= @task_type.name %></h2>
+    <p> 
+      Your ticket has been created.
+    </p>
+    <p>
+      To view this ticket, just follow this link: <%= @url %>.
+    </p>
+    <footer>
+      Varland Metal Service, Inc.
+    </footer>
+  </body>
+</html>

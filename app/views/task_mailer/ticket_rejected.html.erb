@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+  </head>
+  <body>
+    <h1>Ticket #<%= @task.id%> has been rejected</h1>
+    <p>Reviewed By: <%= @rejected_by %></p>
+    <p>
+      Feedback: "<%= @feedback.html_safe %>"
+    </p>
+    <p>
+      To view this ticket, just follow this link: <%= @url %>.
+    </p>
+  </body>
+</html>

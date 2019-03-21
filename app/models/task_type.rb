@@ -27,6 +27,16 @@ class TaskType < ApplicationRecord
         return User.where(id: [user_ids])
     end
 
+    def self.get_admins(task_type)
+        task_type_options = task_type.task_type_options
+        isAdminIds = task_type_options.select(:id).where(isAdmin: true)
+        unless isAdminIds.nil?
+            admins = UserGroup.select(:user_id).where(task_type_option_id: isAdminIds)
+            user_ids = admins.pluck(:user_id)
+            users = User.where(id: user_ids)
+        end
+    end
+
     def self.search(search)
         unless search.empty?
             TaskType.where('name LIKE ?', "%#{sanitize_sql_like(search)}%")
