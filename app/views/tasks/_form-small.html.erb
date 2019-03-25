@@ -56,7 +56,7 @@
                     <%= f.select(:assigned_to_id, options_from_collection_for_select(@assignable_users, :id, :full_name, f.object.assigned_to_id), include_blank: "Select User", class: 'form-control', multiple: true) %>
                 <% end %>
                 <%= f.hidden_field :assigned_by_id, value: current_user.id %>
-                <%= (link_to fa_icon('trash-alt 1.5x'), task_task_assignment_path(@task, f.object.id),
+                <%= (link_to fa_icon('trash-alt 1.5x'), task_task_assignment_path(@task, f.object.id, :param => 'edit'),
                                                         method: :delete,
                                                         data: { confirm: "Are you sure you want to remove user from task?" },
                                                         remote: true) unless f.object == @assignee.first %><br>    

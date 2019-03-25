@@ -40,10 +40,10 @@
         <%end%>
     <% end %>
 <hr>
-<h2><%= @task.title %>  <%= @task.priority.nil? ? "" : task_priority(@task) %> </h2>
+<h2><%= sanitize @task.title.html_safe %>  <%= @task.priority.nil? ? "" : task_priority(@task) %> </h2>
 <p><h5><small><%= fa_icon('clock')%> Created By: <%= task_created_by_name(@task)%>, <%= time_ago_in_words(@task.created_at) %> ago</small></h5></p>
 
-<p><strong>Project:</strong> <%= TaskType.find(@task.task_type_id).name unless @task.task_type_id.blank?%></p>
+<p><strong>Project:</strong> <%= sanitize (TaskType.find(@task.task_type_id).name).html_safe unless @task.task_type_id.blank?%></p>
 <p>
     <strong>Assignee(s):</strong><br>
     <% unless (@assignee.blank? || @assignee.nil?) %>
@@ -52,7 +52,7 @@
         <% end %>
     <%end%>
 </p>   
-<p><strong>Description:</strong> <%=sanitize @task.description %></p> 
+<p><strong>Description:</strong> <%=sanitize @task.description.html_safe %></p> 
 <div id="task-form" style="display:none;"></div>
 <div id="task-info-small">
     <p><strong>Status:</strong> <%= @task.status.nil? ? "" : task_status(@task)%></p>
@@ -79,8 +79,9 @@
     <%= (link_to fa_icon('trash-alt', text:'Delete'), task_path(@task),
                 method: :delete,
                 data: { confirm: 'Are you sure you want to delete this task?' }) if @task_type_option.can_delete %><br>
-    <% end %>
+    
 </p>
+<% end %>
 <br>
 <nav>
     <div class="nav nav-tabs" id="nav-tab" role="tablist">
