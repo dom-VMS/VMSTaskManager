@@ -50,7 +50,7 @@ class TaskTypesController < ApplicationController
         @task_type = TaskType.new(task_type_params)
  
         if @task_type.save
-            flash[:success] = "#{@task_type.name} has been added!"
+            flash[:success] = "#{@task_type.name} has been created! Click #{view_context.link_to 'here', new_task_type_task_type_option_path(@task_type)} to create a new role.".
             redirect_to @task_type
         else
             flash[:danger] = "Oops! Something went wrong."
