@@ -120,23 +120,23 @@ class TasksController < ApplicationController
     if task.update(review_ticket_params)
         if (review_ticket_params[:isApproved] == "true")
             flash[:notice] = "Ticket Approved! You can now add more information to the task and/or assign someone to this."
-            TaskMailer.with(task: task).ticket_approved.deliver_now#deliver_later
-            redirect_to edit_task_path(task)
+            TaskMailer.with(task: task).ticket_approved.deliver_later
+            redirect_to edit_task_path(task) # Send user to task#edit.
         elsif (review_ticket_params[:isApproved] == "false")
             insert_decline_feedback(task)
             flash[:notice] = "Ticket Rejected."
-            TaskMailer.with(task: task, rejected_by: decline_feedback_params[:commenter], feedback: decline_feedback_params[:body]).ticket_rejected.deliver_now#deliver_later
-            redirect_to review_path
+            TaskMailer.with(task: task, rejected_by: decline_feedback_params[:commenter], feedback: decline_feedback_params[:body]).ticket_rejected.deliver_later
+            redirect_back fallback_location: review_path
         elsif (review_ticket_params[:isVerified] == "true")
             flash[:notice] = "Task Completion Approved."
-            redirect_to verify_path
+            redirect_back fallback_location:verify_path
         elsif (review_ticket_params[:isVerified] == "false")
             insert_decline_feedback(task)
             flash[:notice] = "Task Completion Rejected."
-            redirect_to verify_path
+            redirect_back fallback_location: verify_path
         else
             flash[:notice] = "Something went wrong"
-            redirect_to home_path
+            redirect_back fallback_location: home_path
         end
     else
       render 'edit'

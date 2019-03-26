@@ -40,7 +40,7 @@
         <%end%>
     <% end %>
 <hr>
-<h2><%= sanitize @task.title.html_safe %>  <%= @task.priority.nil? ? "" : task_priority(@task) %> </h2>
+<h2><%= sanitize @task.title.html_safe unless @task.title.nil? %>  <%= @task.priority.nil? ? "" : task_priority(@task) %> </h2>
 <p><h5><small><%= fa_icon('clock')%> Created By: <%= task_created_by_name(@task)%>, <%= time_ago_in_words(@task.created_at) %> ago</small></h5></p>
 
 <p><strong>Project:</strong> <%= sanitize (TaskType.find(@task.task_type_id).name).html_safe unless @task.task_type_id.blank?%></p>
@@ -52,7 +52,7 @@
         <% end %>
     <%end%>
 </p>   
-<p><strong>Description:</strong> <%=sanitize @task.description.html_safe %></p> 
+<p><strong>Description:</strong> <%= sanitize @task.description.html_safe unless @task.description.nil? %></p> 
 <div id="task-form" style="display:none;"></div>
 <div id="task-info-small">
     <p><strong>Status:</strong> <%= @task.status.nil? ? "" : task_status(@task)%></p>
