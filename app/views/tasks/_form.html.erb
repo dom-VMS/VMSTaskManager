@@ -16,6 +16,7 @@
             </ul>
         </div>
     <% end %>
+    <!-- Begin Form -->
     <div class="mb-3">
         <p> 
             <%= form.label :title %><br>
@@ -25,7 +26,6 @@
             <%= form.label :description %><br>
             <%= form.text_area :description, class: 'form-control' %>
         </p>
-
         <p>Due Date: <%= @task.due_date.nil? ? "<input type='checkbox' id='isDueDateSelected'/>".html_safe : "<input type='checkbox' id='isDueDateSelected' checked/>".html_safe%></p>
         <p id="due-date"  style="display: none;">
             <%= fa_icon('calendar-alt', text:'Select Date')%>
@@ -35,7 +35,6 @@
                 <%= form.text_field :due_date, value: @task.due_date.strftime("%Y/%m/%d"),data:{ provide:'datepicker' }, id: 'datepicker', class: 'form-control datepicker w-50'%>    
             <% end %>
         </p>
-
         <p>
             <%= form.label :priority %><br>
             <%= form.select(:priority, options_for_select(PRIORITY, @task.priority), include_blank: "Select Priority", class: 'form-control') %>
@@ -67,14 +66,11 @@
                 <%end%> 
             <% end %>
         </p>
-        <p>
-            <strong>Attachments: </strong>
-        </p>
+        <p><strong>Attachments: </strong></p>
         <p>
             <%= form.label :attachments, 'File attachments' %>
             <%= form.file_field :attachments, multiple: true %>
         </p>
-
 
        <% @task.attachments.each_with_index do |attachment, index|%>
             <br><a href="<%= attachment.url %>" target="_blank"><%= image_tag(attachment.url, size:'32') if !attachment.blank? %></a>
@@ -89,10 +85,7 @@
     <%= form.hidden_field 'isApproved', :value => true %>
     <%= form.hidden_field 'created_by_id', :value => current_user.id %>
 
-    <p>
-        <%= form.submit 'Save', class: 'btn btn-primary btn-lg btn-block' %>
-    </p>
- 
+    <p><%= form.submit 'Save', class: 'btn btn-primary btn-lg btn-block' %></p>
 <% end %>
 
 <script type="text/javascript">
