@@ -1,4 +1,6 @@
-<%= form_with model: @task, local: true do |form| %>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css">
+
+<%= form_with model: @task, html: { autocomplete: "off" }, local: true do |form| %>
 <!-- Error Messages -->
     <% if @task.errors.any? %>
         <div id="error_explanation">
@@ -19,11 +21,18 @@
                 <%= form.label :title %><br>
                 <%= form.text_field :title, class: 'form-control' %>
             </p>
-        </div>
-        <div class="mb-3">
             <p> 
                 <%= form.label :description %><br>
                 <%= form.text_area :description, class: 'form-control' %>
+            </p>
+            <p>Due Date: <%= @task.due_date.nil? ? "<input type='checkbox' id='isDueDateSelected'/>".html_safe : "<input type='checkbox' id='isDueDateSelected' checked/>".html_safe%></p>
+            <p id="due-date"  style="display: none;">
+                <%= fa_icon('calendar-alt', text:'Select Date')%>
+                <% if @task.due_date.nil? %>
+                    <%= form.text_field :due_date, data:{ provide:'datepicker' }, id: 'datepicker', class: 'form-control datepicker w-50', placeholder: 'Enter Due Date' %>    
+                <% else %>
+                    <%= form.text_field :due_date, value: @task.due_date.strftime("%Y/%m/%d"),data:{ provide:'datepicker' }, id: 'datepicker', class: 'form-control datepicker w-50'%>    
+                <% end %>
             </p>
         </div>
     <% end%>
@@ -32,20 +41,14 @@
             <%= form.label :priority %><br>
             <%= form.select(:priority, options_for_select(PRIORITY, @task.priority), include_blank: "Select Priority", class: 'form-control') %>
         </p>
-    </div>
-    <div class="mb-3 ">
         <p> 
             <%= form.label :status %><br>
             <%= form.select(:status, options_for_select(STATUS, @task.status), include_blank: "Select Status", class: 'form-control') %>
         </p>
-    </div>
-    <div class="mb-3 w-50 ">
         <p> 
             <%= form.label :percentComplete, 'Percent Complete' %><br>
             <%= form.range_field :percentComplete, :in => 0..100, :step => '10', class: 'form-control slider'%>
         </p>
-    </div>
-    <div class="mb-3">
         <p>
             <strong>Assignee(s): </strong>
             <%= link_to fa_icon('plus-circle'), new_task_task_assignment_path(@task) %><br>
@@ -62,16 +65,13 @@
                                                         remote: true) unless f.object == @assignee.first %><br>    
             <% end %>
         </p>
-    </div>
-    <p>
-        <strong>Attachments: </strong>
-    </p>
-    <p>
-        <%= form.label :attachments, 'File attachments' %>
-        <%= form.file_field :attachments, multiple: true %>
-    </p>
-
-    <div class="mb-3">
+        <p>
+            <strong>Attachments: </strong>
+        </p>
+        <p>
+            <%= form.label :attachments, 'File attachments' %>
+            <%= form.file_field :attachments, multiple: true %>
+        </p>
        <% @task.attachments.each_with_index do |attachment, index|%>
             <br><%= link_to fa_icon('paperclip', text: "#{attachment.file.filename}"), attachment.url%>
             <%= (link_to fa_icon('trash-alt 1.5x'), task_attachment_path(@task, index),
@@ -84,9 +84,31 @@
         <%= link_to 'Cancel', task_path(@task), remote: true, class:'btn btn-secondary btn-lg' %><br>
     </p>
 <% end %>
+
 <script>
+    // Hide the form & show the data once the Save or Cancel button has been clicked.
     $(".btn").click(function() {
         $('#task-form').slideUp(350);
         $('#task-info-small').show();
     })
+
+    // If @task.due_date isn't nil (and checkbox is checked), allow for user to edit.
+    if( $('#isDueDateSelected').is(':checked')){
+        $("#due-date").toggle(this.checked);
+        $('.datepicker').datepicker({dateFormat: 'yy-mm-dd '});
+    }
+
+    // If the checkbox (due_date) is selected, display the date picker. 
+    $(function() {
+        $('#isDueDateSelected').click(function() {
+            if( $('#isDueDateSelected').is(':checked')){
+                $("#due-date").toggle(this.checked);
+                $('.datepicker').datepicker({dateFormat: 'yy-mm-dd '});
+            }
+            else{ //Otherwise, set date to null & hide the datepicker.
+                $(".datepicker").datepicker("setDate", null);
+                $('#due-date').hide();
+            }
+        });
+    });
 </script>

@@ -1,4 +1,6 @@
-<%= form_with model: @task, local: true do |form| %>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css">
+
+<%= form_with model: @task, html: { autocomplete: "off" }, local: true do |form| %>
  
     <!-- Error Messages -->
     <% if @task.errors.any? %>
@@ -19,32 +21,29 @@
             <%= form.label :title %><br>
             <%= form.text_field :title, class: 'form-control' %>
         </p>
-    </div>
-    <div class="mb-3">
         <p> 
             <%= form.label :description %><br>
             <%= form.text_area :description, class: 'form-control' %>
         </p>
-    </div>
-    <div class="mb-3">
+
+        <p>Due Date: <input type="checkbox" id="isDueDateSelected"/></p>
+        <p id="due-date"  style="display: none;">
+            <%= fa_icon('calendar-alt')%>
+            <%= form.text_field :due_date, data:{ provide:'datepicker' }, id: 'datepicker', class: 'form-control datepicker w-50', placeholder: 'Enter Due Date'%>    
+        </p>
+
         <p>
             <%= form.label :priority %><br>
             <%= form.select(:priority, options_for_select(PRIORITY, @task.priority), include_blank: "Select Priority", class: 'form-control') %>
         </p>
-    </div>
-    <div class="mb-3">
         <p> 
             <%= form.label :status %><br>
             <%= form.select(:status, options_for_select(STATUS, @task.status), include_blank: "Select Status", class: 'form-control') %>
         </p>
-    </div>
-    <div class="mb-3">
         <p> 
             <%= form.label :percentComplete, 'Percent Complete' %><br>
             <%= form.range_field :percentComplete, :in => 0..100, :step => '10', class: 'form-control slider'%>
         </p>
-    </div>
-    <div class="mb-3">
         <p>
             <strong>Assignee(s): </strong><br>
             <%= form.fields_for :task_assignments do |f| %>
@@ -64,8 +63,6 @@
                 <%end%> 
             <% end %>
         </p>
-    </div>
-    <div class="mb-3">
         <p>
             <strong>Attachments: </strong>
         </p>
@@ -93,3 +90,20 @@
     </p>
  
 <% end %>
+
+<script type="text/javascript">
+    // If the checkbox (due_date) is selected, display the date picker. 
+    $(function() {
+        $('#isDueDateSelected').click(function() {
+            if( $('#isDueDateSelected').is(':checked')){
+                $("#due-date").toggle(this.checked);
+                $('.datepicker').datepicker({dateFormat: 'yy-mm-dd '});
+                $(".datepicker").datepicker("setDate", new Date());
+            }
+            else{ //Otherwise, set date to null.
+                $(".datepicker").datepicker("setDate", null);
+                $('#due-date').hide();
+            }
+        });
+    });
+</script>

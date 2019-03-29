@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_01_16_140827) do
+ActiveRecord::Schema.define(version: 2019_03_26_190151) do
 
   create_table "activities", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "trackable_type"
@@ -143,6 +143,7 @@ ActiveRecord::Schema.define(version: 2019_01_16_140827) do
     t.bigint "created_by_id"
     t.bigint "reoccuring_event_id"
     t.json "attachments"
+    t.datetime "due_date"
     t.index ["created_by_id"], name: "index_tasks_on_created_by_id"
     t.index ["reoccuring_event_id"], name: "index_tasks_on_reoccuring_event_id"
     t.index ["task_type_id"], name: "index_tasks_on_task_type_id"

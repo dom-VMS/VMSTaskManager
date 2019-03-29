@@ -145,7 +145,7 @@ class TasksController < ApplicationController
 
   private
     def task_params
-      params.require(:task).permit(:title, :description, :priority, :status, :percentComplete,  :isApproved, :task_type_id, :created_by_id, task_assignments_attributes:[:id, :assigned_to_id, :assigned_by_id])
+      params.require(:task).permit(:title, :description, :due_date, :priority, :status, :percentComplete,  :isApproved, :task_type_id, :created_by_id, task_assignments_attributes:[:id, :assigned_to_id, :assigned_by_id])
     end
 
     def assignment_params
