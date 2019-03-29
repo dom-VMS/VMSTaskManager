@@ -26,10 +26,14 @@
             <%= form.text_area :description, class: 'form-control' %>
         </p>
 
-        <p>Due Date: <input type="checkbox" id="isDueDateSelected"/></p>
+        <p>Due Date: <%= @task.due_date.nil? ? "<input type='checkbox' id='isDueDateSelected'/>".html_safe : "<input type='checkbox' id='isDueDateSelected' checked/>".html_safe%></p>
         <p id="due-date"  style="display: none;">
-            <%= fa_icon('calendar-alt')%>
-            <%= form.text_field :due_date, data:{ provide:'datepicker' }, id: 'datepicker', class: 'form-control datepicker w-50', placeholder: 'Enter Due Date'%>    
+            <%= fa_icon('calendar-alt', text:'Select Date')%>
+            <% if @task.due_date.nil? %>
+                <%= form.text_field :due_date, data:{ provide:'datepicker' }, id: 'datepicker', class: 'form-control datepicker w-50', placeholder: 'Enter Due Date' %>    
+            <% else %>
+                <%= form.text_field :due_date, value: @task.due_date.strftime("%Y/%m/%d"),data:{ provide:'datepicker' }, id: 'datepicker', class: 'form-control datepicker w-50'%>    
+            <% end %>
         </p>
 
         <p>
@@ -92,6 +96,12 @@
 <% end %>
 
 <script type="text/javascript">
+    // If @task.due_date isn't nil (and checkbox is checked), allow for user to edit.
+    if( $('#isDueDateSelected').is(':checked')){
+        $("#due-date").toggle(this.checked);
+        $('.datepicker').datepicker({dateFormat: 'yy-mm-dd '});
+    }
+
     // If the checkbox (due_date) is selected, display the date picker. 
     $(function() {
         $('#isDueDateSelected').click(function() {
