@@ -29,12 +29,14 @@
     </div>
     <div class="col-sm-12 col-md-12 col-lg-10 col-xl-10">
         <div class="tab-content" id="v-pills-tabContent">
+         <!-- Display each project in a pill -->
         <% @task_types.each do |task_type| %>
             <% if task_type == @task_types.first %>
                 <div class="tab-pane fade show active" id="v-pills-<%=task_type.id%>" role="tabpanel" aria-labelledby="v-pills-<%=task_type.id%>-tab">
             <% else %>
                 <div class="tab-pane fade show" id="v-pills-<%=task_type.id%>" role="tabpanel" aria-labelledby="v-pills-<%=task_type.id%>-tab">
             <%end%>
+                 <!-- Display all tasks assigned to user within a given project -->
                 <% (@task.where(task_type_id: task_type.id)).each do |task|%>
                     <div class="list-group list-group-flush sortable">
                         <% if task.attributes['position'].nil?%>
