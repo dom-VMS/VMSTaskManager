@@ -2,7 +2,14 @@
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><%= link_to 'Home', home_path %></li>
         <li class="breadcrumb-item"><%= link_to "Projects", task_types_path %></li>
-        <li class="breadcrumb-item active" aria-current="page"><%= sanitize @task_type.name %></li>
+        <% projects = project_hierarchy(@task_type).reverse%>
+        <% (projects).each do |project| %>
+            <% if @task_type.id == project.id%>
+                <li class="breadcrumb-item active" aria-current="page"><%= project.name %></li>
+            <% else %>
+                <li class="breadcrumb-item "><%= link_to project.name , task_type_path(project) %></li>
+            <% end %>
+        <% end %>
     </ol>
 </nav>
 <!--Large to XL Screen Size-->
@@ -14,11 +21,17 @@
                 <strong>Description:</strong>
                 <%= sanitize @task_type.description  %>
             </p>
-            <% unless @task_type_option.nil? %>
-                <% if @task_type_option.can_create %>
-                    <%= link_to fa_icon('plus-circle', text:'New Task'), new_task_type_task_path(@task_type), class: "btn btn-primary" %>
-                    <%= (link_to fa_icon('edit', text: 'Edit'), edit_task_type_path(@task_type), class: "btn btn-secondary") if @task_type_option.isAdmin %><br><br>
-                <% end %>
+            <% if @task_type.children.present? %>
+                <p>
+                    <strong>Sub-projects:</strong>
+                    <% (@task_type.children).each do |child| %>
+                        <%= link_to child.name, task_type_path(child) %><%= ',' unless child.id == (@task_type.children.last).id%>
+                    <% end %>
+                </p>
+            <% end %>
+            <% if @task_type_option&.can_create %>
+                <%= link_to fa_icon('plus-circle', text:'New Task'), new_task_type_task_path(@task_type), class: "btn btn-primary" %>
+                <%= (link_to fa_icon('edit', text: 'Edit'), edit_task_type_path(@task_type), class: "btn btn-secondary") if @task_type_option.isAdmin %><br><br>
             <% end %>
         </div>
         <div class="col-6">
@@ -39,6 +52,14 @@
                 <strong>Description:</strong>
                 <%= sanitize @task_type.description  %>
             </p>
+            <% if @task_type.children.present? %>
+                <p>
+                    <strong>Sub-projects:</strong>
+                    <% (@task_type.children).each do |child| %>
+                        <%= link_to child.name, task_type_path(child) %><%= ',' unless child.id == (@task_type.children.last).id%>
+                    <% end %>
+                </p>
+            <% end %>
         </div>
     </div>
     <div class="row">

@@ -86,7 +86,7 @@ class TasksController < ApplicationController
 
   def ticket
     @task = Task.new
-    @task_type = TaskType.all
+    @task_type = TaskType.where(parent_id: nil)
     @task_assignment = @task.task_assignments.build
   end
 
