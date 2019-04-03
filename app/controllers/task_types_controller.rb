@@ -90,7 +90,7 @@ class TaskTypesController < ApplicationController
 
     private
       def task_type_params
-        params.require(:task_type).permit(:task_type_id, :name, :description, :user_id, :search)
+        params.require(:task_type).permit(:task_type_id, :name, :description, :user_id, :search, :parent_id)
       end
 
       def search_params

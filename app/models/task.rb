@@ -133,25 +133,18 @@ class Task < ApplicationRecord
 
     # Returns all assigned tasks given to a user based on a particular task_type.
     def self.get_tasks_assigned_to_user_for_task_type(task_type, user)
-        tto = user.task_type_options
-        return nil if tto.empty?
+        task_assigment_relation = TaskAssignment.where(assigned_to_id: user.id)
+        task_type_relation = Task.joins(:task_assignments).
+                                    where(task_type_id: task_type.id).
+                                    where(isVerified: [nil, false]).
+                                    where.not(percentComplete: 100).
+                                    where.not(isApproved: [nil, false]).
+                                    order("created_at DESC")
 
-        user_task_types = tto.pluck(:task_type_id)
-        if user_task_types.include? task_type.id
-            task_assigment_relation = TaskAssignment.where(assigned_to_id: user.id)
-            task_type_relation = Task.joins(:task_assignments).
-                                      where(task_type_id: task_type.id).
-                                      where(isVerified: [nil, false]).
-                                      where.not(percentComplete: 100).
-                                      where.not(isApproved: [nil, false]).
-                                      order("created_at DESC")
-
-            return task_type_relation.merge(task_assigment_relation)
-        else 
-            return nil
-        end
+        return task_type_relation.merge(task_assigment_relation)
     end
 
+    # Search for a task within a given TaskType (project)
     def self.search_with_task_type(search, task_type)
         unless search.empty?
             if regex_is_number? search
