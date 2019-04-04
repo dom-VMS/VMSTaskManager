@@ -22,7 +22,7 @@ class Task < ApplicationRecord
 
     #has_many :through association (users x task_assignments x tasks)
     has_many :task_assignments, dependent: :destroy 
-    has_many :users, through: :task_assignments
+    has_many :users, through: :task_assignments, foreign_key: 'assigned_to_id'
 
     accepts_nested_attributes_for :file_attachments, :task_assignments
     

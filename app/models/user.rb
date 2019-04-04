@@ -8,7 +8,7 @@ class User < ApplicationRecord
     has_many :tasks, through: :task_queues
 
     #has_many :through Association (users x task_assignments x tasks)
-    has_many :task_assignments, dependent: :destroy
+    has_many :task_assignments, dependent: :destroy, foreign_key: 'assigned_to_id'
     has_many :tasks, through: :task_assignments
 
     has_secure_password

@@ -1,7 +1,7 @@
 class TaskAssignment < ApplicationRecord
   belongs_to :task, optional: true
-  belongs_to :assigned_to, class_name: "User", optional: true
-  belongs_to :assigned_by, class_name: "User", optional: true
+  belongs_to :assigned_to, class_name: "User", optional: true, foreign_key: 'assigned_to_id'
+  belongs_to :assigned_by, class_name: "User", optional: true, foreign_key: 'assigned_by_id'
 
   def self.get_assignee(task)
     assignee = []
