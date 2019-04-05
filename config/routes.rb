@@ -1,6 +1,5 @@
 Rails.application.routes.draw do
   mount RlegacyAdmin::Engine, at: "/admin"
-
   get 'activities/index'
 
   get '/home', to: 'home#index'

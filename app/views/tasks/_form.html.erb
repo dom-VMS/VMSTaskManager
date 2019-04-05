@@ -18,6 +18,12 @@
     <% end %>
     <!-- Begin Form -->
     <div class="mb-3">
+        <% unless @sub_projects.nil?%>
+        <p>
+            <%= form.label :task_type_id, 'Project' %><br>
+            <%= form.select(:task_type_id, options_from_collection_for_select(@sub_projects, 'id', 'name', @task.task_type_id), class: 'form-control') %>
+        </p>
+        <%end%>
         <p> 
             <%= form.label :title %><br>
             <%= form.text_field :title, class: 'form-control' %>
@@ -79,9 +85,6 @@
                 data: { confirm: 'Are you sure you want to delete this attachment?' }) %>
         <%end%>
     </div>
-
-    <%= form.hidden_field 'task_type_id', :value => @task_type.id %>
-    <%= form.hidden_field 'task_id', :value => params[:id] %>
     <%= form.hidden_field 'isApproved', :value => true %>
     <%= form.hidden_field 'created_by_id', :value => current_user.id %>
 

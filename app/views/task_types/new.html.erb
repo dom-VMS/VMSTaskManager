@@ -7,7 +7,7 @@
 </nav>
 <div class="container">
     <div class="py-4 text-center">
-        <h1>New Project</h1>
+        <h1>New <%= 'Sub-' if params[:parent_id].present?%>Project </h1>
     </div>
     <%= form_with model: @task_type, local: true do |form| %>
         <div class="mb-3">

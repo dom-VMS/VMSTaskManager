@@ -1,5 +1,0 @@
-# Include this file into gitignore so that the
-# Email and Password of the gmail account are not made public
-
-GMAIL_USERNAME: 'dom.aracri'
-GMAIL_PASSWORD: 'longview28'

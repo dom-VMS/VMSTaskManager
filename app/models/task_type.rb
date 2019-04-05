@@ -22,6 +22,7 @@ class TaskType < ApplicationRecord
         return user_task_types
     end
 
+    # Returns all users that belongs to a given task_type.
     def self.get_users(task_type)
         task_type_options = task_type.task_type_options
         tto_id = task_type_options.map(&:id)
@@ -30,6 +31,7 @@ class TaskType < ApplicationRecord
         return User.where(id: [user_ids])
     end
 
+    # Returns all admin users that belong to a given task_type
     def self.get_admins(task_type)
         task_type_options = task_type.task_type_options
         isAdminIds = task_type_options.select(:id).where(isAdmin: true)
@@ -40,6 +42,30 @@ class TaskType < ApplicationRecord
         end
     end
 
+    # Returns an array of all the sub-projects related to a task_type.
+    # Not just first-level children. This will return ALL children to a task_type.
+    def self.get_all_sub_projects(task_type)
+        sub_projects = task_type.children
+        sub_projects.each do |sub_project|
+            if sub_project.children.any?
+                sub_projects += TaskType.get_all_sub_projects(sub_project)
+            end
+        end
+        sub_projects
+    end
+
+    # Returns an array of a given task_type + all children under it.
+    # Used in task#edit.
+    def self.get_list_of_assignable_projects(task_type)
+        projects = [task_type]
+        projects.each do |sub_project|
+            if sub_project.children.any?
+                projects += TaskType.get_all_sub_projects(sub_project)
+            end
+        end
+        projects
+    end
+
     def self.search(search)
         unless search.empty?
             TaskType.where('name LIKE ?', "%#{sanitize_sql_like(search)}%")
@@ -47,4 +73,5 @@ class TaskType < ApplicationRecord
             TaskType.all
         end
     end
+
 end

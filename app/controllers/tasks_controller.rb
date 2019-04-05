@@ -37,6 +37,7 @@ class TasksController < ApplicationController
     get_current_user_task_type_options   
     @assignee = TaskAssignment.get_assigned_user(@task)
     get_assignable_users
+    @sub_projects = TaskType.get_list_of_assignable_projects(@task_type)
   end
 
   def create
@@ -60,12 +61,8 @@ class TasksController < ApplicationController
   end
 
   def update
-    @task_type_id = @task.task_type_id
-    get_current_user_task_type_options 
-    @task_type = TaskType.find_by_id(@task.task_type_id)
-    get_assignable_users
     add_file_attachment(attachment_params[:attachments]) unless attachment_params.empty?
-    if @task.update_attributes(task_params)
+    if @task.update(task_params)
         flash[:notice] = "Task updated!"
         respond_to do |format|
             format.html { redirect_to @task }
