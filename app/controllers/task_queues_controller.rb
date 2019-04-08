@@ -57,7 +57,7 @@ class TaskQueuesController < ApplicationController
   end
 
   def validate_current_user_can_view
-    @task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task_type.id)
+    @task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task_type)
     unless @task_type_option.nil? 
       if !(@task_type_option.isAdmin || current_user.id == @user.id)
         respond_to do |format|

@@ -13,7 +13,7 @@ class TaskTypesController < ApplicationController
     
     def show
         @task_type = find_task_type
-        @task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task_type.id)
+        @task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task_type)
         @pagy_all_tasks, @tasks = pagy(@task_type.tasks.where(isApproved: true).where.not(status: 3).or(@task_type.tasks.where(status: nil).where(isApproved: true)).order("created_at DESC"), 
                                         page_param: :page_all_tasks, 
                                         params: { active_tab: 'all_tasks' })
@@ -39,7 +39,7 @@ class TaskTypesController < ApplicationController
 
     def edit
         @task_type = find_task_type
-        task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task_type.id)
+        task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task_type)
         if task_type_option.nil? || task_type_option.isAdmin == false
             flash[:error] = "Sorry, but you do not have permission to edit #{@task_type.name}."
             redirect_to @task_type
@@ -72,7 +72,7 @@ class TaskTypesController < ApplicationController
 
     def destroy
         @task_type = find_task_type
-        task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task_type.id)
+        task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task_type)
         if task_type_option.isAdmin && task_type_option.can_delete
             @task_type.destroy
             if @task_type.destroyed?

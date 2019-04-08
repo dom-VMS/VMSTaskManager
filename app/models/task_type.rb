@@ -23,8 +23,16 @@ class TaskType < ApplicationRecord
     end
 
     # Returns all users that belongs to a given task_type.
+    # This is all user assigned to the the top-most parent + any other user 
+    # That may be directly assigned to the given task_type
     def self.get_users(task_type)
-        task_type_options = task_type.task_type_options
+        if task_type.parent.present?
+            parent_project = TaskType.get_top_most_parent(task_type)
+            task_type_options = parent_project.task_type_options
+            task_type_options += task_type.task_type_options
+        else 
+            task_type_options = task_type.task_type_options
+        end        
         tto_id = task_type_options.map(&:id)
         ug = UserGroup.where(task_type_option_id: [tto_id])
         user_ids = ug.map(&:user_id)
@@ -52,6 +60,16 @@ class TaskType < ApplicationRecord
             end
         end
         sub_projects
+    end
+
+    # Given a task_type, this method will iterate task_type.parent until it has reached 
+    # the highest level project. (parent)
+    def self.get_top_most_parent(task_type)
+        parent_project = task_type.parent
+        while parent_project.parent != nil
+            parent_project = parent_project.parent
+        end
+        parent_project
     end
 
     # Returns an array of a given task_type + all children under it.

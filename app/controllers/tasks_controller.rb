@@ -19,7 +19,7 @@ class TasksController < ApplicationController
   
   def new
     @task_type = find_task_type  
-    current_task_type_option = @task_type.nil? ? current_user.task_type_options : TaskTypeOption.get_task_type_specific_options(current_user, @task_type.id)
+    current_task_type_option = @task_type.nil? ? current_user.task_type_options : TaskTypeOption.get_task_type_specific_options(current_user, @task_type)
     if current_task_type_option.nil?
         flash[:error] = "Sorry, but you do not have permission to create #{@task_type.name} task."
         redirect_to  new_task_type_task_path(@task_type)
@@ -196,12 +196,12 @@ class TasksController < ApplicationController
 
     # Gets the current user's Task_Type_Options
     def get_current_user_task_type_options
-      @task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task.task_type_id) unless !current_user.present?
+      @task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task.task_type) unless !current_user.present?
     end
 
     # Retrieves all users that may be assigned to a task.
     def get_assignable_users
-      @assignable_users = Task.get_assignable_users(@task_type.task_type_options) 
+      @assignable_users = TaskType.get_users(@task_type) 
     end
 
     # Allows an admin to place a comment in the task that is being declined to describe why it is being rejected.
@@ -220,7 +220,7 @@ class TasksController < ApplicationController
 
     # Looks at current user's TaskTypeOptions. Determines if they are permitted to view/edit data.
     def validate_current_user 
-      @task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task_type.id)
+      @task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task_type)
       if @task_type_option.nil?
         respond_to do |format|
           flash[:error] = "Sorry, but you are not permitted to edit this task."

@@ -22,28 +22,24 @@ class TaskTypeOption < ApplicationRecord
   # Some users belong to multiple task_types. Their associated TaskTypeOptions
   # may vary by TaskType. To ensure the current_user is granted their permissions
   # when visiting their TaskType page, call this method to grab that specific
-  # set of TaskTypeOptions for a current_user. If user does not belong to said
-  # task_type, then search to see if that TaskType has a parent. If the user
-  # has a TaskTypeOption there, return it. If there is no TaskTypeOption that can
-  # be applied, return nil.
+  # set of TaskTypeOptions for a current_user. If the user does not belong to a given
+  # task_type, search to see if that TaskType has a parent. If the user
+  # has a TaskTypeOption there, return it. Keep repeating until you've found a TaskTypeOption or reached the top-most parent project.
+  # If there is no TaskTypeOption that can be applied, return nil.
   # 
   # Params:
   # current_user - current user in the session.
-  # task_type_id - give the task_type_id associated with the task_type or task.
-  def self.get_task_type_specific_options(current_user, task_type_id)
+  # task_type - task_type / project where a user is currently at.
+  def self.get_task_type_specific_options(current_user, task_type)
 
     # Return the TaskTypeOption for a given TaskType & User (if it exsist)
-    task_type_option = (current_user.task_type_options).where(task_type_id: task_type_id)
+    task_type_option = (current_user.task_type_options).where(task_type_id: task_type.id)
     return TaskTypeOption.find_by_id(task_type_option.pluck(:id)) unless task_type_option.empty?
 
-    # No TaskTypeOption was found for user given this task_type. Check if there are any admin TaskTypeOptions 
-    # defined for the given TaskType. If so, return nil.
-    return nil if TaskTypeOption.where(task_type_id: task_type_id, isAdmin: true).any?
-
-    # No TaskTypeOption was directly assigned & there are no defined Admin roles. Find the parent (if any) and see if there is a match.
-    task_type = TaskType.find_by_id(task_type_id)
+    # No TaskTypeOption matching that User & TaskType was found.
+    # Find the parent project (if any) and see if there is a match.
     if task_type.parent.present?
-      task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, task_type.parent.id)
+      task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, task_type.parent)
       return task_type_option unless task_type_option.nil?
     end
 
@@ -54,7 +50,7 @@ class TaskTypeOption < ApplicationRecord
 
   # Params:
   # user - current user in the session.
-  def self.get_user_task_types()
+  def self.get_user_task_types(user)
     tto = user.task_type_options #Grab the current user's role(s).
     return nil if tto.empty?
 
