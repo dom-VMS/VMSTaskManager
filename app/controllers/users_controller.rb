@@ -19,9 +19,13 @@ class UsersController < ApplicationController
       @can_edit = verify_if_current_user_can_edit(@user, current_user)
       @user_group = @user.user_groups   
       get_task_type_options_from_user_group
-      task_type_ids = TaskType.get_task_types_assigned_to_user(@user)
-      @task_types = TaskType.where(id: [task_type_ids])
-      @task = Task.get_all_tasks_assigned_to_user(@user)
+      task_type_ids = TaskType.get_task_types_assigned_to_user(current_user)
+      task_types = TaskType.where(id: [task_type_ids])
+      @task_types = []
+      task_types.each do |task_type|
+        @task_types += TaskType.get_list_of_assignable_projects(task_type)
+      end
+      @task = Task.get_all_tasks_assigned_to_user(current_user, @task_types)
       @pagy_recent_activity, @recent_activity = pagy(@user.logged_labors.order('created_at DESC'), page_param: :page_recent_activity, params: { active_tab: 'recent_activity' })
     end
     

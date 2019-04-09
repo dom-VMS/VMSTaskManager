@@ -115,14 +115,14 @@ class Task < ApplicationRecord
     ORDER BY ISNULL(tq.position), tq.position ASC;
 =end
     # Returns all tasks assigned to a current user.
-    def self.get_all_tasks_assigned_to_user(user)
-        tto = user.task_type_options #Grab the current user's role(s).
-        return nil if tto.empty?
+    def self.get_all_tasks_assigned_to_user(user, task_types)
+        #tto = user.task_type_options #Grab the current user's role(s).
+        #return nil if tto.empty?
 
-        user_task_types = tto.pluck(:task_type_id) #Returns projects the user belongs to.
+        #user_task_types = tto.pluck(:task_type_id) #Returns projects the user belongs to.
         task_assignment_joins_task_queue= TaskAssignment.joins("LEFT JOIN task_queues ON task_queues.task_id = task_assignments.task_id AND task_queues.user_id = #{user.id}")
         task_joins_task_assignments = Task.joins(:task_assignments).select("tasks.*, task_assignments.assigned_to_id, task_queues.position").
-                                                                    where(task_type_id: [user_task_types]).
+                                                                    where(task_type_id: [task_types]).
                                                                     where(isVerified: [nil, false]).
                                                                     where("task_assignments.assigned_to_id = #{user.id}").
                                                                     where.not(percentComplete: 100).
@@ -135,7 +135,7 @@ class Task < ApplicationRecord
     def self.get_tasks_assigned_to_user_for_task_type(task_type, user)
         task_assigment_relation = TaskAssignment.where(assigned_to_id: user.id)
         task_type_relation = Task.joins(:task_assignments).
-                                    where(task_type_id: task_type.id).
+                                    where(task_type_id: task_type).
                                     where(isVerified: [nil, false]).
                                     where.not(percentComplete: 100).
                                     where.not(isApproved: [nil, false]).
