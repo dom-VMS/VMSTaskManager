@@ -13,7 +13,8 @@ class TasksController < ApplicationController
     @task_type = TaskType.find_by_id(@task.task_type_id)
     get_current_user_task_type_options
     @activities = ActivitiesHelper.get_activities(@task)
-    @assignee = TaskAssignment.get_assigned_user(@task)
+    @assignees = @task.users
+    #TaskAssignment.get_assigned_user(@task)
     get_assignable_users        
   end
   
@@ -34,8 +35,12 @@ class TasksController < ApplicationController
   def edit
     @task_type = TaskType.find_by_id(@task.task_type_id)
     validate_current_user
-    get_current_user_task_type_options   
-    @assignee = TaskAssignment.get_assigned_user(@task)
+    get_current_user_task_type_options  
+    if @task_type_option.nil? || @task_type_option.can_update? == false
+      flash[:error] = "Sorry, but you do not have permission to edit tasks."
+      redirect_to task_path(@task)
+    end
+    @assignee = @task.users
     get_assignable_users
     @sub_projects = TaskType.get_list_of_assignable_projects(@task_type)
   end

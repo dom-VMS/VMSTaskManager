@@ -4,15 +4,15 @@
         <div class="nav flex-column nav-pills " id="v-pills-tab" role="tablist" aria-orientation="vertical">
         <% flag = false %>
         <% @task_types.each do |task_type| %>
-            <% unless @task.where(task_type_id: task_type.id).size  == 0%>
+            <% unless @task.where(task_type_id: task_type.id).length  == 0%>
                 <% if flag == false %>
                     <a class="nav-link active border border-light" id="v-pills-<%=task_type.id%>-tab" data-toggle="pill" href="#v-pills-<%=task_type.id%>" role="tab" aria-controls="v-pills-<%=task_type.id%>" aria-selected="true"><%=task_type.name%> 
-                        <span class="badge badge-light right"><%= @task.where(task_type_id: task_type.id).size %></span>
+                        <span class="badge badge-light right"><%= @task.where(task_type_id: task_type.id).length %></span>
                     </a>
                     <%flag = true%>
                 <% else %>
                     <a class="nav-link border border-light" id="v-pills-<%=task_type.id%>-tab" data-toggle="pill" href="#v-pills-<%=task_type.id%>" role="tab" aria-controls="v-pills-<%=task_type.id%>" aria-selected="true"><%=task_type.name%>  
-                        <span class="badge badge-light right"><%= @task.where(task_type_id: task_type.id).size %></span>
+                        <span class="badge badge-light right"><%= @task.where(task_type_id: task_type.id).length %></span>
                     </a>
                 <% end %>
             <% end %>
@@ -25,16 +25,16 @@
             <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
                 <% flag = false %>
                 <% @task_types.each do |task_type| %>
-                    <% unless @task.where(task_type_id: task_type.id).size == 0%>
+                    <% unless @task.where(task_type_id: task_type.id).length == 0%>
                         <li class="nav-item">
                             <% if flag == false  %>
                                 <a class="nav-link active border border-primary" id="v-pills-<%=task_type.id%>-tab" data-toggle="pill" href="#v-pills-<%=task_type.id%>" role="tab" aria-controls="v-pills-<%=task_type.id%>" aria-selected="true" style="white-space: nowrap; overflow: hidden;"><%=task_type.name%> 
-                                    <span class="badge badge-light right"><%= @task.where(task_type_id: task_type.id).size %></span>
+                                    <span class="badge badge-light right"><%= @task.where(task_type_id: task_type.id).length %></span>
                                 </a>
                                 <%flag = true%>
                             <% else %>
                                 <a class="nav-link border border-primary pill-secondary" id="v-pills-<%=task_type.id%>-tab" data-toggle="pill" href="#v-pills-<%=task_type.id%>" role="tab" aria-controls="v-pills-<%=task_type.id%>" aria-selected="true" style="white-space: nowrap; overflow: hidden;"><%=task_type.name%>  
-                                    <span class="badge badge-light right"><%= @task.where(task_type_id: task_type.id).size %></span>
+                                    <span class="badge badge-light right"><%= @task.where(task_type_id: task_type.id).length %></span>
                                 </a>
                             <% end %>    
                         </li>
@@ -48,7 +48,7 @@
         <!-- Display each project in a pill -->
         <% flag = false %>
         <% @task_types.each do |task_type| %>
-            <% unless @task.where(task_type_id: task_type.id).size  == 0%>
+            <% unless @task.where(task_type_id: task_type.id).length  == 0%>
                 <% if flag == false  %>
                     <div class="tab-pane fade show active" id="v-pills-<%=task_type.id%>" role="tabpanel" aria-labelledby="v-pills-<%=task_type.id%>-tab">
                     <%flag = true%>

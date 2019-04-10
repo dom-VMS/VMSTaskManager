@@ -39,7 +39,7 @@ class TaskAssignmentsController < ApplicationController
 
     # Retrieves all users that may be assigned to a task.
     def get_assignable_users
-        @assignable_users = Task.get_assignable_users(@task_type.task_type_options) 
+        @assignable_users = TaskType.get_users(@task_type) 
     end
        
 end
