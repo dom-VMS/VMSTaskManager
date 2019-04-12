@@ -69,35 +69,29 @@ class Task < ApplicationRecord
 
     # Retrieve all open tasks that a User is permitted to verify.
     def self.get_all_tasks_user_can_verify(user)
-        tto = user.task_type_options
-        if tto.empty?
-            return nil
-        else
-            ttoHash = tto.pluck(:task_type_id, :can_verify).to_h
-            task_types = ttoHash.select { |key, value| value == true }
-            task_types = task_types.keys
-            # task_types = tto.pluck(:task_type_id) <-- Consider reimplementing this and just making the buttons disabled.
-            return (Task.where(isVerified: [nil, false]).
-                        where(status: 3).
-                        where(task_type_id: [task_types]).
-                        order("updated_at DESC"))
+        task_type_ids = TaskType.get_task_types_assigned_to_user(user)
+        task_types = TaskType.where(id: [task_type_ids])
+        all_task_types = []
+        task_types.each do |task_type|
+            all_task_types += TaskType.get_list_of_assignable_projects(task_type)
         end
+        return (Task.where(isVerified: [nil, false]).
+                    where(status: 3).
+                    where(task_type_id: [all_task_types]).
+                    order("updated_at DESC"))
     end
 
     # Retrieve all open tasks that the current user is permitted to approve.
     def self.get_all_tickets_user_can_approve(user)
-        tto = user.task_type_options
-        if tto.empty?
-            return nil
-        else
-            ttoHash = tto.pluck(:task_type_id, :can_approve).to_h
-            task_types = ttoHash.select { |key, value| value == true }
-            task_types = task_types.keys
-            # task_types = tto.pluck(:task_type_id) <-- Consider reimplementing this and just making the buttons disabled.
-            return (Task.where(isApproved: [nil]).
-                        where(task_type_id: [task_types]).
-                        order("updated_at DESC"))
+        task_type_ids = TaskType.get_task_types_assigned_to_user(user)
+        task_types = TaskType.where(id: [task_type_ids])
+        all_task_types = []
+        task_types.each do |task_type|
+            all_task_types += TaskType.get_list_of_assignable_projects(task_type)
         end
+        return (Task.where(isApproved: [nil]).
+                    where(task_type_id: [all_task_types]).
+                    order("updated_at DESC"))
     end
 
 =begin

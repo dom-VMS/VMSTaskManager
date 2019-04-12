@@ -93,28 +93,28 @@ class TasksController < ApplicationController
   end
 
   def review
-    tto = current_user.task_type_options
-    unless tto.empty?
-        ttoHash = tto.pluck(:task_type_id, :can_approve).to_h
-        task_types = ttoHash.select { |key, value| value == true }
-        @task_types = TaskType.where(id: task_types.keys)
-        @task = Task.where(isApproved: [nil]).
+    task_type_ids = TaskType.get_task_types_assigned_to_user(current_user)
+    task_types = TaskType.where(id: [task_type_ids])
+    @task_types = []
+    task_types.each do |task_type|
+      @task_types += TaskType.get_list_of_assignable_projects(task_type)
+    end
+    @task = Task.where(isApproved: [nil]).
                     where(task_type_id: [@task_types]).
                     order("updated_at DESC")
-    end
   end
 
   def verify
-    tto = current_user.task_type_options
-    unless tto.empty?
-        ttoHash = tto.pluck(:task_type_id, :can_verify).to_h
-        task_types = ttoHash.select { |key, value| value == true }
-        @task_types = TaskType.where(id: task_types.keys)
-        @task = Task.where(isVerified: [nil, false]).
-                    where(status: 3).
-                    where(task_type_id: [@task_types]).
-                    order("updated_at DESC")
+    task_type_ids = TaskType.get_task_types_assigned_to_user(current_user)
+    task_types = TaskType.where(id: [task_type_ids])
+    @task_types = []
+    task_types.each do |task_type|
+      @task_types += TaskType.get_list_of_assignable_projects(task_type)
     end
+    @task = Task.where(isVerified: [nil, false]).
+                where(status: 3).
+                where(task_type_id: [@task_types]).
+                order("updated_at DESC")
   end
 
   def update_ticket
