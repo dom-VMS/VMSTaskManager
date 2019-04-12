@@ -59,9 +59,9 @@
                 <% (@task.where(task_type_id: task_type.id)).each do |task|%>
                     <div class="list-group list-group-flush sortable">
                         <% if task.attributes['position'].nil?%>
-                            <div class="list-group-item py-2 d-flex justify-content-between align-items-center list-group-item-linkable" data-link="<%= task_path(task)%>">
+                        <div class="list-group-item py-2 d-flex justify-content-between align-items-center list-group-item-linkable" data-link="<%= task_path(task)%>">
                         <% else %>
-                            <div class="list-group-item py-2 d-flex justify-content-between align-items-center list-group-item-linkable list-group-item-info" data-link="<%= task_path(task)%>">
+                        <div class="list-group-item py-2 d-flex justify-content-between align-items-center list-group-item-linkable list-group-item-info" data-link="<%= task_path(task)%>">
                         <%end%>
                             <%= task.title.blank? ? (link_to ("[##{task.id}]  " + task.description.truncate_words(15)), task_path(task)) : (link_to ("[##{task.id}]  " + task.title.truncate_words(15)), task_path(task)) %>
                             <%= task_priority(task) %>

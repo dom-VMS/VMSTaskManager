@@ -73,6 +73,10 @@
                         user_path(current_user.id), 
                         class:  "dropdown-item",
                         title: 'Profile' %>
+        <%= link_to fa_icon("question-circle 2x", text:"Help"),
+                        contents_getting_started_path, 
+                        class:  "dropdown-item",
+                        title: 'Help' %>
         <%= link_to fa_icon("sign-out-alt 2x", text:"Sign Out"), 
                       logout_path,
                       class:  "dropdown-item",

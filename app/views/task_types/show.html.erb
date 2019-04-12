@@ -175,11 +175,7 @@
                                 <tr>
                                     <td><%= link_to user.full_name, user_path(user) %></td>
                                     <td><%= user_task_type_option(user) %></td>
-                                    <% if @task_type_option&.isAdmin || current_user == user %>
-                                        <td><%= (link_to 'View Queue', task_type_user_task_queues_path(@task_type.id, user.id), class: "btn btn-primary" )%></td>
-                                    <% else %>
-                                        <td><%= (link_to 'View Queue', task_type_user_task_queues_path(@task_type.id, user.id), class: "btn btn-primary disabled" )%></td>
-                                    <% end %>
+                                    <td><%= (link_to 'View Queue', task_type_user_task_queues_path(@task_type.id, user.id), class: "btn btn-primary #{'disabled' unless @task_type_option&.isAdmin || current_user == user }" )%></td>
                                 </tr>
                                 <%end%>
                             </tbody>

@@ -2,9 +2,11 @@ require 'my_utilities'
 
 class Task < ApplicationRecord
     include PublicActivity::Model
-    #include Filterable 
+    
+    # Used for public_acitivity gem
     tracked
 
+    # File uploader for attchaments
     mount_uploaders :attachments, AttachmentUploader
 
     # config/initializers/task_constants.rb
@@ -26,7 +28,6 @@ class Task < ApplicationRecord
 
     accepts_nested_attributes_for :file_attachments, :task_assignments
     
-    #validates :title, presence: true
     #validates :created_by_id_exists
     validates_presence_of :task_type_id
     validates :created_by_id, numericality: true

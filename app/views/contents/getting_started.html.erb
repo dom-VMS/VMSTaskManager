@@ -1,0 +1,150 @@
+
+<div class="container-fluid">
+    <div class="row content">
+        <div class="col-sm-1 bg-light"></div>
+        <div class="col-sm-10">
+            <div class="container">
+                <h1 class="text-center">Getting Started</h1>
+                <br>
+                <h4 class="text-center">Welcome! This is a quick guide to using <br> Varland's Project Managment System </h4> <br>
+                <p>
+                    In this guide, we will cover how to perform actions such as:
+                    <ul>
+                        <li>Creating a Project.</li>
+                        <li>Defining roles & permissions.</li>
+                        <li>Generating and assigning tasks.</li>
+                        <li>Filing a ticket.</li>
+                        <li>Reviewing & Verifiying Tasks.</li>
+                        <li>Understanding the <i>Task Queue</i>. </li>
+                    </ul>
+                </p>
+                <br><br>
+                <h4 class="text-center">Creating a project</h4><br>
+                <p>
+                    The first step to managing a project is to define it within our applicaton. <br><br>
+
+                    Click the "Projects" (<%= fa_icon 'building' %>) button in the nav-bar to be redirected to a list of available projects.<br><br>
+
+                    Find the <%= (link_to fa_icon('plus-circle', text: 'Add Project'), new_task_type_path, class: 'btn btn-primary ') %> button to be redirected to the project-creation form.<br><br>
+
+                    There you will provide the project with a name and description. Once complete, click the create button to develop your project.<br><br>
+
+                    <strong>Sub-projects:</strong> To create a sub-project, go into a pre-exsisting project & click the "Add Sub-project" (<%= fa_icon 'plus-circle' %>) button.
+                </p>
+                <br><br>
+                <h4 class="text-center">Defining Roles & Permissions</h4><br>
+                <p>
+                    Once a project has been created, defining roles and adding users is the next step.<br><br>
+                    Either click under <%= fa_icon('user-cog', text: 'Admin') %> / <%= fa_icon('user-tie', text: 'Roles') %> or follw the prompt once a project is officially created.<br><br>
+
+                    When on the <i>Roles and Permissions</i> page, find the appropriate project, click the <%= fa_icon 'plus-circle', text: 'New Role' %> button, and follow the instructions.<br><br>
+
+                    <i><strong>NOTE:</strong> Roles and permissions for a sub-project will automatically inherit any exsisting roles from the parent project. A user will need to define new roles for the sub-project if they do not want the inheritance.</i><br><br>
+
+                    Once a role is created, click the 
+                    <button type="button" class="btn btn-primary btn-sm" >
+                        <%= fa_icon 'user-plus', text: 'Assign User' %>
+                    </button> button to assign users to a role.
+                </p>
+                <br><br>
+                <h4 class="text-center">Generating and assigning tasks</h4><br>
+                <p>
+                    To create a task, go to a project where you have roles and permissions for.<br><br>
+                    Assuming the admin user of a project has given you the priviledge, find the 
+                    <button type="button" class="btn btn-primary btn-sm" >
+                        <%= fa_icon 'plus-circle', text: 'New Task' %> 
+                    </button> button near the top of the page.<br><br>
+
+                    Fill out any necessary information. This includes a title, description, due date, priority, status, percent complete, assignee, and attachments.<br><br>
+
+                    These fields may be left blank but the more information provided, the better.<br><br>
+
+                    To assign more users to a task, click <%= fa_icon 'edit', text: 'Edit' %>, click the <%= fa_icon 'plus-circle', text: 'Assign User' %> button, and follow the prompt.  <br><br>
+                </p>
+                <br><br>
+                <h4 class="text-center">Filing a ticket</h4><br>
+                <p>
+                    Tickets may be filed to by users who do not belong or are not assigned to a given project.<br><br>
+
+                    Once filed, admin users in the project will be notified of the ticket's creation. 
+                    The ticket will then be reviewed and marked as accepted or declined. 
+                    In both cases, an email confirmation will be sent to the user who created the ticket.<br><br>
+
+                    To file a ticket, find the <%= link_to fa_icon('ticket-alt', text:'File Ticket'), ticket_path%> button in the nav-bar or on the welcome screen.<br><br>
+
+                    Select a project from the list of non-sub-projects, fill out the form, and click <i>Submit Request</i> when complete.
+                </p>
+                <br><br>
+                <h4 class="text-center">Reviewing & Verifiying Tasks</h4><br>
+                <p>
+                    All tasks and tickets must under-go an evaluation process.<br><br>
+
+                    Only users with assined this priviledge in their roles may Approve/Decline a task or ticket.<br><br>
+
+                    <strong>Tasks</strong> must be <i>verified</i> before they are offically marked as complete. 
+                    When a user believes a task is done, they must set <strong>Percent Complete</strong> to  <i>100%</i>  and mark the <strong>Status</strong>  as <i>Complete</i>.
+                    The task is then sent off to be verified. This can be found under <%= fa_icon('user-cog', text: 'Admin') %> / <%= fa_icon('check-circle', text:'Verify Completion') %> or just <%= fa_icon('check-circle', text:'Verify Completion') %>
+                    if the user is not an admin but has permissions. <br><br>
+
+                    Once there, any tasks that require verification will be displayed.<br><br>
+                    To verify a task as complete, click the 
+                    <button type="button" class="btn btn-primary btn-sm">
+                        <%= fa_icon('check-circle')%>
+                    </button> button.<br>
+                    To mark a task as incomplete, click the 
+                    <button type="button" class="btn btn-danger btn-sm" >
+                        <%= fa_icon('times-circle')%>
+                    </button> button. An option will appear to give feedback.
+                    <br><br> 
+                    <strong>Tickets</strong> must be <i>reviewed</i> before they are offically marked as accepted. 
+                    When a ticket is filed, a user with the proper priviledges will review the ticket.
+                    This can be found under <%= fa_icon('user-cog', text: 'Admin') %> / <%= fa_icon('user-tag ', text:'Review Tickets') %> or just <%= fa_icon('user-tag ', text:'Review Tickets') %>
+                    if the user is not an admin but has permissions. <br><br>
+
+                    Once there, any ticket that required approval will be displayed.<br><br>
+                    To mark a ticket as approved, click the 
+                    <button type="button" class="btn btn-primary btn-sm">
+                        <%= fa_icon('check-circle')%>
+                    </button> button.<br>
+                    To mark a ticket as declined, click the 
+                    <button type="button" class="btn btn-danger btn-sm" >
+                        <%= fa_icon('times-circle')%>
+                    </button> button. An option will appear to give feedback.
+                </p>
+                <br><br>
+                <h4 class="text-center">Understanding the <i>Task Queue</i></h4><br>
+                <p>
+                    Task Queue is a feature for project admins to define an order in which other user's should complete their assigned tasks.<br><br>
+
+                    Every user within a project has a queue for that project. Only tasks the user is assigned to may be added to their queue. 
+                    As well, only Admin users may adjust a user's queue.<br><br>
+
+                    To access a queue: enter a project, go to the <i>users</i> tab, and click the 
+                    <button type="button" class="btn btn-primary btn-sm">
+                        View Queue
+                    </button> button.<br><br>
+
+                    From here, you may view the user's current queue and, if you have the priviledges, may adjust it. This can be done by dragging and dropping
+                    the tasks. Once dropped, the order of the queue will automatically be updated. Refresh the page to see how the has changed.<br><br>
+
+                    As well, an admin may add a task to the queue. This is done by clicking the
+                    <button type="button" class="btn btn-light btn-sm">
+                        <%= fa_icon('plus-circle', text: 'Add task to queue')%>
+                    </button> button. From there, select a task from the list of tasks and then click the
+                    <button type="button" class="btn btn-success btn-sm">
+                        <%= fa_icon('plus-circle', text: 'Add Task')%>
+                    </button> button.
+                    <br><br>
+                    
+                    As a user, your queue can be seen on the homepage. They are shaded in a green hue, much like this:<br>
+                    <div class="list-group-item py-2 d-flex justify-content-between align-items-center list-group-item-linkable list-group-item-info">
+                        This is an example of what a queued task would look like.
+                        <%= task_priority(Task.first) unless Task.first.nil?%> 
+                    </div>
+                </p>
+                <br><br>
+            </div>
+        </div>
+        <div class="col-sm-1 bg-light"></div>
+    </div>
+</div> 

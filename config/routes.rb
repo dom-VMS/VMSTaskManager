@@ -1,10 +1,10 @@
 Rails.application.routes.draw do
   mount RlegacyAdmin::Engine, at: "/admin"
   get 'activities/index'
-
+  get 'contents/getting_started'
+  get 'errors/not_signed_in'
   get '/home', to: 'home#index'
   get 'home/welcome'
-  get 'errors/not_signed_in'
 
   # Sessions
   get    '/login',   to: 'sessions#new'

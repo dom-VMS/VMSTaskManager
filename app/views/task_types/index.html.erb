@@ -8,7 +8,7 @@
     <div class="row">
          <!--Large to XL Screen Size-->
         <div class="col-lg-9 col-xl-9 float-left ">
-            <%= (link_to fa_icon('plus-circle', text: 'Add Project'), new_task_type_path, class: 'btn btn-primary ') if isAdmin? == true %>
+            <%= (link_to fa_icon('plus-circle', text: 'Add Project'), new_task_type_path, class: 'btn btn-primary ')%>
         </div>
         <div class="col-lg-3 col-xl-3 float-right">
             <%= form_tag(task_types_path, method: :get, class: 'form-inline') do %>
@@ -22,7 +22,7 @@
     <div class="row">
         <!--Any size screen less than large-->
         <div class="col-6">
-            <%= (link_to fa_icon('plus-circle', text: 'Add Project'), new_task_type_path, class: 'btn btn-sm btn-primary float-left') if isAdmin? == true %>
+            <%= (link_to fa_icon('plus-circle', text: 'Add Project'), new_task_type_path, class: 'btn btn-sm btn-primary float-left')%>
         </div>
         <div class=" col-6">
             <%= form_tag(task_types_path, method: :get, class: 'form-inline float-right') do %>
