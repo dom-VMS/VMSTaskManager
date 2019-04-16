@@ -250,7 +250,7 @@ DEPENDENCIES
   brakeman
   byebug
   capybara (~> 2.13)
-  carrierwave (~> 1.0)
+  carrierwave
   coffee-rails (~> 4.2)
   filterrific
   font-awesome-rails
