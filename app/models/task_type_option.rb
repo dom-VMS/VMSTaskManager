@@ -45,7 +45,6 @@ class TaskTypeOption < ApplicationRecord
     return nil if tto.empty?
 
     user_task_types = tto.pluck(:task_type_id) #Returns projects the user belongs to.
-    puts user_task_types
   end
 
 end

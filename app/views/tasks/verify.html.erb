@@ -9,9 +9,15 @@
             <div class="nav flex-column nav-pills " id="v-pills-tab" role="tablist" aria-orientation="vertical">
             <% @task_types.each do |task_type| %>
                 <% if task_type == @task_types.first %>
-                    <a class="nav-link active border border-light" id="v-pills-<%=task_type.id%>-tab" data-toggle="pill" href="#v-pills-<%=task_type.id%>" role="tab" aria-controls="v-pills-<%=task_type.id%>" aria-selected="true"><%=task_type.name%> <span class="badge badge-light right"><%= @task.where(task_type_id: task_type.id).count %></span></a>
+                    <a class="nav-link active border border-light" id="v-pills-<%=task_type.id%>-tab" data-toggle="pill" href="#v-pills-<%=task_type.id%>" role="tab" aria-controls="v-pills-<%=task_type.id%>" aria-selected="true">
+                        <%=task_type.name%>
+                        <span class="badge badge-light right"><%= @task.where(task_type_id: task_type.id).count %></span>
+                    </a>
                 <% else %>
-                    <a class="nav-link border border-light" id="v-pills-<%=task_type.id%>-tab" data-toggle="pill" href="#v-pills-<%=task_type.id%>" role="tab" aria-controls="v-pills-<%=task_type.id%>" aria-selected="true"><%=task_type.name%> <span class="badge badge-light right"><%= @task.where(task_type_id: task_type.id).count %></span></a>
+                    <a class="nav-link border border-light" id="v-pills-<%=task_type.id%>-tab" data-toggle="pill" href="#v-pills-<%=task_type.id%>" role="tab" aria-controls="v-pills-<%=task_type.id%>" aria-selected="true">
+                        <%=task_type.name%> 
+                        <span class="badge badge-light right"><%= @task.where(task_type_id: task_type.id).count %></span>
+                    </a>
                 <% end %>
             <% end %>
             </div>
@@ -23,9 +29,15 @@
                     <% @task_types.each do |task_type| %>
                         <li class="nav-item">
                             <% if task_type == @task_types.first %>
-                                <a class="nav-link active border border-primary" id="v-pills-<%=task_type.id%>-tab" data-toggle="pill" href="#v-pills-<%=task_type.id%>" role="tab" aria-controls="v-pills-<%=task_type.id%>" aria-selected="true" style="white-space: nowrap; overflow: hidden;"><%=task_type.name%> <span class="badge badge-light right"><%= @task.where(task_type_id: task_type.id).count %></span></a>
+                                <a class="nav-link active border border-primary" id="v-pills-<%=task_type.id%>-tab" data-toggle="pill" href="#v-pills-<%=task_type.id%>" role="tab" aria-controls="v-pills-<%=task_type.id%>" aria-selected="true" style="white-space: nowrap; overflow: hidden;">
+                                    <%=task_type.name%> 
+                                    <span class="badge badge-light right"><%= @task.where(task_type_id: task_type.id).count %></span>
+                                </a>
                             <% else %>
-                                <a class="nav-link border border-primary pill-secondary" id="v-pills-<%=task_type.id%>-tab" data-toggle="pill" href="#v-pills-<%=task_type.id%>" role="tab" aria-controls="v-pills-<%=task_type.id%>" aria-selected="true" style="white-space: nowrap; overflow: hidden;"><%=task_type.name%> <span class="badge badge-light right"><%= @task.where(task_type_id: task_type.id).count %></span></a>
+                                <a class="nav-link border border-primary pill-secondary" id="v-pills-<%=task_type.id%>-tab" data-toggle="pill" href="#v-pills-<%=task_type.id%>" role="tab" aria-controls="v-pills-<%=task_type.id%>" aria-selected="true" style="white-space: nowrap; overflow: hidden;">
+                                    <%=task_type.name%>
+                                    <span class="badge badge-light right"><%= @task.where(task_type_id: task_type.id).count %></span>
+                                </a>
                             <% end %>    
                         </li>
                     <% end %>
@@ -37,13 +49,13 @@
             <div class="tab-content" id="v-pills-tabContent">
                 <% @task_types.each do |task_type| %>
                     <% if task_type == @task_types.first %>
-                        <div class="tab-pane fade show active" id="v-pills-<%=task_type.id%>" role="tabpanel" aria-labelledby="v-pills-<%=task_type.id%>-tab">
+                    <div class="tab-pane fade show active" id="v-pills-<%=task_type.id%>" role="tabpanel" aria-labelledby="v-pills-<%=task_type.id%>-tab">
                     <% else %>
-                        <div class="tab-pane fade" id="v-pills-<%=task_type.id%>" role="tabpanel" aria-labelledby="v-pills-<%=task_type.id%>-tab">
+                    <div class="tab-pane fade" id="v-pills-<%=task_type.id%>" role="tabpanel" aria-labelledby="v-pills-<%=task_type.id%>-tab">
                     <%end%>
-                            <div class="row">
-                            <% tasks = @task.where(task_type_id: task_type.id) %>
-                            <% unless tasks.empty? %>
+                        <div class="row">
+                        <% tasks = @task.where(task_type_id: task_type.id) %>
+                        <% unless tasks.empty? %>
                             <% tasks.each do |task|%>
                                 <div class="col-sm-4">
                                 <%= link_to task_path(task) do %>
@@ -58,11 +70,11 @@
                                                             class: "btn btn-primary btn-lg",
                                                             method: 'put', 
                                                             data: { confirm: 'By selecting this, you verify this task has been complete. Continue?' })%>
-                                            <button type="button" class="btn btn-danger btn-lg" data-toggle="modal" data-target="#declineTaskModal">
+                                            <button type="button" class="btn btn-danger btn-lg" data-toggle="modal" data-target="#declineTaskModal<%=task.id%>">
                                                 <%= fa_icon('times-circle')%>
                                             </button>
-                                            <!-- Decline Task Modal -->
-                                            <div class="modal fade" id="declineTaskModal" tabindex="-1" role="dialog" aria-labelledby="declineTaskModalLabel" aria-hidden="true">
+                                            <!-- Decline Task Modal --> 
+                                            <div class="modal fade" id="declineTaskModal<%=task.id%>" tabindex="-1" role="dialog" aria-labelledby="declineTaskModalLabel" aria-hidden="true">
                                                 <div class="modal-dialog" role="document">
                                                     <div class="modal-content">
                                                         <div class="modal-header">
@@ -72,27 +84,27 @@
                                                             </button>
                                                         </div>
                                                         <%= form_with(model: task, url: {action: "update_ticket"}, local: true) do |form| %>
-                                                        <div class="modal-body">
-                                                            <h4>Why is this task is being declined?</h4>
-                                                            <p>
-                                                                <%= form.label :body, 'Click Decline Completion when finished.' %><br>
-                                                                <%= form.text_area :body, class: 'form-control', placeholder: "Please enter details here." %>
-                                                            </p>
-                                                            <p>
-                                                                <%= form.label :attachments, 'File attachments' %>
-                                                                <%= form.file_field :attachments, multiple: true %>
-                                                            </p>
-                                                            <% commenter = current_user.full_name %>
-                                                            <%= form.hidden_field 'status', :value => 1 %>
-                                                            <%= form.hidden_field 'isVerified', :value => false %>
-                                                            <%= form.hidden_field 'id', :value => task.id %>
-                                                        </div>   
-                                                        <div class="modal-footer">
-                                                            <%= button_tag type: 'submit', class: "btn btn-lg btn-danger", id: "register-button" do %>
-                                                                <%= fa_icon('times-circle', text: 'Decline Completion')%>
-                                                            <% end %>
-                                                            <button type="button" class="btn btn-lg btn-secondary" data-dismiss="modal">Cancel</button>
-                                                        </div>
+                                                            <div class="modal-body">
+                                                                <h4>Why is this task is being declined?</h4>
+                                                                <p>
+                                                                    <%= form.label :body, 'Click Decline Completion when finished.' %><br>
+                                                                    <%= form.text_area :body, class: 'form-control', placeholder: "Please enter details here." %>
+                                                                </p>
+                                                                <p>
+                                                                    <%= form.label :attachments, 'File attachments' %>
+                                                                    <%= form.file_field :attachments, multiple: true %>
+                                                                </p>
+                                                                <% commenter = current_user.full_name %>
+                                                                <%= form.hidden_field 'status', :value => 1 %>
+                                                                <%= form.hidden_field 'isVerified', :value => false %>
+                                                                <%= form.hidden_field 'id', :value => task.id %>
+                                                            </div>   
+                                                            <div class="modal-footer">
+                                                                <%= button_tag type: 'submit', class: "btn btn-lg btn-danger", id: "register-button" do %>
+                                                                    <%= fa_icon('times-circle', text: 'Decline Completion')%>
+                                                                <% end %>
+                                                                <button type="button" class="btn btn-lg btn-secondary" data-dismiss="modal">Cancel</button>
+                                                            </div>
                                                         <% end %>
                                                     </div>
                                                 </div>   
@@ -105,9 +117,9 @@
                                 <% end%>
                                 </div>
                             <% end%>
-                            <% else %>
-                                <h1><strong>No new completed tasks for <%=task_type.name%></strong></h1>
-                            <% end %>
+                        <% else %>
+                            <h1><strong>No new completed tasks for <%=task_type.name%></strong></h1>
+                        <% end %>
                         </div>
                     </div>
                 <%end%>

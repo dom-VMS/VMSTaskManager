@@ -45,6 +45,8 @@ gem 'rails_sortable'
 gem 'pagy'
 # Richard's Admin Gem
 gem 'rlegacy_admin', :git => 'git://github.com/rLegacy-Varland/rlegacy_admin'
+# Brakeman is a tool that analysizes security vulnerabilities
+gem 'brakeman'
 
 # Use CoffeeScript for .coffee assets and views
 gem 'coffee-rails', '~> 4.2'
