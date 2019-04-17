@@ -1,5 +1,7 @@
 class TaskTypeOption < ApplicationRecord
   belongs_to :task_type
+
+  #has_many :through Association (users x user_groups x task_type_options)
   has_many :user_groups, dependent: :destroy
   has_many :users, through: :user_groups
 

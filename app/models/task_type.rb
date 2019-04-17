@@ -39,14 +39,16 @@ class TaskType < ApplicationRecord
         return User.where(id: [user_ids])
     end
 
-    # Returns all admin users that belong to a given task_type
+    # Returns all admin users that belong to a given task_type.
+    # If no admin is directly defined, check the top-most parent project.
     def self.get_admins(task_type)
-        task_type_options = task_type.task_type_options
-        isAdminIds = task_type_options.select(:id).where(isAdmin: true)
-        unless isAdminIds.nil?
-            admins = UserGroup.select(:user_id).where(task_type_option_id: isAdminIds)
-            user_ids = admins.pluck(:user_id)
-            users = User.where(id: user_ids)
+        if task_type.task_type_options.where(isAdmin: true).any?
+            tto = TaskTypeOption.find_by(task_type_id: task_type.id, isAdmin: true)
+            return tto.users
+        elsif task_type.parent.present?
+            parent = TaskType.get_top_most_parent(task_type)
+            tto = TaskTypeOption.find_by(task_type_id: parent.id, isAdmin: true)
+            tto.users.nil? ? (return nil) : (return tto.users)
         end
     end
 
@@ -84,6 +86,7 @@ class TaskType < ApplicationRecord
         projects
     end
 
+    # Search function for TaskTypes.
     def self.search(search)
         unless search.empty?
             TaskType.where('name LIKE ?', "%#{sanitize_sql_like(search)}%")

@@ -50,16 +50,18 @@
       <% else %>
         <% if canApprove? %>
         <li class="nav-item">
-          <%= link_to fa_icon('user-tag 2x', text:'Review Tickets'),
-                            review_path, 
-                            class:  "nav-link" %>
+          <%= link_to review_path, class:  "nav-link" do %>
+            <%= fa_icon('user-tag 2x', text:'Review Tickets')%>
+            <span class="badge badge-light right"><%= Task.get_all_tickets_user_can_approve(current_user).count %></span>                  
+          <% end %>
         </li>
         <%end%>
         <% if canVerify? %>
         <li class="nav-item">
-          <%= link_to fa_icon('check-circle 2x', text:'Verify Completion'),
-                              verify_path, 
-                              class:  "nav-link" %>
+          <%= link_to verify_path, class: "nav-link" do  %>
+                <%= fa_icon('check-circle 2x', text:'Verify Completion') %>
+                <span class="badge badge-light right"><%= Task.get_all_tasks_user_can_verify(current_user).count %></span>             
+          <% end %>
         </li>
         <% end %>
       <% end %>
