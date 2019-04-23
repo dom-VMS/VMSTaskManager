@@ -1,5 +1,4 @@
 require 'my_utilities'
-
 class Task < ApplicationRecord
     include PublicActivity::Model
     
@@ -51,7 +50,7 @@ class Task < ApplicationRecord
              order("created_at DESC")
     end
 
-    # Retrieve all open tasks that the current user is permitted to work on.
+    # Retrieve all open tasks that a user is permitted to work on.
     def self.get_all_tasks_user_can_see(user)
         tasks = []
         tto = user.task_type_options
@@ -67,7 +66,7 @@ class Task < ApplicationRecord
         end
     end
 
-    # Retrieve all open tasks that a User is permitted to verify.
+    # Retrieve all open tasks that a user is permitted to verify.
     def self.get_all_tasks_user_can_verify(user)
         task_type_ids = TaskType.get_task_types_assigned_to_user(user)
         task_types = TaskType.where(id: [task_type_ids])
@@ -81,7 +80,7 @@ class Task < ApplicationRecord
                     order("updated_at DESC"))
     end
 
-    # Retrieve all open tasks that the current user is permitted to approve.
+    # Retrieve all open tasks that a user is permitted to approve.
     def self.get_all_tickets_user_can_approve(user)
         task_type_ids = TaskType.get_task_types_assigned_to_user(user)
         task_types = TaskType.where(id: [task_type_ids])
@@ -94,49 +93,16 @@ class Task < ApplicationRecord
                     order("updated_at DESC"))
     end
 
-=begin
-    SELECT t.*, ta.assigned_to_id, tq.position
-    FROM tasks t
-    INNER JOIN task_assignments ta
-        ON t.id = ta.task_id
-    LEFT JOIN task_queues tq
-        ON t.id = tq.task_id
-        AND ta.assigned_to_id = tq.user_id
-    WHERE t.task_type_id IN (2, 4)
-        AND (t.isVerified = 0 OR t.isVerified IS NULL)
-        AND t.percentComplete != 100
-        AND (NOT(t.isApproved = 0 OR t.isApproved is NULL))
-        AND (ta.assigned_to_id = #{user.id} OR ta.assigned_to_id IS NULL)
-    ORDER BY ISNULL(tq.position), tq.position ASC;
-=end
-    # Returns all tasks assigned to a current user.
-    def self.get_all_tasks_assigned_to_user(user, task_types)
-        #tto = user.task_type_options #Grab the current user's role(s).
-        #return nil if tto.empty?
-
-        #user_task_types = tto.pluck(:task_type_id) #Returns projects the user belongs to.
-        task_assignment_joins_task_queue= TaskAssignment.joins("LEFT JOIN task_queues ON task_queues.task_id = task_assignments.task_id AND task_queues.user_id = #{user.id}")
-        task_joins_task_assignments = Task.joins(:task_assignments).select("tasks.*, task_assignments.assigned_to_id, task_queues.position").
-                                                                    where(task_type_id: [task_types]).
-                                                                    where(isVerified: [nil, false]).
-                                                                    where("task_assignments.assigned_to_id = #{user.id}").
-                                                                    where.not(percentComplete: 100).
-                                                                    where.not(isApproved: [nil, false]).
-                                                                    order(Arel.sql("ISNULL(task_queues.position), task_queues.position ASC;"))
-        return task_joins_task_assignments.merge(task_assignment_joins_task_queue)
+    # Returns all tasks assigned to a current user, combined with their task queue.
+    def self.get_all_tasks_assigned_to_user(user)
+        tasks = user.tasks.where(isVerified: [nil, false]).where.not(percentComplete: 100).where.not(isApproved: [nil, false])
+        all_tasks = tasks.joins("LEFT OUTER JOIN task_queues ON task_queues.user_id = #{user.id} AND task_queues.task_id = tasks.id").select("tasks.*, task_queues.position").order(Arel.sql("ISNULL(task_queues.position), task_queues.position ASC;"))
+        return all_tasks
     end
 
     # Returns all assigned tasks given to a user based on a particular task_type.
     def self.get_tasks_assigned_to_user_for_task_type(task_type, user)
-        task_assigment_relation = TaskAssignment.where(assigned_to_id: user.id)
-        task_type_relation = Task.joins(:task_assignments).
-                                    where(task_type_id: task_type).
-                                    where(isVerified: [nil, false]).
-                                    where.not(percentComplete: 100).
-                                    where.not(isApproved: [nil, false]).
-                                    order("created_at DESC")
-
-        return task_type_relation.merge(task_assigment_relation)
+        tasks = user.tasks.where(task_type_id: task_type).where(isVerified: [nil, false]).where.not(percentComplete: 100).where.not(isApproved: [nil, false]).order("created_at DESC")
     end
 
     # Search for a task within a given TaskType (project)

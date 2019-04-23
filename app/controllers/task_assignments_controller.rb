@@ -17,6 +17,9 @@ class TaskAssignmentsController < ApplicationController
         end
     end
 
+    def update
+    end
+
     def destroy
         @task = Task.find(params[:task_id])
         @assigment = @task.task_assignments.find(params[:id])

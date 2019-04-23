@@ -25,7 +25,7 @@ class UsersController < ApplicationController
       task_types.each do |task_type|
         @task_types += TaskType.get_list_of_assignable_projects(task_type)
       end
-      @task = Task.get_all_tasks_assigned_to_user(@user, @task_types)
+      @task = Task.get_all_tasks_assigned_to_user(@user)
       @pagy_recent_activity, @recent_activity = pagy(@user.logged_labors.order('created_at DESC'), page_param: :page_recent_activity, params: { active_tab: 'recent_activity' })
     end
     

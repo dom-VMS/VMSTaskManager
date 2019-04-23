@@ -14,7 +14,6 @@ class TasksController < ApplicationController
     get_current_user_task_type_options
     @activities = ActivitiesHelper.get_activities(@task)
     @assignees = @task.users
-    #TaskAssignment.get_assigned_user(@task)
     get_assignable_users        
   end
   
@@ -40,7 +39,7 @@ class TasksController < ApplicationController
       flash[:error] = "Sorry, but you do not have permission to edit tasks."
       redirect_to task_path(@task)
     end
-    @assignee = @task.users
+    @assignees = @task.users
     get_assignable_users
     @sub_projects = TaskType.get_list_of_assignable_projects(@task_type)
   end
@@ -132,6 +131,7 @@ class TasksController < ApplicationController
         elsif (review_ticket_params[:isVerified] == "true")
             flash[:notice] = "Task Completion Approved."
             redirect_back fallback_location:verify_path
+            remove_comepleted_task_from_queue(task)
         elsif (review_ticket_params[:isVerified] == "false")
             insert_decline_feedback(task)
             flash[:notice] = "Task Completion Rejected."
@@ -215,14 +215,6 @@ class TasksController < ApplicationController
       comment.save!
     end
 
-    # Set task_assignment for a given task. If an assignment already exists, update. Else, create.
-    def set_task_assignments
-      @task_assignment = TaskAssignment.where(task_id: params[:id])
-      unless @task_assignment.exists?
-          TaskAssignment.create(:task_id => @task.id, :assigned_to_id => assignment_params[:assigned_to_id])
-      end
-    end
-
     # Looks at current user's TaskTypeOptions. Determines if they are permitted to view/edit data.
     def validate_current_user 
       @task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task_type)
@@ -253,6 +245,16 @@ class TasksController < ApplicationController
         else
           flash[:error] = "Ticket creation failed. "
           redirect_to ticket_path
+        end
+      end
+    end
+
+    # When a task is verified as complete, this funciton is called to remove the given task from any queue with it present.
+    def remove_comepleted_task_from_queue(task)
+      queue_items = TaskQueue.where(task_id: task.id)
+      unless queue_items.nil?
+        queue_items.each do |queue_item|
+          queue_item.destroy
         end
       end
     end

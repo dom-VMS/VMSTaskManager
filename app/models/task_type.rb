@@ -13,7 +13,8 @@ class TaskType < ApplicationRecord
 
     tracked owner: Proc.new{ |controller, model| controller.current_user }
 
-    # Returns all the task_types a user belongs to a user.
+    # Returns all the task_types a user directly belongs to a user. 
+    # That is, they have a specific TaskTypeOption assigned in that project.
     def self.get_task_types_assigned_to_user(current_user)
         tto = current_user.task_type_options
         return nil if tto.empty?
