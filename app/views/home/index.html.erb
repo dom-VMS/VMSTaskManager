@@ -5,8 +5,12 @@
 </div>
 <div class="container-fluid">
   <br>
+  <% if @task.present?%>
   <h2>Assigned to you:</h2><br>
-  <%= render 'tasks/assigned_to_user'%>
+    <%= render 'tasks/assigned_to_user'%>
+  <% else %>
+    <h3> No tasks assigned to you.</h3>
+  <% end %>
 </div><br>
 
 <script>

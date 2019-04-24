@@ -47,8 +47,13 @@
                 </div>
                 <div class="tab-pane" id="nav-tasks" role="tabpanel" aria-labelledby="nav-tasks-tab">
                     <div class="container-fluid">
-                    <br><h2>Assigned to <%=@user.f_name%>:</h2><br>
+                    <br>
+                    <% if @task.present? %>
+                        <h2>Assigned to <%=@user.f_name%>:</h2><br>
                         <%= render 'tasks/assigned_to_user'%>
+                    <% else %>
+                        <h2>No tasks assigned to user.</h2>
+                    <% end %>
                     </div><br>
                 </div>
                 <div class="tab-pane" id="nav-roles" role="tabpanel" aria-labelledby="nav-roles-tab">
@@ -65,7 +70,7 @@
                             <% @user.user_groups.each do |user_group|%>  
                             <tbody>      
                                 <tr>
-                                    <td><%= user_group.task_type_option.task_type.name%></td>
+                                    <td><%= link_to user_group.task_type_option.task_type.name, task_type_path(user_group.task_type_option.task_type)%></td>
                                     <td><%= link_to "#{user_group.task_type_option.name}", task_type_task_type_option_path(user_group.task_type_option.task_type, user_group.task_type_option)%></td>
                                 </tr>
                             </tbody>

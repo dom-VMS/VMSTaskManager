@@ -1,5 +1,7 @@
 class User < ApplicationRecord
     has_many :logged_labors
+
+    #has_many :through Association (users x user_groups x task_type_options)
     has_many :user_groups, dependent: :destroy
     has_many :task_type_options, through: :user_groups
 
@@ -8,7 +10,7 @@ class User < ApplicationRecord
     has_many :tasks, through: :task_queues
 
     #has_many :through Association (users x task_assignments x tasks)
-    has_many :task_assignments, dependent: :destroy
+    has_many :task_assignments, dependent: :destroy, foreign_key: 'assigned_to_id'
     has_many :tasks, through: :task_assignments
 
     has_secure_password
@@ -43,5 +45,16 @@ class User < ApplicationRecord
         else
             User.all
         end
+    end
+
+    # 
+    def self.isAdmin(current_user)
+        task_type_options = current_user.task_type_options.where(isAdmin: true)
+        if task_type_options.present?
+            task_type_options.each do |tto|
+                return true if (TaskType.find_by_id(tto.task_type_id).parent_id.nil?)
+            end
+        end
+        return false
     end
 end

@@ -1,10 +1,11 @@
 require 'my_utilities'
-
 class Task < ApplicationRecord
     include PublicActivity::Model
-    #include Filterable 
+    
+    # Used for public_acitivity gem
     tracked
 
+    # File uploader for attchaments
     mount_uploaders :attachments, AttachmentUploader
 
     # config/initializers/task_constants.rb
@@ -22,11 +23,10 @@ class Task < ApplicationRecord
 
     #has_many :through association (users x task_assignments x tasks)
     has_many :task_assignments, dependent: :destroy 
-    has_many :users, through: :task_assignments
+    has_many :users, through: :task_assignments, source: 'assigned_to'
 
     accepts_nested_attributes_for :file_attachments, :task_assignments
     
-    #validates :title, presence: true
     #validates :created_by_id_exists
     validates_presence_of :task_type_id
     validates :created_by_id, numericality: true
@@ -50,7 +50,7 @@ class Task < ApplicationRecord
              order("created_at DESC")
     end
 
-    # Retrieve all open tasks that the current user is permitted to work on.
+    # Retrieve all open tasks that a user is permitted to work on.
     def self.get_all_tasks_user_can_see(user)
         tasks = []
         tto = user.task_type_options
@@ -66,92 +66,46 @@ class Task < ApplicationRecord
         end
     end
 
-    # Retrieve all open tasks that a User is permitted to verify.
+    # Retrieve all open tasks that a user is permitted to verify.
     def self.get_all_tasks_user_can_verify(user)
-        tto = user.task_type_options
-        if tto.empty?
-            return nil
-        else
-            ttoHash = tto.pluck(:task_type_id, :can_verify).to_h
-            task_types = ttoHash.select { |key, value| value == true }
-            task_types = task_types.keys
-            # task_types = tto.pluck(:task_type_id) <-- Consider reimplementing this and just making the buttons disabled.
-            return (Task.where(isVerified: [nil, false]).
-                        where(status: 3).
-                        where(task_type_id: [task_types]).
-                        order("updated_at DESC"))
+        task_type_ids = TaskType.get_task_types_assigned_to_user(user)
+        task_types = TaskType.where(id: [task_type_ids])
+        all_task_types = []
+        task_types.each do |task_type|
+            all_task_types += TaskType.get_list_of_assignable_projects(task_type)
         end
+        return (Task.where(isVerified: [nil, false]).
+                    where(status: 3).
+                    where(task_type_id: [all_task_types]).
+                    order("updated_at DESC"))
     end
 
-    # Retrieve all open tasks that the current user is permitted to approve.
+    # Retrieve all open tasks that a user is permitted to approve.
     def self.get_all_tickets_user_can_approve(user)
-        tto = user.task_type_options
-        if tto.empty?
-            return nil
-        else
-            ttoHash = tto.pluck(:task_type_id, :can_approve).to_h
-            task_types = ttoHash.select { |key, value| value == true }
-            task_types = task_types.keys
-            # task_types = tto.pluck(:task_type_id) <-- Consider reimplementing this and just making the buttons disabled.
-            return (Task.where(isApproved: [nil]).
-                        where(task_type_id: [task_types]).
-                        order("updated_at DESC"))
+        task_type_ids = TaskType.get_task_types_assigned_to_user(user)
+        task_types = TaskType.where(id: [task_type_ids])
+        all_task_types = []
+        task_types.each do |task_type|
+            all_task_types += TaskType.get_list_of_assignable_projects(task_type)
         end
+        return (Task.where(isApproved: [nil]).
+                    where(task_type_id: [all_task_types]).
+                    order("updated_at DESC"))
     end
 
-=begin
-    SELECT t.*, ta.assigned_to_id, tq.position
-    FROM tasks t
-    INNER JOIN task_assignments ta
-        ON t.id = ta.task_id
-    LEFT JOIN task_queues tq
-        ON t.id = tq.task_id
-        AND ta.assigned_to_id = tq.user_id
-    WHERE t.task_type_id IN (2, 4)
-        AND (t.isVerified = 0 OR t.isVerified IS NULL)
-        AND t.percentComplete != 100
-        AND (NOT(t.isApproved = 0 OR t.isApproved is NULL))
-        AND (ta.assigned_to_id = #{user.id} OR ta.assigned_to_id IS NULL)
-    ORDER BY ISNULL(tq.position), tq.position ASC;
-=end
-    # Returns all tasks assigned to a current user.
+    # Returns all tasks assigned to a current user, combined with their task queue.
     def self.get_all_tasks_assigned_to_user(user)
-        tto = user.task_type_options #Grab the current user's role(s).
-        return nil if tto.empty?
-
-        user_task_types = tto.pluck(:task_type_id) #Returns projects the user belongs to.
-        task_assignment_joins_task_queue= TaskAssignment.joins("LEFT JOIN task_queues ON task_queues.task_id = task_assignments.task_id AND task_queues.user_id = #{user.id}")
-        task_joins_task_assignments = Task.joins(:task_assignments).select("tasks.*, task_assignments.assigned_to_id, task_queues.position").
-                                                                    where(task_type_id: [user_task_types]).
-                                                                    where(isVerified: [nil, false]).
-                                                                    where("task_assignments.assigned_to_id = #{user.id}").
-                                                                    where.not(percentComplete: 100).
-                                                                    where.not(isApproved: [nil, false]).
-                                                                    order(Arel.sql("ISNULL(task_queues.position), task_queues.position ASC;"))
-        return task_joins_task_assignments.merge(task_assignment_joins_task_queue)
+        tasks = user.tasks.where(isVerified: [nil, false]).where.not(percentComplete: 100).where.not(isApproved: [nil, false])
+        all_tasks = tasks.joins("LEFT OUTER JOIN task_queues ON task_queues.user_id = #{user.id} AND task_queues.task_id = tasks.id").select("tasks.*, task_queues.position").order(Arel.sql("ISNULL(task_queues.position), task_queues.position ASC;"))
+        return all_tasks
     end
 
     # Returns all assigned tasks given to a user based on a particular task_type.
     def self.get_tasks_assigned_to_user_for_task_type(task_type, user)
-        tto = user.task_type_options
-        return nil if tto.empty?
-
-        user_task_types = tto.pluck(:task_type_id)
-        if user_task_types.include? task_type.id
-            task_assigment_relation = TaskAssignment.where(assigned_to_id: user.id)
-            task_type_relation = Task.joins(:task_assignments).
-                                      where(task_type_id: task_type.id).
-                                      where(isVerified: [nil, false]).
-                                      where.not(percentComplete: 100).
-                                      where.not(isApproved: [nil, false]).
-                                      order("created_at DESC")
-
-            return task_type_relation.merge(task_assigment_relation)
-        else 
-            return nil
-        end
+        tasks = user.tasks.where(task_type_id: task_type).where(isVerified: [nil, false]).where.not(percentComplete: 100).where.not(isApproved: [nil, false]).order("created_at DESC")
     end
 
+    # Search for a task within a given TaskType (project)
     def self.search_with_task_type(search, task_type)
         unless search.empty?
             if regex_is_number? search

@@ -24,7 +24,7 @@ gem 'filterrific'
 # Hash function for passwords
 gem 'bcrypt', '>= 3.1.12'
 # Use Carrierwave for file attachments
-gem 'carrierwave', '~> 1.0'
+gem 'carrierwave'
 # Using Bootstrap for CSS/Front-end
 gem 'bootstrap', '~> 4.3.1' #v4.1.3 (2/21/2019)
 # Bootstrap dependency
@@ -43,6 +43,10 @@ gem 'rails_sortable'
 #gem 'ffi', '~> 1.10'
 # Pagy is used for pagination
 gem 'pagy'
+# Richard's Admin Gem
+gem 'rlegacy_admin', :git => 'git://github.com/rLegacy-Varland/rlegacy_admin'
+# Brakeman is a tool that analysizes security vulnerabilities
+gem 'brakeman'
 
 # Use CoffeeScript for .coffee assets and views
 gem 'coffee-rails', '~> 4.2'
@@ -54,6 +58,7 @@ gem 'jbuilder', '~> 2.5'
 # gem 'redis', '~> 4.0'
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
+
 
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
