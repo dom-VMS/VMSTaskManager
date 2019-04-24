@@ -92,11 +92,14 @@ class TasksController < ApplicationController
   end
 
   def review
-    task_type_ids = TaskType.get_task_types_assigned_to_user(current_user)
-    task_types = TaskType.where(id: [task_type_ids])
-    @task_types = []
-    task_types.each do |task_type|
-      @task_types += TaskType.get_list_of_assignable_projects(task_type)
+    task_type_ids = TaskType.get_task_types_assigned_to_user(current_user) 
+    @task_types = TaskType.find(task_type_ids) 
+    @task_types.each do |task_type|
+      if task_type.children.any?
+        task_type.children.each do |child|
+          @task_types.append(child) unless (@task_types.any? {|task_type| task_type == child})
+        end
+      end
     end
     @task = Task.where(isApproved: [nil]).
                     where(task_type_id: [@task_types]).
@@ -104,11 +107,14 @@ class TasksController < ApplicationController
   end
 
   def verify
-    task_type_ids = TaskType.get_task_types_assigned_to_user(current_user)
-    task_types = TaskType.where(id: [task_type_ids])
-    @task_types = []
-    task_types.each do |task_type|
-      @task_types += TaskType.get_list_of_assignable_projects(task_type)
+    task_type_ids = TaskType.get_task_types_assigned_to_user(current_user) 
+    @task_types = TaskType.find(task_type_ids) 
+    @task_types.each do |task_type|
+      if task_type.children.any?
+        task_type.children.each do |child|
+          @task_types.append(child) unless (@task_types.any? {|task_type| task_type == child})
+        end
+      end
     end
     @task = Task.where(isVerified: [nil, false]).
                 where(status: 3).
