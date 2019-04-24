@@ -77,12 +77,14 @@
                                 <% end %>
                             </table>
                         <%# end %><br>
-                        <% unless @current_user_task_type_option.nil? %>
+                        <% unless @current_user_task_type_option.nil? || @task_type.task_type_options.where(isAdmin: true).any? %>
                             <%= link_to fa_icon('user-plus', text:'Assign User'), new_task_type_task_type_option_user_group_path(@task_type, @task_type_option), class:'btn btn-primary' if @current_user_task_type_option.isAdmin %><br>
+                        <% else @task_type_option.user_groups.count == 0 %>
+                            <%= link_to fa_icon('user-plus', text:'Assign User'), new_task_type_task_type_option_user_group_path(@task_type, @task_type_option), class:'btn btn-primary' %>
                         <% end %>
                         <br>
             </div>
-            <hr>
+            <br>
             <% unless @current_user_task_type_option.nil? %>
                 <%= link_to fa_icon('edit', text:'Edit'), edit_task_type_task_type_option_path(@task_type, @task_type_option) if @current_user_task_type_option.isAdmin %><br>
                 <%= link_to fa_icon('trash-alt', text:'Delete'), task_type_task_type_option_path(@task_type, @task_type_option),

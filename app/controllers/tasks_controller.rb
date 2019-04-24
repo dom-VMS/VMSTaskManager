@@ -13,13 +13,13 @@ class TasksController < ApplicationController
     @task_type = TaskType.find_by_id(@task.task_type_id)
     get_current_user_task_type_options
     @activities = ActivitiesHelper.get_activities(@task)
-    @assignee = TaskAssignment.get_assigned_user(@task)
+    @assignees = @task.users
     get_assignable_users        
   end
   
   def new
     @task_type = find_task_type  
-    current_task_type_option = @task_type.nil? ? current_user.task_type_options : TaskTypeOption.get_task_type_specific_options(current_user, @task_type.id)
+    current_task_type_option = @task_type.nil? ? current_user.task_type_options : TaskTypeOption.get_task_type_specific_options(current_user, @task_type)
     if current_task_type_option.nil?
         flash[:error] = "Sorry, but you do not have permission to create #{@task_type.name} task."
         redirect_to  new_task_type_task_path(@task_type)
@@ -34,9 +34,14 @@ class TasksController < ApplicationController
   def edit
     @task_type = TaskType.find_by_id(@task.task_type_id)
     validate_current_user
-    get_current_user_task_type_options   
-    @assignee = TaskAssignment.get_assigned_user(@task)
+    get_current_user_task_type_options  
+    if @task_type_option.nil? || @task_type_option.can_update? == false
+      flash[:error] = "Sorry, but you do not have permission to edit tasks."
+      redirect_to task_path(@task)
+    end
+    @assignees = @task.users
     get_assignable_users
+    @sub_projects = TaskType.get_list_of_assignable_projects(@task_type)
   end
 
   def create
@@ -60,12 +65,8 @@ class TasksController < ApplicationController
   end
 
   def update
-    @task_type_id = @task.task_type_id
-    get_current_user_task_type_options 
-    @task_type = TaskType.find_by_id(@task.task_type_id)
-    get_assignable_users
     add_file_attachment(attachment_params[:attachments]) unless attachment_params.empty?
-    if @task.update_attributes(task_params)
+    if @task.update(task_params)
         flash[:notice] = "Task updated!"
         respond_to do |format|
             format.html { redirect_to @task }
@@ -86,33 +87,39 @@ class TasksController < ApplicationController
 
   def ticket
     @task = Task.new
-    @task_type = TaskType.all
+    @task_type = TaskType.where(parent_id: nil)
     @task_assignment = @task.task_assignments.build
   end
 
   def review
-    tto = current_user.task_type_options
-    unless tto.empty?
-        ttoHash = tto.pluck(:task_type_id, :can_approve).to_h
-        task_types = ttoHash.select { |key, value| value == true }
-        @task_types = TaskType.where(id: task_types.keys)
-        @task = Task.where(isApproved: [nil]).
+    task_type_ids = TaskType.get_task_types_assigned_to_user(current_user) 
+    @task_types = TaskType.find(task_type_ids) 
+    @task_types.each do |task_type|
+      if task_type.children.any?
+        task_type.children.each do |child|
+          @task_types.append(child) unless (@task_types.any? {|task_type| task_type == child})
+        end
+      end
+    end
+    @task = Task.where(isApproved: [nil]).
                     where(task_type_id: [@task_types]).
                     order("updated_at DESC")
-    end
   end
 
   def verify
-    tto = current_user.task_type_options
-    unless tto.empty?
-        ttoHash = tto.pluck(:task_type_id, :can_verify).to_h
-        task_types = ttoHash.select { |key, value| value == true }
-        @task_types = TaskType.where(id: task_types.keys)
-        @task = Task.where(isVerified: [nil, false]).
-                    where(status: 3).
-                    where(task_type_id: [@task_types]).
-                    order("updated_at DESC")
+    task_type_ids = TaskType.get_task_types_assigned_to_user(current_user) 
+    @task_types = TaskType.find(task_type_ids) 
+    @task_types.each do |task_type|
+      if task_type.children.any?
+        task_type.children.each do |child|
+          @task_types.append(child) unless (@task_types.any? {|task_type| task_type == child})
+        end
+      end
     end
+    @task = Task.where(isVerified: [nil, false]).
+                where(status: 3).
+                where(task_type_id: [@task_types]).
+                order("updated_at DESC")
   end
 
   def update_ticket
@@ -130,6 +137,7 @@ class TasksController < ApplicationController
         elsif (review_ticket_params[:isVerified] == "true")
             flash[:notice] = "Task Completion Approved."
             redirect_back fallback_location:verify_path
+            remove_comepleted_task_from_queue(task)
         elsif (review_ticket_params[:isVerified] == "false")
             insert_decline_feedback(task)
             flash[:notice] = "Task Completion Rejected."
@@ -145,7 +153,7 @@ class TasksController < ApplicationController
 
   private
     def task_params
-      params.require(:task).permit(:title, :description, :priority, :status, :percentComplete,  :isApproved, :task_type_id, :created_by_id, task_assignments_attributes:[:id, :assigned_to_id, :assigned_by_id])
+      params.require(:task).permit(:title, :description, :due_date, :priority, :status, :percentComplete,  :isApproved, :task_type_id, :created_by_id, task_assignments_attributes:[:id, :assigned_to_id, :assigned_by_id])
     end
 
     def assignment_params
@@ -199,12 +207,12 @@ class TasksController < ApplicationController
 
     # Gets the current user's Task_Type_Options
     def get_current_user_task_type_options
-      @task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task.task_type_id) unless !current_user.present?
+      @task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task.task_type) unless !current_user.present?
     end
 
     # Retrieves all users that may be assigned to a task.
     def get_assignable_users
-      @assignable_users = Task.get_assignable_users(@task_type.task_type_options) 
+      @assignable_users = TaskType.get_users(@task_type) 
     end
 
     # Allows an admin to place a comment in the task that is being declined to describe why it is being rejected.
@@ -213,17 +221,9 @@ class TasksController < ApplicationController
       comment.save!
     end
 
-    # Set task_assignment for a given task. If an assignment already exists, update. Else, create.
-    def set_task_assignments
-      @task_assignment = TaskAssignment.where(task_id: params[:id])
-      unless @task_assignment.exists?
-          TaskAssignment.create(:task_id => @task.id, :assigned_to_id => assignment_params[:assigned_to_id])
-      end
-    end
-
     # Looks at current user's TaskTypeOptions. Determines if they are permitted to view/edit data.
     def validate_current_user 
-      @task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task_type.id)
+      @task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task_type)
       if @task_type_option.nil?
         respond_to do |format|
           flash[:error] = "Sorry, but you are not permitted to edit this task."
@@ -251,6 +251,16 @@ class TasksController < ApplicationController
         else
           flash[:error] = "Ticket creation failed. "
           redirect_to ticket_path
+        end
+      end
+    end
+
+    # When a task is verified as complete, this funciton is called to remove the given task from any queue with it present.
+    def remove_comepleted_task_from_queue(task)
+      queue_items = TaskQueue.where(task_id: task.id)
+      unless queue_items.nil?
+        queue_items.each do |queue_item|
+          queue_item.destroy
         end
       end
     end

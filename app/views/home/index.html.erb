@@ -5,11 +5,16 @@
 </div>
 <div class="container-fluid">
   <br>
+  <% if @task.present?%>
   <h2>Assigned to you:</h2><br>
-  <%= render 'tasks/assigned_to_user'%>
+    <%= render 'tasks/assigned_to_user'%>
+  <% else %>
+    <h3> No tasks assigned to you.</h3>
+  <% end %>
 </div><br>
 
 <script>
+  // Allow user to click anywhere on list-group-item and be redirected to task
   $(document).ready(function() {
     $('.list-group-item-linkable').on('click', function() {
         window.location.href = $(this).data('link');
@@ -18,18 +23,6 @@
     $('.list-group-item-linkable a, .list-group-item-linkable button')
     .on('click', function(e) {
         e.stopPropagation();
-    });
-  });
-
-  document.ready(function() {
-    $("#task_queues").sortable({
-        update: function(e, ui) {
-        Rails.ajax({
-            url: $(this).data("url"),
-            type: "PATCH",
-            data: $(this).sortable('serialize'),
-        });
-        }
     });
   });
 </script>

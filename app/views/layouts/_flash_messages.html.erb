@@ -2,7 +2,21 @@
 <div class="container">
     <% flash.each do |key, value| %>
         <div class="alert alert-<%= flash_class(key)%> text-center" role="alert">
-            <%= value %>
+            <%= sanitize(value) %>
         </div>
     <% end %>
 </div>
+
+<script>
+    // Positive alert messages fade out much quicker.
+    $(".alert-success" ).fadeOut(3500);
+    $(".alert-info" ).fadeOut(3500);
+    $(".alert-warning" ).fadeOut(4000);
+    $(".alert-danger" ).fadeOut(4000);
+
+    // Negative alert messages disappear after a 10s.
+   /* setTimeout(function () {
+      $(".alert-warning").hide();
+      $(".alert-danger").hide();
+    }, 10000);*/
+</script>

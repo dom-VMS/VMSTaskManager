@@ -7,7 +7,7 @@
 </nav>
 <div class="container">
     <div class="py-4 text-center">
-        <h1>New Project</h1>
+        <h1>New <%= 'Sub-' if params[:parent_id].present?%>Project </h1>
     </div>
     <%= form_with model: @task_type, local: true do |form| %>
         <div class="mb-3">
@@ -19,6 +19,7 @@
                 <%= form.label :description %><br>
                 <%= form.text_area :description, class: 'form-control' %>
             </p>
+            <%= form.hidden_field 'parent_id', :value => params[:parent_id] if params[:parent_id].present? %>
         </div>
         <%= form.submit 'Create', class: 'btn btn-primary btn-lg btn-block' %>
     <% end %>

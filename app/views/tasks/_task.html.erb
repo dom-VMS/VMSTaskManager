@@ -46,16 +46,21 @@
 <p><strong>Project:</strong> <%= sanitize (TaskType.find(@task.task_type_id).name).html_safe unless @task.task_type_id.blank?%></p>
 <p>
     <strong>Assignee(s):</strong><br>
-    <% unless (@assignee.blank? || @assignee.nil?) %>
-        <% @assignee.each do |assignee| %>
-            <%= (User.find_by_id(assignee.assigned_to_id)).full_name unless assignee.assigned_to_id.nil? %><br>
+    <% if @assignees.present? %>
+        <% @assignees.each do |assignee| %>
+            <%= link_to assignee.full_name, user_path(assignee) %><br>
         <% end %>
     <%end%>
 </p>   
 <p><strong>Description:</strong> <%= sanitize @task.description.html_safe unless @task.description.nil? %></p> 
 <div id="task-form" style="display:none;"></div>
 <div id="task-info-small">
-    <p><strong>Status:</strong> <%= @task.status.nil? ? "" : task_status(@task)%></p>
+    <p>
+        <strong>Due Date:</strong> <%= @task.due_date.strftime("%m/%d/%Y") unless @task.due_date.nil? %>
+    </p>
+    <p>
+        <strong>Status:</strong> <%= @task.status.nil? ? "" : task_status(@task)%>
+    </p>
     <p>
         <strong>Percent Complete:</strong> 
         <div class="progress w-50">

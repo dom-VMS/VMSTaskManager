@@ -6,8 +6,7 @@ class TaskQueuesController < ApplicationController
   def index
     validate_current_user_can_view
     task_type = TaskType.find_by_id(task_queue_params[:task_type_id])
-    user = User.find_by_id(task_queue_params[:user_id])
-    @tasks = Task.get_tasks_assigned_to_user_for_task_type(task_type, user)
+    @tasks = Task.get_tasks_assigned_to_user_for_task_type(task_type, @user)
   end
   
   def create
@@ -49,7 +48,7 @@ class TaskQueuesController < ApplicationController
   end
 
   def get_queue
-    @queue = TaskQueue.where(user_id: task_queue_params[:user_id], task_type_id: task_queue_params[:task_type_id]).order(:position)
+    @queue = @user.task_queues.where(task_type_id: @task_type.id).order(:position)
   end
 
   def get_queue_item
@@ -57,7 +56,7 @@ class TaskQueuesController < ApplicationController
   end
 
   def validate_current_user_can_view
-    @task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task_type.id)
+    @task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task_type)
     unless @task_type_option.nil? 
       if !(@task_type_option.isAdmin || current_user.id == @user.id)
         respond_to do |format|

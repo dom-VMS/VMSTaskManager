@@ -1,7 +1,11 @@
 module TasksHelper
     # Takes a task and returns task.priority in a badge.
     def task_priority(task)
-        if task.status == 4 
+        if task.status == 3 && task.isVerified == true
+            return ('<span class="badge badge-success">Complete</span>').html_safe
+        elsif task.status == 3 && (task.isVerified == nil)
+            return ('<span class="badge badge-info">Awaiting Verification</span>').html_safe
+        elsif task.status == 4 
             return ('<span class="badge badge-dark">On-Hold</span>').html_safe
         elsif task.priority == 1 
             return ('<span class="badge badge-light">Low</span>').html_safe
@@ -46,8 +50,8 @@ module TasksHelper
             return ('<span class="badge badge-success">Task Complete</span>').html_safe
         elsif task.status != 3 && task.isVerified == false 
             return ('<span class="badge badge-warning">Rework Required</span>').html_safe
-        elsif task.status == 3 && task.isVerified != true 
-            return ('<span class="badge badge-secondary">Awaiting Verification</span>').html_safe
+        #elsif task.status == 3 && task.isVerified != true 
+        #    return ('<span class="badge badge-info">Awaiting Verification</span>').html_safe
         end
     end
 

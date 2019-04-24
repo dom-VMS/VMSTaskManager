@@ -11,11 +11,6 @@
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
-      <!-- <li class="nav-item">
-        <%#= link_to fa_icon('plus-circle 2x', text:'Add Task'),
-                          new_task_path,
-                          class: "nav-link"%>
-      </li> -->
       <li class="nav-item">
         <%= link_to fa_icon('building 2x', text:'Projects'),
                           task_types_path,
@@ -55,16 +50,18 @@
       <% else %>
         <% if canApprove? %>
         <li class="nav-item">
-          <%= link_to fa_icon('user-tag 2x', text:'Review Tickets'),
-                            review_path, 
-                            class:  "nav-link" %>
+          <%= link_to review_path, class:  "nav-link" do %>
+            <%= fa_icon('user-tag 2x', text:'Review Tickets')%>
+            <span class="badge badge-light right"><%= Task.get_all_tickets_user_can_approve(current_user).count %></span>                  
+          <% end %>
         </li>
         <%end%>
         <% if canVerify? %>
         <li class="nav-item">
-          <%= link_to fa_icon('check-circle 2x', text:'Verify Completion'),
-                              verify_path, 
-                              class:  "nav-link" %>
+          <%= link_to verify_path, class: "nav-link" do  %>
+                <%= fa_icon('check-circle 2x', text:'Verify Completion') %>
+                <span class="badge badge-light right"><%= Task.get_all_tasks_user_can_verify(current_user).count %></span>             
+          <% end %>
         </li>
         <% end %>
       <% end %>
@@ -78,6 +75,10 @@
                         user_path(current_user.id), 
                         class:  "dropdown-item",
                         title: 'Profile' %>
+        <%= link_to fa_icon("question-circle 2x", text:"Help"),
+                        contents_getting_started_path, 
+                        class:  "dropdown-item",
+                        title: 'Help' %>
         <%= link_to fa_icon("sign-out-alt 2x", text:"Sign Out"), 
                       logout_path,
                       class:  "dropdown-item",
