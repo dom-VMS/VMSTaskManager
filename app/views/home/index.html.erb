@@ -6,12 +6,13 @@
 <div class="container-fluid">
   <br>
   <% if @task.present?%>
-  <h2>Assigned to you:</h2><br>
+    <h2>Assigned to you:</h2><br>
     <%= render 'tasks/assigned_to_user'%>
   <% else %>
     <h3> No tasks assigned to you.</h3>
   <% end %>
-</div><br>
+</div>
+
 
 <script>
   // Allow user to click anywhere on list-group-item and be redirected to task
