@@ -95,14 +95,14 @@ class Task < ApplicationRecord
 
     # Returns all tasks assigned to a current user, combined with their task queue.
     def self.get_all_tasks_assigned_to_user(user)
-        tasks = user.tasks.where(isVerified: [nil, false]).where.not(percentComplete: 100).where.not(isApproved: [nil, false])
+        tasks = user.tasks.where(isVerified: [nil, false]).where.not(status: 3).where.not(isApproved: [nil, false])
         all_tasks = tasks.joins("LEFT OUTER JOIN task_queues ON task_queues.user_id = #{user.id} AND task_queues.task_id = tasks.id").select("tasks.*, task_queues.position").order(Arel.sql("ISNULL(task_queues.position), task_queues.position ASC;"))
         return all_tasks
     end
 
     # Returns all assigned tasks given to a user based on a particular task_type.
     def self.get_tasks_assigned_to_user_for_task_type(task_type, user)
-        tasks = user.tasks.where(task_type_id: task_type).where(isVerified: [nil, false]).where.not(percentComplete: 100).where.not(isApproved: [nil, false]).order("created_at DESC")
+        tasks = user.tasks.where(task_type_id: task_type).where(isVerified: [nil, false]).where.not(status: 3).where.not(isApproved: [nil, false]).order("created_at DESC")
     end
 
     # Search for a task within a given TaskType (project)

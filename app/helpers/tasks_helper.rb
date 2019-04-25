@@ -4,7 +4,9 @@ module TasksHelper
         if task.status == 3 && task.isVerified == true
             return ('<span class="badge badge-success">Complete</span>').html_safe
         elsif task.status == 3 && (task.isVerified == nil)
-            return ('<span class="badge badge-info">Awaiting Verification</span>').html_safe
+            return ('<span class="badge badge-info">Pending Verification</span>').html_safe
+        elsif task.status == 0 && (task.isVerified == false)
+            return ('<span class="badge badge-warning">Rework Required</span>').html_safe
         elsif task.status == 4 
             return ('<span class="badge badge-dark">On-Hold</span>').html_safe
         elsif task.priority == 1 
@@ -43,15 +45,9 @@ module TasksHelper
 
     def task_badges(task)
         if task.isApproved.nil?
-            return ('<span class="badge badge-warning">Awaiting Approval</span>').html_safe
+            return ('<span class="badge badge-warning">Pending Approval</span>').html_safe
         elsif task.isApproved == false 
             return ('<span class="badge badge-danger">Ticket Denied</span>').html_safe
-        elsif task.isVerified == true 
-            return ('<span class="badge badge-success">Task Complete</span>').html_safe
-        elsif task.status != 3 && task.isVerified == false 
-            return ('<span class="badge badge-warning">Rework Required</span>').html_safe
-        #elsif task.status == 3 && task.isVerified != true 
-        #    return ('<span class="badge badge-info">Awaiting Verification</span>').html_safe
         end
     end
 
