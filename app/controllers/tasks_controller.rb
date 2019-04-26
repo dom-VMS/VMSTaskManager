@@ -92,34 +92,29 @@ class TasksController < ApplicationController
   end
 
   def review
-    task_type_ids = TaskType.get_task_types_assigned_to_user(current_user) 
-    @task_types = TaskType.find(task_type_ids) 
+    @task_types = TaskType.find(current_user.task_type_options.where(can_approve: true).pluck(:task_type_id))
+    unpermitted_task_types = TaskType.find(current_user.task_type_options.where(can_approve: false).pluck(:task_type_id))
     @task_types.each do |task_type|
       if task_type.children.any?
         task_type.children.each do |child|
-          @task_types.append(child) unless (@task_types.any? {|task_type| task_type == child})
+          @task_types.append(child) unless ((@task_types.any? {|task_type| task_type == child}) || (unpermitted_task_types.any? {|unpermitted| unpermitted == child}))
         end
       end
-    end
-    @task = Task.where(isApproved: [nil]).
-                    where(task_type_id: [@task_types]).
-                    order("updated_at DESC")
+    end  
+    @task = Task.where(isApproved: [nil]).where(task_type_id: [@task_types]).order("updated_at DESC")
   end
 
   def verify
-    task_type_ids = TaskType.get_task_types_assigned_to_user(current_user) 
-    @task_types = TaskType.find(task_type_ids) 
+    @task_types = TaskType.find(current_user.task_type_options.where(can_verify: true).pluck(:task_type_id))
+    unpermitted_task_types = TaskType.find(current_user.task_type_options.where(can_verify: false).pluck(:task_type_id))
     @task_types.each do |task_type|
       if task_type.children.any?
         task_type.children.each do |child|
-          @task_types.append(child) unless (@task_types.any? {|task_type| task_type == child})
+          @task_types.append(child) unless ((@task_types.any? {|task_type| task_type == child}) || (unpermitted_task_types.any? {|unpermitted| unpermitted == child}))
         end
       end
-    end
-    @task = Task.where(isVerified: [nil, false]).
-                where(status: 3).
-                where(task_type_id: [@task_types]).
-                order("updated_at DESC")
+    end  
+    @task = Task.where(isVerified: [nil, false]).where(status: 3).where(task_type_id: [@task_types]).order("updated_at DESC")
   end
 
   def update_ticket

@@ -68,29 +68,30 @@ class Task < ApplicationRecord
 
     # Retrieve all open tasks that a user is permitted to verify.
     def self.get_all_tasks_user_can_verify(user)
-        task_type_ids = TaskType.get_task_types_assigned_to_user(user)
-        task_types = TaskType.where(id: [task_type_ids])
-        all_task_types = []
+        task_types = TaskType.find(user.task_type_options.where(can_verify: true).pluck(:task_type_id))
+        unpermitted_task_types = TaskType.find(user.task_type_options.where(can_verify: false).pluck(:task_type_id))
         task_types.each do |task_type|
-            all_task_types += TaskType.get_list_of_assignable_projects(task_type)
-        end
-        return (Task.where(isVerified: [nil, false]).
-                    where(status: 3).
-                    where(task_type_id: [all_task_types]).
-                    order("updated_at DESC"))
+          if task_type.children.any?
+            task_type.children.each do |child|
+              task_types.append(child) unless ((task_types.any? {|task_type| task_type == child}) || (unpermitted_task_types.any? {|unpermitted| unpermitted == child}))
+            end
+          end
+        end  
+        task = Task.where(isVerified: [nil, false]).where(status: 3).where(task_type_id: [task_types]).order("updated_at DESC")
     end
 
     # Retrieve all open tasks that a user is permitted to approve.
     def self.get_all_tickets_user_can_approve(user)
-        task_type_ids = TaskType.get_task_types_assigned_to_user(user)
-        task_types = TaskType.where(id: [task_type_ids])
-        all_task_types = []
+        task_types = TaskType.find(user.task_type_options.where(can_approve: true).pluck(:task_type_id))
+        unpermitted_task_types = TaskType.find(user.task_type_options.where(can_approve: false).pluck(:task_type_id))
         task_types.each do |task_type|
-            all_task_types += TaskType.get_list_of_assignable_projects(task_type)
-        end
-        return (Task.where(isApproved: [nil]).
-                    where(task_type_id: [all_task_types]).
-                    order("updated_at DESC"))
+            if task_type.children.any?
+                task_type.children.each do |child|
+                    task_types.append(child) unless ((task_types.any? {|task_type| task_type == child}) || (unpermitted_task_types.any? {|unpermitted| unpermitted == child}))
+                end
+            end
+        end  
+        task = Task.where(isApproved: [nil]).where(task_type_id: [task_types]).order("updated_at DESC")
     end
 
     # Returns all tasks assigned to a current user, combined with their task queue.
