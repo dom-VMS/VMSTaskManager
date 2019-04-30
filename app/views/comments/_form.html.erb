@@ -1,6 +1,20 @@
 <!-- Allows user(s) to create comments -->
 
 <%= form_with(model: [ @task, @task.comments.build ], remote: true) do |form| %>
+<% if (@task.comments.build).errors.any? %>
+    <div id="error_explanation">
+      <h2>
+        <%= pluralize((@task.comments.build).errors.count, "error") %> prohibited
+        this comment from being created:
+      </h2>
+      <ul>
+        <% (@task.comments.build).errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>  
+
   <p>
     <%= form.label :body, 'Comment' %><br>
     <%= form.text_area :body, class: 'form-control', placeholder: "Give us some details." %>
