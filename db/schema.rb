@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_04_01_140409) do
+ActiveRecord::Schema.define(version: 2019_04_30_184900) do
 
   create_table "activities", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "trackable_type"
@@ -79,6 +79,25 @@ ActiveRecord::Schema.define(version: 2019_04_01_140409) do
     t.datetime "updated_at", null: false
     t.index ["reoccuring_event_type_id"], name: "index_reoccuring_events_on_reoccuring_event_type_id"
     t.index ["task_id"], name: "index_reoccuring_events_on_task_id"
+  end
+
+  create_table "reoccuring_task_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "title"
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "reoccuring_tasks", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "reoccuring_task_type_id"
+    t.bigint "task_id"
+    t.integer "freq_days"
+    t.datetime "last_date"
+    t.datetime "next_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["reoccuring_task_type_id"], name: "index_reoccuring_tasks_on_reoccuring_task_type_id"
+    t.index ["task_id"], name: "index_reoccuring_tasks_on_task_id"
   end
 
   create_table "task_assignments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -178,6 +197,8 @@ ActiveRecord::Schema.define(version: 2019_04_01_140409) do
   add_foreign_key "logged_labors", "users"
   add_foreign_key "reoccuring_events", "reoccuring_event_types"
   add_foreign_key "reoccuring_events", "tasks"
+  add_foreign_key "reoccuring_tasks", "reoccuring_task_types"
+  add_foreign_key "reoccuring_tasks", "tasks"
   add_foreign_key "task_assignments", "tasks"
   add_foreign_key "task_assignments", "users", column: "assigned_by_id"
   add_foreign_key "task_assignments", "users", column: "assigned_to_id"

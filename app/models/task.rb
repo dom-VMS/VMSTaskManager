@@ -12,6 +12,7 @@ class Task < ApplicationRecord
     attr_accessor :PRIORITY
     attr_accessor :STATUS
 
+    has_one :reoccuring_task
     belongs_to :task_type
     has_many :comments, dependent: :destroy
     has_many :logged_labors, dependent: :destroy

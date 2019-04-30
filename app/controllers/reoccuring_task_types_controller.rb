@@ -1,0 +1,2 @@
+class ReoccuringTaskTypesController < ApplicationController
+end
