@@ -39,10 +39,15 @@ class TaskTypesController < ApplicationController
 
     def edit
         @task_type = find_task_type
-        task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task_type)
-        if task_type_option.nil? || task_type_option.isAdmin == false
-            flash[:error] = "Sorry, but you do not have permission to edit #{@task_type.name}."
-            redirect_to @task_type
+        @children = @task_type.children
+        @task_type_options = @task_type.task_type_options
+
+        if @task_type_options.present?
+            current_user_task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task_type)
+            if current_user_task_type_option.nil? || current_user_task_type_option.isAdmin == false 
+                flash[:error] = "Sorry, but you do not have permission to edit #{@task_type.name}."
+                redirect_to @task_type
+            end
         end
     end
 
@@ -50,8 +55,8 @@ class TaskTypesController < ApplicationController
         @task_type = TaskType.new(task_type_params)
  
         if @task_type.save
-            flash[:success] = %["#{@task_type.name}" has been created! Click #{view_context.link_to 'here', new_task_type_task_type_option_path(@task_type)} to create a new role.]
-            redirect_to task_type_path(@task_type)
+            flash[:success] = "#{@task_type.name} has been created!"
+            redirect_to edit_task_type_path(@task_type)
         else
             flash[:danger] = "Oops! Something went wrong."
             render 'new'
@@ -73,17 +78,36 @@ class TaskTypesController < ApplicationController
     def destroy
         @task_type = find_task_type
         task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task_type)
-        if task_type_option.isAdmin && task_type_option.can_delete
-            @task_type.destroy
-            if @task_type.destroyed?
-                flash[:success] = "#{@task_type.name} has been removed."
-                redirect_to task_types_path
-            else
-                flash[:danger] = "Something went wrong."
-                redirect_to edit_task_type_path(@task_type)
-            end
+        if !@task_type.task_type_options.present?
+            destroy_task_type
+        elsif (task_type_option.isAdmin && task_type_option.can_delete) 
+            destroy_task_type
         else
             flash[:danger] = "You are not permitted to delete this project."
+            redirect_to edit_task_type_path(@task_type)
+        end
+    end
+
+    def remove_child
+        child = TaskType.find(params[:id])
+        parent = TaskType.find(child.parent.id)
+
+        if child.update(parent_id: nil)
+            flash[:success] = "#{child.name} has been removed from #{parent.name}."            
+            redirect_to edit_task_type_path(parent)
+        else
+            flash[:danger] = "Something went wrong. #{child.name} was not removed from #{parent.name} "
+            redirect_to edit_task_type_path(@task_type)
+        end
+    end
+
+    def destroy_task_type
+        @task_type.destroy
+        if @task_type.destroyed?
+            flash[:success] = "#{@task_type.name} has been removed."
+            redirect_to task_types_path
+        else
+            flash[:danger] = "Something went wrong."
             redirect_to edit_task_type_path(@task_type)
         end
     end

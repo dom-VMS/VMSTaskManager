@@ -27,12 +27,8 @@
                     <% (@task_type.children).each do |child| %>
                         <%= link_to child.name, task_type_path(child) %><%= ',' unless child.id == (@task_type.children.last).id%>
                     <% end %>
-                    <%= link_to fa_icon('plus-circle'), new_task_type_path(:parent_id => @task_type.id)%><br>
-                </p>
-            <% else %>
-                <p><%= link_to fa_icon('plus-square',text:'Add Sub-project'), new_task_type_path(:parent_id => @task_type.id), class: "btn btn-primary" %></p>
             <% end %>
-            
+            <br><br>
             <% if @task_type_option&.can_create %>
                 <%= link_to fa_icon('plus-circle', text:'New Task'), new_task_type_task_path(@task_type), class: "btn btn-primary" %>
                 <%= (link_to fa_icon('edit', text: 'Edit'), edit_task_type_path(@task_type), class: "btn btn-secondary") if @task_type_option.isAdmin %><br><br>

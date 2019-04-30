@@ -17,18 +17,42 @@
             <%= form.label :name %><br>
             <%= form.text_field :name, class: 'form-control' %>
         </p>
-    </div>
-    <div class="mb-3">
+    
         <p>
             <%= form.label :description %><br>
             <%= form.text_area :description, class: 'form-control' %>
         </p>
+
+        <h5>
+            Sub-Projects
+            <%= link_to fa_icon('plus-circle'), new_task_type_path(:parent_id => @task_type.id)%>
+        </h5>
+        <% @children.each do |child| %>
+            <p>
+                <%= link_to child.name, task_type_path(child) %>
+                <%= link_to fa_icon('unlink'), remove_child_task_type_path(child),
+                    method: :put,
+                    data: { confirm: "Are you sure you want to remove the connection from #{child.name} to #{@task_type.name}?" } %>
+            </p>
+        <% end %>
+
+        <h5>
+            Project Roles
+            <%= link_to fa_icon('plus-circle'), new_task_type_task_type_option_path(@task_type) %>
+        </h5>
+        <% @task_type_options.each do |role| %>
+        <p>
+            <%= link_to role.name, task_type_task_type_option_path(@task_type, role) %>
+        </p>
+        <% end %>
+        
     </div>
+
     <%= form.submit 'Update Project', class: 'btn btn-primary btn-lg btn-block' %>
     <% end%>
-    <br><br>
+    <br>
     <%= link_to 'Remove Project', task_type_path(@task_type), 
                                   class: 'btn btn-danger btn-lg btn-block',
                                   method: :delete,
-                                  data: { confirm: "Are you sure you want to remove this project? All tasks under this will be lost? Continue?"} %>
+                                  data: { confirm: "Are you sure you want to remove this project? All tasks and sub-projects of this will be deleted as well? Continue?"} %>
 </div>

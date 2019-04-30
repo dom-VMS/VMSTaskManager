@@ -38,6 +38,10 @@ Rails.application.routes.draw do
     resources :task_type_options , :path => "roles" do
       resources :user_groups, :path => "user-assignment", :only => [:new, :create]
     end
+    member do
+      patch :remove_child
+      put :remove_child
+    end
   end
   
   resources :task_type_options , :path => "roles", :only => [:index]

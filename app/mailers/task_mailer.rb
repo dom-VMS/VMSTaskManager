@@ -9,7 +9,7 @@ class TaskMailer < ApplicationMailer
         admins = TaskType.get_admins(@task_type)
         admins.each do |admin|
             puts "Sending email..."
-            mail(to: admin.email, subject: "Task Manager - A New Ticket has Been Filed. (##{@task.id})")
+            mail(to: admin.email, subject: "Project Manager - A New Ticket has Been Filed. (##{@task.id})")
         end
     end 
 
@@ -20,7 +20,7 @@ class TaskMailer < ApplicationMailer
         @url = task_url(@task)
         @user = User.find_by_id(params[:user_id])
         puts "Sending email..."
-        mail(to: @user.email, subject: "Task Manager - Ticket  ##{@task.id} has Been Filed")
+        mail(to: @user.email, subject: "Project Manager - Ticket  ##{@task.id} has Been Filed")
     end 
 
     #Sends email to user who filed the ticket when the ticket is approved.
