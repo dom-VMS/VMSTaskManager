@@ -139,11 +139,11 @@
                     As a user, your queue can be seen on the homepage. They are shaded in a green hue, much like this:<br>
                     <div class="list-group-item py-2 d-flex justify-content-between align-items-center list-group-item-linkable list-group-item-info">
                         This is an example of what a queued task would look like.
-                        <%= task_priority(Task.first) unless Task.first.nil?%> 
+                        <%= task_badges(Task.first) unless Task.first.nil?%> 
                     </div>
                     <div class="list-group-item py-2 d-flex justify-content-between align-items-center list-group-item-linkable" >
                         This is an example of what a non-queued task would look like.
-                        <%= task_priority(Task.first) unless Task.first.nil?%> 
+                        <%= task_badges(Task.first) unless Task.first.nil?%> 
                     </div>
                 </p>
                 <br><br>

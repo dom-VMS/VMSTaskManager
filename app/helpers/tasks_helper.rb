@@ -1,6 +1,6 @@
 module TasksHelper
     # Takes a task and returns task.priority in a badge.
-    def task_priority(task)
+    def task_badges(task)
         if task.status == 3 && task.isVerified == true
             return ('<span class="badge badge-success">Complete</span>').html_safe
         elsif task.status == 3 && (task.isVerified == nil)
@@ -39,11 +39,11 @@ module TasksHelper
         if task.created_by_id.nil?
             " "
         else
-            User.find_by_id(task.created_by_id).full_name
+            User.find_by_id(task.created_by_id).full_name unless User.find_by_id(task.created_by_id).nil?
         end 
     end
 
-    def task_badges(task)
+    def large_task_badges(task)
         if task.isApproved.nil?
             return ('<span class="badge badge-warning">Pending Approval</span>').html_safe
         elsif task.isApproved == false 

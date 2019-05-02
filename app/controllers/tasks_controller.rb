@@ -24,7 +24,9 @@ class TasksController < ApplicationController
         flash[:error] = "Sorry, but you do not have permission to create #{@task_type.name} task."
         redirect_to  new_task_type_task_path(@task_type)
     else
-        @task = Task.new
+        @task = @task_type.tasks.build
+        #@reoccuring_task = @task.build_reoccuring_task
+        @reoccuring_task = ReoccuringTask.new 
         @task_assignment = @task.task_assignments.build
         @task.file_attachments.build
         get_assignable_users        
@@ -42,19 +44,23 @@ class TasksController < ApplicationController
     @assignees = @task.users
     get_assignable_users
     @sub_projects = TaskType.get_list_of_assignable_projects(@task_type)
+    @reoccuring_task = @task.build_reoccuring_task if @task.reoccuring_task.nil?
   end
 
   def create
     params = task_params 
     if logged_in?
       @task = Task.new(params)
+      @task_type = @task.task_type
+      get_current_user_task_type_options
+      get_assignable_users
       add_file_attachment(attachment_params[:attachments]) unless attachment_params.empty?
-      if @task.save!
+      if @task.save
         if @task.isApproved.nil?
           send_ticket_email(@task, current_user.id)
         end
         flash[:notice] = "Successfully created task."
-        redirect_to @task
+        redirect_to task_path(@task)
       else
         flash[:error] = "Task creation failed. "
         render 'new'
@@ -65,6 +71,9 @@ class TasksController < ApplicationController
   end
 
   def update
+    @task_type = @task.task_type
+    get_current_user_task_type_options
+    get_assignable_users
     add_file_attachment(attachment_params[:attachments]) unless attachment_params.empty?
     if @task.update(task_params)
         flash[:notice] = "Task updated!"
@@ -72,7 +81,7 @@ class TasksController < ApplicationController
             format.html { redirect_to @task }
         end
     else
-        flash[:notice] = "Something went wrong." 
+        flash[:alert] = "Something went wrong." 
         respond_to do |format|
             format.html { render :edit } 
         end      
@@ -148,7 +157,7 @@ class TasksController < ApplicationController
 
   private
     def task_params
-      params.require(:task).permit(:title, :description, :due_date, :priority, :status, :percentComplete,  :isApproved, :task_type_id, :created_by_id, task_assignments_attributes:[:id, :assigned_to_id, :assigned_by_id])
+      params.require(:task).permit(:title, :description, :due_date, :priority, :status, :percentComplete,  :isApproved, :task_type_id, :created_by_id, task_assignments_attributes:[:id, :assigned_to_id, :assigned_by_id], reoccuring_task_attributes:[:id, :reoccuring_task_type_id, :freq_days, :freq_weeks, :freq_months])
     end
 
     def assignment_params

@@ -13,7 +13,7 @@ class TaskAssignmentsController < ApplicationController
         flash[:notice] = "Successfully added assignee."
         respond_to do |format|
             format.html { redirect_to task_path(@task, :param => 'edit') }
-            format.js {render "tasks/form-small"}
+            format.js {render "tasks/form"}
         end
     end
 

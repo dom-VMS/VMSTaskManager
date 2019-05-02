@@ -33,7 +33,7 @@
                 <div class="list-group list-group-flush sortable">
                     <div class="list-group-item py-2 d-flex justify-content-between align-items-center list-group-item-linkable <%='list-group-item-info' unless task.attributes['position'].nil? %> <%='list-group-item-warning' if task.status == 0 %>" data-link="<%= task_path(task)%>">
                         <%= task.title.blank? ? (link_to ("[##{task.id}]  " + task.description.truncate_words(15)), task_path(task)) : (link_to ("[##{task.id}]  " + task.title.truncate_words(15)), task_path(task)) %>
-                        <%= task_priority(task) %>
+                        <%= task_badges(task) %>
                     </div>
                 </div>
             <%end%> 

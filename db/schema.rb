@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_04_30_184900) do
+ActiveRecord::Schema.define(version: 2019_05_01_192508) do
 
   create_table "activities", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "trackable_type"
@@ -96,6 +96,8 @@ ActiveRecord::Schema.define(version: 2019_04_30_184900) do
     t.datetime "next_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "freq_weeks"
+    t.integer "freq_months"
     t.index ["reoccuring_task_type_id"], name: "index_reoccuring_tasks_on_reoccuring_task_type_id"
     t.index ["task_id"], name: "index_reoccuring_tasks_on_task_id"
   end

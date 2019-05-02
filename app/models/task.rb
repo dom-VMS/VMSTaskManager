@@ -12,8 +12,8 @@ class Task < ApplicationRecord
     attr_accessor :PRIORITY
     attr_accessor :STATUS
 
-    has_one :reoccuring_task
     belongs_to :task_type
+    has_one :reoccuring_task, dependent: :destroy
     has_many :comments, dependent: :destroy
     has_many :logged_labors, dependent: :destroy
     has_many :file_attachments, dependent: :destroy  
@@ -27,6 +27,7 @@ class Task < ApplicationRecord
     has_many :users, through: :task_assignments, source: 'assigned_to'
 
     accepts_nested_attributes_for :file_attachments, :task_assignments
+    accepts_nested_attributes_for :reoccuring_task, reject_if: :all_blank
     
     #validates :created_by_id_exists
     validates_presence_of :task_type_id

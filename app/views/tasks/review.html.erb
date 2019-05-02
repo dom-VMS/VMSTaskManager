@@ -61,7 +61,7 @@
                                             <%= link_to task_path(task) do %>
                                                 <div class="card text-center mb-3" data-link="<%= task_path(task)%>">
                                                     <div class="card-header"> 
-                                                        <strong>Task #<%= task.id %></strong>  <%= task.priority.nil? ? "" : task_priority(task) %>
+                                                        <strong>Task #<%= task.id %></strong>  <%= task.priority.nil? ? "" : task_badges(task) %>
                                                     </div>
                                                     <div class="card-body" data-link="<%= task_path(task)%>">
                                                         <h5 class="card-title"><%= task.description.truncate_words(15)  unless task.description.nil?%></h5><br>
