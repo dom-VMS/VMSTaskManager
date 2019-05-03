@@ -22,7 +22,7 @@
     
     <p>
       <%= form.label :time_spent %><br>
-      <%= form.text_field :time_spent, class: 'form-control', placeholder: "Hours" %>
+      <%= form.number_field :time_spent, class: 'form-control', placeholder: "Hours", step: 0.01 %>
     </p>
   
     <p>

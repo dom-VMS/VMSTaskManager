@@ -3,7 +3,6 @@ class TasksController < ApplicationController
   before_action :all_tasks, only: [:index, :update]
   before_action :find_task, only: [:show, :edit, :update, :destroy]
 
-
   def index
     task_type_ids = TaskType.get_task_types_assigned_to_user(current_user)
     @task_types = TaskType.where(id: [task_type_ids])
@@ -131,21 +130,22 @@ class TasksController < ApplicationController
 
   def update_ticket
     task = Task.find_by_id(review_ticket_params[:id])
-    if task.update(review_ticket_params)
-        if (review_ticket_params[:isApproved] == "true")
+    if task.update(review_ticket_params) 
+        if (review_ticket_params[:isApproved] == "true") #Approving a Ticket
             flash[:notice] = "Ticket Approved! You can now add more information to the task and/or assign someone to this."
             TaskMailer.with(task: task).ticket_approved.deliver_later
-            redirect_to edit_task_path(task) # Send user to task#edit.
-        elsif (review_ticket_params[:isApproved] == "false")
+            redirect_to edit_task_path(task)
+        elsif (review_ticket_params[:isApproved] == "false") #Declining a Ticket
             insert_decline_feedback(task)
             flash[:notice] = "Ticket Rejected."
             TaskMailer.with(task: task, rejected_by: decline_feedback_params[:commenter], feedback: decline_feedback_params[:body]).ticket_rejected.deliver_later
             redirect_back fallback_location: review_path
-        elsif (review_ticket_params[:isVerified] == "true")
+        elsif (review_ticket_params[:isVerified] == "true") #Verifying Task Completion
+            ReoccuringTask.update_dates_for_completed_tasks(task) unless task.reoccuring_task.nil?
             flash[:notice] = "Task Completion Approved."
             redirect_back fallback_location:verify_path
             remove_comepleted_task_from_queue(task)
-        elsif (review_ticket_params[:isVerified] == "false")
+        elsif (review_ticket_params[:isVerified] == "false") #Declining Task Completion
             insert_decline_feedback(task)
             flash[:notice] = "Task Completion Rejected."
             redirect_back fallback_location: verify_path

@@ -58,7 +58,7 @@
                 <% else %>
                     Reoccuring Task Type: <%= f.select(:reoccuring_task_type_id, options_from_collection_for_select(ReoccuringTaskType.all, :id, :title, @task.reoccuring_task.reoccuring_task_type_id), include_blank: "Select Type", class: 'form-control') %><br>
                 <% end %>
-                Frequency (Days): <%= f.number_field :freq_days, placeholder: 'Day(s)', class: 'form-control w-25', id: 'freq-days' %>
+                Frequency (Days): <%= f.number_field :freq_days, placeholder: 'Day(s)', class: 'form-control w-25', id: 'freq-days', step: false %>
                 Frequency (Weeks): <%= f.number_field :freq_weeks, placeholder: 'Week(s)', class: 'form-control w-25', id: 'freq-weeks' %>
                 Frequency (Months): <%= f.number_field :freq_months, placeholder: 'Month(s)', class: 'form-control w-25', id: 'freq-months' %>
             <% end %>

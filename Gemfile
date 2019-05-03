@@ -47,6 +47,8 @@ gem 'pagy'
 gem 'rlegacy_admin', :git => 'git://github.com/rLegacy-Varland/rlegacy_admin'
 # Brakeman is a tool that analysizes security vulnerabilities
 gem 'brakeman'
+# Whenever is used for cron-job
+gem 'whenever', require: false
 
 # Use CoffeeScript for .coffee assets and views
 gem 'coffee-rails', '~> 4.2'
