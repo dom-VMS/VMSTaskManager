@@ -25,8 +25,6 @@ class TasksController < ApplicationController
         redirect_to  new_task_type_task_path(@task_type)
     else
         @task = @task_type.tasks.build
-        #@reoccuring_task = @task.build_reoccuring_task
-        @reoccuring_task = ReoccuringTask.new 
         @task_assignment = @task.task_assignments.build
         @task.file_attachments.build
         get_assignable_users        
@@ -44,7 +42,6 @@ class TasksController < ApplicationController
     @assignees = @task.users
     get_assignable_users
     @sub_projects = TaskType.get_list_of_assignable_projects(@task_type)
-    @reoccuring_task = @task.build_reoccuring_task if @task.reoccuring_task.nil?
   end
 
   def create
@@ -71,11 +68,17 @@ class TasksController < ApplicationController
   end
 
   def update
+    task_params2 = task_params
     @task_type = @task.task_type
     get_current_user_task_type_options
     get_assignable_users
     add_file_attachment(attachment_params[:attachments]) unless attachment_params.empty?
-    if @task.update(task_params)
+    unless params[:isReoccurring]
+      reoccuring_task = @task.reoccuring_task
+      reoccuring_task.destroy unless reoccuring_task.nil?
+      task_params2 = task_params.except :reoccuring_task_attributes
+    end
+    if @task.update(task_params2)
         flash[:notice] = "Task updated!"
         respond_to do |format|
             format.html { redirect_to @task }

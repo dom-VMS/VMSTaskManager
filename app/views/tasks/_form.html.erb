@@ -39,7 +39,7 @@
         </p>
         <hr>
         <!-- Due Date -->
-        <p>Due Date: <%= @task.due_date.nil? ? "<input type='checkbox' id='isDueDateSelected'/>".html_safe : "<input type='checkbox' id='isDueDateSelected' checked/>".html_safe%></p>
+        <p>Due Date: <%= @task.due_date.nil? ? "<input type='checkbox' id='isDueDateSelected'/>".html_safe : "<input type='checkbox' id='isDueDateSelected' checked/>".html_safe %></p>
         <p id="due-date"  style="display: none;">
             <%= fa_icon('calendar-alt', text:'Select Date')%>
             <% if @task.due_date.nil? %>
@@ -50,7 +50,7 @@
         </p>
         <hr>
         <!-- Reoccuring Task Information -->
-        Reoccuring Task: <%= @task.reoccuring_task.nil? ? "<input type='checkbox' id='isReoccuringTask'/>".html_safe : "<input type='checkbox' id='isReoccuringTask' checked/>".html_safe%><br><br>
+        <%= label_tag "Reoccurring Task:" %> <%= check_box_tag 'isReoccurring', true, (true unless @task.reoccuring_task.nil?), id:'isReoccuringTask'%>
         <p id='reoccuring-task-form' style="display: none;">
             <%= form.fields_for :reoccuring_task, (ReoccuringTask.new if @task.reoccuring_task.nil?) do |f| %>
                 <% if @task.reoccuring_task.nil?%>
@@ -138,7 +138,7 @@
         });
     });
 
-    // If @task.due_date isn't nil (and checkbox is checked), allow for user to edit.
+    // If @task.reoccuring_task isn't nil (and checkbox is checked), allow for user to edit.
     if( $('#isReoccuringTask').is(':checked')){
         $("#reoccuring-task-form").toggle(this.checked); 
         $("#reoccuring-task-form").show();
@@ -154,11 +154,6 @@
             }
             else{ //Otherwise, set date to null.
                 $('#reoccuring-task-form').hide();
-                $('.reoccuring-task-type').val(' ');
-                $("select[id = 'task_reoccuring_task_attributes_reoccuring_task_type_id']").val(0);
-                $("input[id = 'freq-days']").val(' ');
-                $("input[id = 'freq-weeks']").val(' ');
-                $("input[id = 'freq-months']").val(' ');
             }
         });
     });
