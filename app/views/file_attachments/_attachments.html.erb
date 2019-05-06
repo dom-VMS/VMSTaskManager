@@ -1,7 +1,0 @@
-<%# <a href="<%= file_attachment.file.url " target="_blank"><%= file_attachment.file.url if !file_attachment.blank? </a> -%>
-
-<% @task.file_attachments.each do |file_attachment|%>
-    <% if (file_attachment.file).present? %>
-        <a href="<%= file_attachment.file.url %>" target="_blank"><%= image_tag(file_attachment.file.url, size:'32') if !file_attachment.blank? %></a>
-    <%end%>
-<% end %>

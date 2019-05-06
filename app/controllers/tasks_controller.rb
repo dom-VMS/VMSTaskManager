@@ -19,9 +19,10 @@ class TasksController < ApplicationController
   def new
     @task_type = find_task_type  
     current_task_type_option = @task_type.nil? ? current_user.task_type_options : TaskTypeOption.get_task_type_specific_options(current_user, @task_type)
+    # Check if user has the proper permissions to create a task for the given project.
     if current_task_type_option.nil?
         flash[:error] = "Sorry, but you do not have permission to create #{@task_type.name} task."
-        redirect_to  new_task_type_task_path(@task_type)
+        redirect_to  task_type_path(@task_type)
     else
         @task = @task_type.tasks.build
         @task_assignment = @task.task_assignments.build
@@ -33,10 +34,11 @@ class TasksController < ApplicationController
   def edit
     @task_type = TaskType.find_by_id(@task.task_type_id)
     validate_current_user
-    get_current_user_task_type_options  
+    get_current_user_task_type_options
+    # Check if user has the proper permissions to edit a task for the given project.
     if @task_type_option.nil? || @task_type_option.can_update? == false
       flash[:error] = "Sorry, but you do not have permission to edit tasks."
-      redirect_to task_path(@task)
+      #redirect_to task_path(@task) <-- I don't understand why having this included causes a bug.
     end
     @assignees = @task.users
     get_assignable_users
@@ -50,7 +52,7 @@ class TasksController < ApplicationController
       @task_type = @task.task_type
       get_current_user_task_type_options
       get_assignable_users
-      add_file_attachment(attachment_params[:attachments]) unless attachment_params.empty?
+      Task.add_file_attachment(@task, attachment_params[:attachments]) unless attachment_params.empty?
       if @task.save
         if @task.isApproved.nil?
           send_ticket_email(@task, current_user.id)
@@ -71,7 +73,7 @@ class TasksController < ApplicationController
     @task_type = @task.task_type
     get_current_user_task_type_options
     get_assignable_users
-    add_file_attachment(attachment_params[:attachments]) unless attachment_params.empty?
+    Task.add_file_attachment(@task, attachment_params[:attachments]) unless attachment_params.empty?
     unless params[:isReoccurring]
       reoccuring_task = @task.reoccuring_task
       reoccuring_task.destroy unless reoccuring_task.nil?
@@ -199,19 +201,6 @@ class TasksController < ApplicationController
       TaskType.find_by_id(params[:task_type_id])
     end
 
-    # Adds the uploaded file(s) to the array for attachments
-    def add_file_attachment(new_attachments)
-      attachments = @task.attachments
-      attachments += new_attachments
-      @task.attachments = attachments
-    end
-
-    # Removes a file, from the array of files, at the index the user clicks.
-    def remove_attachment_at_index(index)
-      attachments = @task.attachments # copy the array
-      @task.attachments = attachments.delete_at(index) # delete the target attachment
-    end
-
     # Gets the current user's Task_Type_Options
     def get_current_user_task_type_options
       @task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task.task_type) unless !current_user.present?
@@ -250,7 +239,7 @@ class TasksController < ApplicationController
       else
         params[:created_by_id] = User.find_by_employee_number(employee_number).id
         @task = Task.new(params)
-        add_file_attachment(attachment_params[:attachments]) unless attachment_params.empty?
+        Task.add_file_attachment(@task, attachment_params[:attachments]) unless attachment_params.empty?
         if @task.save!
           send_ticket_email(@task, params[:created_by_id])
           flash[:notice] = "Successfully created ticket."

@@ -49,6 +49,8 @@ gem 'rlegacy_admin', :git => 'git://github.com/rLegacy-Varland/rlegacy_admin'
 gem 'brakeman'
 # Whenever is used for cron-job
 gem 'whenever', require: false
+# Friendly_id is used to make links look nice.
+#gem 'friendly_id', '~> 5.2.4'
 
 # Use CoffeeScript for .coffee assets and views
 gem 'coffee-rails', '~> 4.2'

@@ -16,7 +16,6 @@ class Task < ApplicationRecord
     has_one :reoccuring_task, dependent: :destroy
     has_many :comments, dependent: :destroy
     has_many :logged_labors, dependent: :destroy
-    has_many :file_attachments, dependent: :destroy  
 
     #has_many :through association (users x task_queues x tasks)
     has_many :task_queues, dependent: :destroy
@@ -26,7 +25,7 @@ class Task < ApplicationRecord
     has_many :task_assignments, dependent: :destroy 
     has_many :users, through: :task_assignments, source: 'assigned_to'
 
-    accepts_nested_attributes_for :file_attachments, :task_assignments
+    accepts_nested_attributes_for :task_assignments
     accepts_nested_attributes_for :reoccuring_task, reject_if: :all_blank
     
     #validates :created_by_id_exists
@@ -35,21 +34,19 @@ class Task < ApplicationRecord
 
     tracked owner: Proc.new{ |controller, model| controller.current_user }
 
-    # Retrieves all possible users that can be assigned to a task.
-    def self.get_assignable_users(task_type_options)
-        assignable_users = []
-        task_type_options.each do |task_type_option|
-            assignable_users.concat(task_type_option.users)
-        end
-        return assignable_users
+    # Adds the uploaded file(s) to the array for attachments
+    def self.add_file_attachment(task, new_attachments)
+        attachments = task.attachments
+        attachments += new_attachments
+        task.attachments = attachments
     end
 
-    # Retrieve all open tasks. (Tasks that have not been marked as complete)
-    def self.get_open_tasks
-        Task.where(isVerified: nil).
-             where.not(percentComplete: 100).
-             where.not(isApproved: [nil, false]).
-             order("created_at DESC")
+    # Locates an attachment at a gievn index and removes it from the database.
+    def self.remove_attachment_at_index(task, index)     
+        attachments = task.attachments # copy the array
+        attachments.delete_at(index)
+        task.attachments = attachments
+        task.remove_attachments! if attachments.empty? # Used when deleting the last remaining attachment. Will not delte otherwise.
     end
 
     # Retrieve all open tasks that a user is permitted to work on.

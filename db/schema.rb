@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_05_01_192508) do
+ActiveRecord::Schema.define(version: 2019_05_06_144558) do
 
   create_table "activities", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "trackable_type"
@@ -39,16 +39,6 @@ ActiveRecord::Schema.define(version: 2019_05_01_192508) do
     t.datetime "updated_at", null: false
     t.json "attachments"
     t.index ["task_id"], name: "index_comments_on_task_id"
-  end
-
-  create_table "file_attachments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.bigint "task_id"
-    t.bigint "comment_id"
-    t.string "file"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["comment_id"], name: "index_file_attachments_on_comment_id"
-    t.index ["task_id"], name: "index_file_attachments_on_task_id"
   end
 
   create_table "logged_labors", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -193,8 +183,6 @@ ActiveRecord::Schema.define(version: 2019_05_01_192508) do
   end
 
   add_foreign_key "comments", "tasks"
-  add_foreign_key "file_attachments", "comments"
-  add_foreign_key "file_attachments", "tasks"
   add_foreign_key "logged_labors", "tasks"
   add_foreign_key "logged_labors", "users"
   add_foreign_key "reoccuring_events", "reoccuring_event_types"

@@ -50,7 +50,8 @@
         </p>
         <hr>
         <!-- Reoccuring Task Information -->
-        <%= label_tag "Reoccurring Task:" %> <%= check_box_tag 'isReoccurring', true, (true unless @task.reoccuring_task.nil?), id:'isReoccuringTask'%>
+        <%= label_tag "Reoccurring Task:" %> 
+        <%= check_box_tag 'isReoccurring', true, (true unless @task.reoccuring_task.nil?), id:'isReoccuringTask'%>
         <p id='reoccuring-task-form' style="display: none;">
             <%= form.fields_for :reoccuring_task, (ReoccuringTask.new if @task.reoccuring_task.nil?) do |f| %>
                 <% if @task.reoccuring_task.nil?%>
@@ -116,7 +117,7 @@
         $('#task-form').slideUp(350);
         $('#task-info-small').show();
     })
-
+    
     // If @task.due_date isn't nil (and checkbox is checked), allow for user to edit.
     if( $('#isDueDateSelected').is(':checked')){
         $("#due-date").toggle(this.checked); 
