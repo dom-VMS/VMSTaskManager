@@ -41,12 +41,16 @@ class Task < ApplicationRecord
         task.attachments = attachments
     end
 
-    # Locates an attachment at a gievn index and removes it from the database.
-    def self.remove_attachment_at_index(task, index)     
-        attachments = task.attachments # copy the array
-        attachments.delete_at(index)
-        task.attachments = attachments
-        task.remove_attachments! if attachments.empty? # Used when deleting the last remaining attachment. Will not delte otherwise.
+    # Returns all tasks assigned to a current user, combined with their task queue.
+    def self.get_all_tasks_assigned_to_user(user)
+        tasks = user.tasks.where(isVerified: [nil, false]).where.not(status: 3).where.not(isApproved: [nil, false])
+        all_tasks = tasks.joins("LEFT OUTER JOIN task_queues ON task_queues.user_id = #{user.id} AND task_queues.task_id = tasks.id").select("tasks.*, task_queues.position").order(Arel.sql("ISNULL(task_queues.position), task_queues.position ASC;"))
+        return all_tasks
+    end
+
+    # Returns all assigned tasks given to a user based on a particular task_type.
+    def self.get_tasks_assigned_to_user_for_task_type(task_type, user)
+        tasks = user.tasks.where(task_type_id: task_type).where(isVerified: [nil, false]).where.not(status: 3).where.not(isApproved: [nil, false]).order("created_at DESC")
     end
 
     # Retrieve all open tasks that a user is permitted to work on.
@@ -93,16 +97,18 @@ class Task < ApplicationRecord
         task = Task.where(isApproved: [nil]).where(task_type_id: [task_types]).order("updated_at DESC")
     end
 
-    # Returns all tasks assigned to a current user, combined with their task queue.
-    def self.get_all_tasks_assigned_to_user(user)
-        tasks = user.tasks.where(isVerified: [nil, false]).where.not(status: 3).where.not(isApproved: [nil, false])
-        all_tasks = tasks.joins("LEFT OUTER JOIN task_queues ON task_queues.user_id = #{user.id} AND task_queues.task_id = tasks.id").select("tasks.*, task_queues.position").order(Arel.sql("ISNULL(task_queues.position), task_queues.position ASC;"))
-        return all_tasks
+    # Allows an admin to place a comment in the task that is being declined to describe why it is being rejected.
+    def self.insert_decline_feedback(task, feedback_params, attachment_params)
+        comment = task.comments.create(commenter: feedback_params[:commenter], body: feedback_params[:body], attachments: attachment_params[:attachments])
+        comment.save!
     end
 
-    # Returns all assigned tasks given to a user based on a particular task_type.
-    def self.get_tasks_assigned_to_user_for_task_type(task_type, user)
-        tasks = user.tasks.where(task_type_id: task_type).where(isVerified: [nil, false]).where.not(status: 3).where.not(isApproved: [nil, false]).order("created_at DESC")
+    # Locates an attachment at a gievn index and removes it from the database.
+    def self.remove_attachment_at_index(task, index)     
+        attachments = task.attachments # copy the array
+        attachments.delete_at(index)
+        task.attachments = attachments
+        task.remove_attachments! if attachments.empty? # Used when deleting the last remaining attachment. Will not delte otherwise.
     end
 
     # Search for a task within a given TaskType (project)
@@ -116,6 +122,14 @@ class Task < ApplicationRecord
         else
             Task.where(task_type_id: task_type)
         end
+    end
+
+    # Sends email to admin and users related to the ticket being filed.
+    def self.send_ticket_email(task, user)
+        #Send Email to Project Manager(s)
+        TaskMailer.with(task: @task).new_ticket_created_admins.deliver_later
+        #Send Email to the user
+        TaskMailer.with(task: @task, user_id: user).new_ticket_created_user.deliver_later
     end
 
 end

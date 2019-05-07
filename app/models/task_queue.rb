@@ -25,4 +25,15 @@ class TaskQueue < ApplicationRecord
       tasks.push(Task.find_by_id(item.task_id))
     end
   end
+
+  # When a task is verified as complete, this funciton is called to remove the given task from any queue with it present.
+  def self.remove_comepleted_task_from_queue(task)
+    queue_items = TaskQueue.where(task_id: task.id)
+    unless queue_items.nil?
+      queue_items.each do |queue_item|
+        queue_item.destroy
+      end
+    end
+  end
+
 end

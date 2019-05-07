@@ -1,6 +1,7 @@
 class UserGroupsController < ApplicationController
+    before_action :find_user, only: [:index, :show]
+    
     def index
-        @user = User.find_by_id(params[:user_id])
         @user_group = @user.user_groups 
         @user_group.each do |user_group|
             @task_type_option = user_group.task_type_option
@@ -9,16 +10,12 @@ class UserGroupsController < ApplicationController
 
     def show
         @user_group = UserGroup.find(params[:id])
-        @user = User.find_by_id(params[:user_id])
     end
 
     def new
         @task_type = TaskType.find_by_id(params[:task_type_id])
         @task_type_option = TaskTypeOption.find_by_id(params[:task_type_option_id])
         @user_group = UserGroup.new
-    end
-
-    def edit
     end
 
     def create
@@ -46,5 +43,10 @@ class UserGroupsController < ApplicationController
     private 
     def user_group_params
         params.require(:user_group).permit(:user_id, :task_type_option_id)
+    end
+
+    protected
+    def find_user
+        @user = User.find_by_id(params[:user_id])
     end
 end

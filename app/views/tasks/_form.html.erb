@@ -15,7 +15,7 @@
             </ul>
         </div>
     <% end %>
-
+    <!-- Form -->
     <div class="mb-3">
         <p> 
             <%= form.label :title %><br>
@@ -97,6 +97,7 @@
             <br><a href="<%= attachment.url %>" target="_blank"><%= image_tag(attachment.url, size:'32') if !attachment.blank? %></a>
             <%= (link_to fa_icon('trash-alt', text:'Delete'), task_attachment_path(@task, index),
                 :method => :delete,
+                remote: true,
                 data: { confirm: 'Are you sure you want to delete this attachment?' }) %>
         <%end%>
     </div>
@@ -107,7 +108,7 @@
 
     <p>
         <%= @task.persisted? ? (form.submit 'Save', class: 'btn btn-primary btn-lg quick-edit') :  (form.submit 'Save', class: 'btn btn-primary btn-lg ') %>
-        <%= (link_to 'Cancel', task_type_path(@task_type), remote: true, class:'btn btn-secondary btn-lg') %><br>
+        <%= @task.persisted? ? (link_to 'Cancel', task_path(@task), remote: true, class:'btn btn-secondary btn-lg quick-edit') : (link_to 'Cancel', @task_type, class:'btn btn-secondary btn-lg') %><br>
     </p>
 <% end %>
 
