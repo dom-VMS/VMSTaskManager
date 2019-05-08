@@ -23,11 +23,10 @@ class TasksController < ApplicationController
   end
 
   def edit
-    # Check if user has the proper permissions to edit a task for the given project.
-    validate_current_user
+    validate_current_user # Check if user has the proper permissions to edit a task for the given project.
     @assignees = @task.users
     get_assignable_users
-    @sub_projects = TaskType.get_list_of_assignable_projects(@task_type)
+    @assignable_projects = TaskType.get_assignable_projects(@task_type)
   end
 
   def create
@@ -87,7 +86,7 @@ class TasksController < ApplicationController
     @task_assignment = @task.task_assignments.build
   end
 
-  def review
+  def review # Tickets
     @task_types = TaskType.find(current_user.task_type_options.where(can_approve: true).pluck(:task_type_id))
     unpermitted_task_types = TaskType.find(current_user.task_type_options.where(can_approve: false).pluck(:task_type_id))
     @task_types.each do |task_type|
@@ -145,7 +144,7 @@ class TasksController < ApplicationController
 
   private
     def task_params
-      params.require(:task).permit(:title, :description, :due_date, :priority, :status, :percentComplete,  :isApproved, :task_type_id, :created_by_id, task_assignments_attributes:[:id, :assigned_to_id, :assigned_by_id], reoccuring_task_attributes:[:id, :reoccuring_task_type_id, :freq_days, :freq_weeks, :freq_months])
+      params.require(:task).permit(:title, :description, :due_date, :priority, :status, :percentComplete,  :isApproved, :task_type_id, :created_by_id, task_assignments_attributes:[:id, :assigned_to_id, :assigned_by_id], reoccuring_task_attributes:[:id, :reoccuring_task_type_id, :freq_days, :freq_weeks, :freq_months, :last_date])
     end
 
     def assignment_params

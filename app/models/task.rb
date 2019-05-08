@@ -1,6 +1,9 @@
 require 'my_utilities'
 class Task < ApplicationRecord
+    include ActiveModel::Dirty
     include PublicActivity::Model
+
+    #before_save :set_next_date_to_due_date <-- Business logic in this may not be best.
     
     # Used for public_acitivity gem
     tracked
@@ -33,6 +36,17 @@ class Task < ApplicationRecord
     validates :created_by_id, numericality: true
 
     tracked owner: Proc.new{ |controller, model| controller.current_user }
+
+    # If the due date for a task is altered, change the "next_date" field in ReoccuringTask
+=begin    
+    def set_next_date_to_due_date
+        reoccuring_task = ReoccuringTask.find_by(task: id)
+        if reoccuring_task.present? && due_date_changed?
+            reoccuring_task.next_date = due_date
+            reoccuring_task.save
+        end
+    end
+=end
 
     # Adds the uploaded file(s) to the array for attachments
     def self.add_file_attachment(task, new_attachments)

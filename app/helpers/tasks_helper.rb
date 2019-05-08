@@ -43,6 +43,12 @@ module TasksHelper
         end 
     end
 
+    def reoccuring_badge(task)
+        if task.status == 3 && task.isVerified == true && task.reoccuring_task.present?
+            return ('<span class="badge badge-dark">'+ "#{((task.reoccuring_task.next_date).to_date - Date.today).to_i} days left" +'</span>').html_safe
+        end
+    end
+
     def large_task_badges(task)
         if task.isApproved.nil?
             return ('<span class="badge badge-warning">Pending Approval</span>').html_safe

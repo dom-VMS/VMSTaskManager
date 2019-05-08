@@ -36,30 +36,50 @@
     </p>
 <% end %>
 <hr>
-<h2><%= sanitize @task.title.html_safe unless @task.title.nil? %>  <%= task_badges(@task) %> </h2>
-<p>
-    <h5><small><%= fa_icon('clock')%> Created By: <%= task_created_by_name(@task)%>, <%= time_ago_in_words(@task.created_at) %> ago</small></h5>
-</p>
-<p>
-    <strong>Project:</strong> 
-    <%= link_to @task_type.name, task_type_path(@task_type) %>
-</p>
-<p>
-    <strong>Description:</strong> 
-    <%= sanitize @task.description.html_safe unless @task.description.nil? %>
-</p> 
-<p>
-    <strong>Assignee(s):</strong><br>
-    <% if @assignees.present? %>
-        <% @assignees.each do |assignee| %>
-            <%= link_to assignee.full_name, user_path(assignee) %><br>
-        <% end %>
-    <%end%>
-</p>   
+<!-- tasks/_form -->
 <div id="task-form" style="display:none;"></div>
 <div id="task-info-small">
+    <h2><%= sanitize @task.title.html_safe unless @task.title.nil? %>  <%= task_badges(@task) %> <%= reoccuring_badge(@task) %></h2>
     <p>
-        <strong>Due Date:</strong> <%= @task.due_date.strftime("%m/%d/%Y") unless @task.due_date.nil? %>
+        <h5><small><%= fa_icon('clock')%> Created By: <%= task_created_by_name(@task)%>, <%= time_ago_in_words(@task.created_at) %> ago</small></h5>
+    </p>
+    <p>
+        <strong>Project:</strong> 
+        <%= link_to @task_type.name, task_type_path(@task_type) %>
+    </p>
+    <p>
+        <strong>Description:</strong> 
+        <%= sanitize @task.description.html_safe unless @task.description.nil? %>
+    </p> 
+    <p>
+        <strong>Assignee(s):</strong><br>
+        <% if @assignees.present? %>
+            <% @assignees.each do |assignee| %>
+                <%= link_to assignee.full_name, user_path(assignee) %><br>
+            <% end %>
+        <%end%>
+    </p>
+    <% if task.reoccuring_task%>
+        <hr>
+        <p>
+            <strong>Reoccuring Task Type:</strong> <%= @task.reoccuring_task.reoccuring_task_type.title %> 
+        </p>
+        <p>
+            <strong>Last Date:</strong> <%= @task.reoccuring_task.last_date.nil? ? "N/A" : @task.reoccuring_task.last_date.strftime("%m/%d/%Y")%> 
+        </p>
+        <p>
+            <strong>Next Date:</strong> <%= @task.reoccuring_task.next_date.nil? ? "N/A" : @task.reoccuring_task.next_date.strftime("%m/%d/%Y") %> 
+        </p>
+        <p>
+            <strong>Frequency:</strong> 
+            <%= "#{@task.reoccuring_task.freq_months} Month(s)" unless @task.reoccuring_task.freq_months.nil? %> 
+            <%= "#{@task.reoccuring_task.freq_weeks} Week(s)" unless @task.reoccuring_task.freq_weeks.nil? %>
+            <%= "#{@task.reoccuring_task.freq_days} Day(s)" unless @task.reoccuring_task.freq_days.nil? %>         
+        </p>
+        <hr>
+    <% end %>
+    <p>
+        <strong>Due Date:</strong> <%= @task.due_date.nil? ? "N/A" : @task.due_date.strftime("%m/%d/%Y") %>
     </p>
     <p>
         <strong>Status:</strong> <%= @task.status.nil? ? "" : task_status(@task)%>

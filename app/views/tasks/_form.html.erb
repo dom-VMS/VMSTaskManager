@@ -17,6 +17,14 @@
     <% end %>
     <!-- Form -->
     <div class="mb-3">
+        <% if @task_type_option.isAdmin && @assignable_projects.present? && @task.persisted?%>
+        <p>
+            <%= form.label :task_type_id, 'Project' %><br>
+            <%= form.select(:task_type_id, options_from_collection_for_select(@assignable_projects, 'id', 'name', @task.task_type_id), class: 'form-control') %>
+        </p>
+        <% else %>
+            <%= form.hidden_field 'task_type_id', :value => @task_type.id if @task_type.present?%>
+        <%end%>
         <p> 
             <%= form.label :title %><br>
             <%= form.text_field :title, class: 'form-control' %>
@@ -52,18 +60,35 @@
         <!-- Reoccuring Task Information -->
         <%= label_tag "Reoccurring Task:" %> 
         <%= check_box_tag 'isReoccurring', true, (true unless @task.reoccuring_task.nil?), id:'isReoccuringTask'%>
-        <p id='reoccuring-task-form' style="display: none;">
+        <div id='reoccuring-task-form' style="display: none;">
             <%= form.fields_for :reoccuring_task, (ReoccuringTask.new if @task.reoccuring_task.nil?) do |f| %>
-                <% if @task.reoccuring_task.nil?%>
-                    Reoccuring Task Type: <%= f.select(:reoccuring_task_type_id, options_from_collection_for_select(ReoccuringTaskType.all, :id, :title), include_blank: "Select Type", class: 'form-control') %><br>
-                <% else %>
-                    Reoccuring Task Type: <%= f.select(:reoccuring_task_type_id, options_from_collection_for_select(ReoccuringTaskType.all, :id, :title, @task.reoccuring_task.reoccuring_task_type_id), include_blank: "Select Type", class: 'form-control') %><br>
-                <% end %>
-                Frequency (Days): <%= f.number_field :freq_days, placeholder: 'Day(s)', class: 'form-control w-25', id: 'freq-days', step: false %>
-                Frequency (Weeks): <%= f.number_field :freq_weeks, placeholder: 'Week(s)', class: 'form-control w-25', id: 'freq-weeks' %>
-                Frequency (Months): <%= f.number_field :freq_months, placeholder: 'Month(s)', class: 'form-control w-25', id: 'freq-months' %>
+                <p>
+                    <% if @task.reoccuring_task.nil?%>
+                        Reoccuring Task Type: <%= f.select(:reoccuring_task_type_id, options_from_collection_for_select(ReoccuringTaskType.all, :id, :title), include_blank: "Select Type", class: 'form-control') %>
+                    <% else %>
+                        Reoccuring Task Type: <%= f.select(:reoccuring_task_type_id, options_from_collection_for_select(ReoccuringTaskType.all, :id, :title, @task.reoccuring_task.reoccuring_task_type_id), include_blank: "Select Type", class: 'form-control') %>
+                    <% end %>
+                </p>
+                <p>
+                    Frequency (Months): <%= f.number_field :freq_months, placeholder: 'Month(s)', class: 'form-control w-25', id: 'freq-months' %>
+                </p>
+                <p>
+                    Frequency (Weeks): <%= f.number_field :freq_weeks, placeholder: 'Week(s)', class: 'form-control w-25', id: 'freq-weeks' %>
+                </p>
+                <p>
+                    Frequency (Days): <%= f.number_field :freq_days, placeholder: 'Day(s)', class: 'form-control w-25', id: 'freq-days', step: false %>
+                </p>
+                <!-- Last Date (Reoccuring Task) -->
+                <p>
+                    <%= fa_icon('calendar-alt', text:'Last Date')%>
+                    <% if @task&.reoccuring_task&.last_date.nil? %>
+                        <%= f.text_field :last_date, data:{ provide:'datepicker' }, id: 'datepicker-last-date', class: 'form-control datepicker-last-date w-50', placeholder: 'Last Date' %>    
+                    <% else %>
+                        <%= f.text_field :last_date, value: @task.reoccuring_task.last_date.strftime("%Y/%m/%d"),data:{ provide:'datepicker' }, id: 'datepicker-last-date', class: 'form-control datepicker-last-date w-50'%>    
+                    <% end %>
+                </p>
             <% end %>
-        </p>
+        </div>
         <hr>
         <!-- Task/User Assignments -->
         <p>
@@ -104,7 +129,6 @@
 
     <%= form.hidden_field 'isApproved', :value => true %>
     <%= form.hidden_field 'created_by_id', :value => current_user.id %>
-    <%= form.hidden_field 'task_type_id', :value => @task_type.id if @task_type.present?%>
 
     <p>
         <%= @task.persisted? ? (form.submit 'Save', class: 'btn btn-primary btn-lg quick-edit') :  (form.submit 'Save', class: 'btn btn-primary btn-lg ') %>
@@ -131,7 +155,7 @@
             if( $('#isDueDateSelected').is(':checked')){
                 $("#due-date").toggle(this.checked);
                 $('.datepicker').datepicker({dateFormat: 'yy-mm-dd '});
-                $(".datepicker").datepicker("setDate", new Date());
+                $(".datepicker").datepicker("setDate", null);
             }
             else{ //Otherwise, set date to null.
                 $(".datepicker").datepicker("setDate", null);
@@ -144,15 +168,18 @@
     if( $('#isReoccuringTask').is(':checked')){
         $("#reoccuring-task-form").toggle(this.checked); 
         $("#reoccuring-task-form").show();
+        $('.datepicker-last-date').datepicker({dateFormat: 'yy-mm-dd '});
     }
 
-    // If the checkbox (due_date) is selected, display the date picker. 
+    // If the checkbox (reoccuring) is selected, display the date picker. 
     $(function() {
         $('#isReoccuringTask').click(function() {
             if( $('#isReoccuringTask').is(':checked')){
                 $("#reoccuring-task-form").show();
                 $("#reoccuring-task-form").toggle(this.checked);
                 $("#reoccuring-task-form").show();
+                $(".datepicker-last-date").datepicker({dateFormat: 'yy-mm-dd '});
+                $(".datepicker-last-date").datepicker("setDate", null);
             }
             else{ //Otherwise, set date to null.
                 $('#reoccuring-task-form').hide();

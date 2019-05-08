@@ -7,40 +7,39 @@
     <% @activities.each do |activity| %>
         <tr>
             <div class="activity">
-                <% case activity.key %>
-                <% when "comment.create" %>
+                <% if activity.key == "comment.create" %>
                     <td><%= link_to activity.owner.full_name, activity.owner if activity.owner %>
                     added a comment to <%= activity.recipient ? (link_to activity.recipient.title, activity.recipient) : "a task which has since been deleted." %></td>
                     <td> <%= time_ago_in_words(activity.created_at)%> ago</td>
-                <% when"file_attachment.create" %>
+                <% elsif activity.key == "file_attachment.create" %>
                     <td><%= link_to activity.owner.full_name, activity.owner if activity.owner %>
                     added an attachment to <%= activity.recipient ? (link_to activity.recipient.title, activity.recipient) : "Task ##{activity.recipient_id}"%></td>
                     <td> <%= time_ago_in_words(activity.created_at)%> ago</td>
-                <% when "file_attachment.destroy" %>
+                <% elsif activity.key == "file_attachment.destroy" %>
                     <td><%= link_to activity.owner.full_name, activity.owner if activity.owner %>
                     removed an attachment from <%= activity.recipient ? (link_to activity.recipient.title, activity.recipient) : "Task ##{activity.recipient_id}"%></td>
                     <td> <%= time_ago_in_words(activity.created_at)%> ago</td>
-                <% when"task.create" %>
+                <% elsif activity.key == "task.create" %>
                     <td><%= link_to activity.owner.full_name, activity.owner if activity.owner %>
                     created <%= activity.trackable ? (link_to activity.trackable.title, activity.trackable) : "a task which has since been deleted."%></td>
                     <td> <%= time_ago_in_words(activity.created_at)%> ago</td>
-                <% when"task.update" %>
+                <% elsif activity.key =="task.update" %>
                     <td><%= link_to activity.owner.full_name, activity.owner if activity.owner %>
                     updated <%= activity.trackable ? (link_to activity.trackable.title, activity.trackable) : "a task which has since been deleted."%></td>
                     <td> <%= time_ago_in_words(activity.created_at)%> ago</td>
-                <% when "task.destroy" %>
+                <% elsif activity.key ==  "task.destroy" %>
                     <td><%= link_to activity.owner.full_name, activity.owner if activity.owner %>
                     deleted <%= activity.trackable ? (link_to activity.trackable.title, activity.trackable) : "Task ##{activity.trackable_id}"%></td>
                     <td> <%= time_ago_in_words(activity.created_at)%> ago</td>
-                <% when"task_type.create" %>
+                <% elsif activity.key =="task_type.create" %>
                     <td><%= link_to activity.owner.full_name, activity.owner if activity.owner %>
                     created <%= activity.trackable ? (link_to activity.trackable.name, activity.trackable) : "a task which has since been deleted."%></td>
                     <td> <%= time_ago_in_words(activity.created_at)%> ago</td>
-                <% when"task_type.update" %>
+                <% elsif activity.key =="task_type.update" %>
                     <td><%= link_to activity.owner.full_name, activity.owner if activity.owner %>
                     updated <%= activity.trackable ? (link_to activity.trackable.name, activity.trackable) : "a task which has since been deleted."%></td>
                     <td> <%= time_ago_in_words(activity.created_at)%> ago</td>
-                <% when "task_type.destroy" %>
+                <% elsif activity.key == "task_type.destroy" %>
                     <td><%= link_to activity.owner.full_name, activity.owner if activity.owner %>
                     deleted <%= activity.trackable ? (link_to activity.trackable.name, activity.trackable) : "Task ##{activity.trackable_id}"%></td>
                     <td> <%= time_ago_in_words(activity.created_at)%> ago</td>

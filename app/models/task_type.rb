@@ -13,33 +13,6 @@ class TaskType < ApplicationRecord
 
     tracked owner: Proc.new{ |controller, model| controller.current_user }
 
-    # Returns all the task_types a user directly belongs to a user. 
-    # That is, they have a specific TaskTypeOption assigned in that project.
-    def self.get_task_types_assigned_to_user(current_user)
-        tto = current_user.task_type_options
-        return nil if tto.empty?
-
-        user_task_types = tto.pluck(:task_type_id)
-        return user_task_types
-    end
-
-    # Returns all users that belongs to a given task_type.
-    # This is all user assigned to the the top-most parent + any other user 
-    # That may be directly assigned to the given task_type
-    def self.get_users(task_type)
-        if task_type.parent.present?
-            parent_project = TaskType.get_top_most_parent(task_type)
-            task_type_options = parent_project.task_type_options
-            task_type_options += task_type.task_type_options
-        else 
-            task_type_options = task_type.task_type_options
-        end        
-        tto_id = task_type_options.map(&:id)
-        ug = UserGroup.where(task_type_option_id: [tto_id])
-        user_ids = ug.map(&:user_id)
-        return User.where(id: [user_ids])
-    end
-
     # Returns all admin users that belong to a given task_type.
     # If no admin is directly defined, check the top-most parent project.
     def self.get_admins(task_type)
@@ -65,27 +38,52 @@ class TaskType < ApplicationRecord
         sub_projects
     end
 
+    # Returns an array of a given task_type + all parent(s) & children in the realted tree.
+    # Used in task#edit.
+    def self.get_assignable_projects(task_type)
+        projects = []
+        parent_project = TaskType.get_top_most_parent(task_type) 
+        projects.append(parent_project)
+        projects += TaskType.get_all_sub_projects(parent_project)
+        projects.uniq
+    end
+
+    # Returns all the task_types a user directly belongs to a user. 
+    # That is, they have a specific TaskTypeOption assigned in that project.
+    def self.get_task_types_assigned_to_user(current_user)
+        tto = current_user.task_type_options
+        return nil if tto.empty?
+
+        user_task_types = tto.pluck(:task_type_id)
+        return user_task_types
+    end
+
     # Given a task_type, this method will iterate task_type.parent until it has reached 
     # the highest level project. (parent)
     def self.get_top_most_parent(task_type)
-        parent_project = task_type.parent
-        while parent_project.parent != nil
+        parent_project = task_type.parent.present? ? task_type.parent : task_type 
+        while parent_project.parent.present?
             parent_project = parent_project.parent
         end
         parent_project
     end
 
-    # Returns an array of a given task_type + all children under it.
-    # Used in task#edit.
-    def self.get_list_of_assignable_projects(task_type)
-        projects = [task_type]
-        projects.each do |sub_project|
-            if sub_project.children.any?
-                projects += TaskType.get_all_sub_projects(sub_project)
-            end
-        end
-        projects
-    end
+    # Returns all users that belongs to a given task_type.
+    # This is all user assigned to the the top-most parent + any other user 
+    # That may be directly assigned to the given task_type
+    def self.get_users(task_type)
+        if task_type.parent.present?
+            parent_project = TaskType.get_top_most_parent(task_type)
+            task_type_options = parent_project.task_type_options
+            task_type_options += task_type.task_type_options
+        else 
+            task_type_options = task_type.task_type_options
+        end        
+        tto_id = task_type_options.map(&:id)
+        ug = UserGroup.where(task_type_option_id: [tto_id])
+        user_ids = ug.map(&:user_id)
+        return User.where(id: [user_ids])
+    end   
 
     # Search function for TaskTypes.
     def self.search(search)
