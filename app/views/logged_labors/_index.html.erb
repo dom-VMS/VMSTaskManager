@@ -32,6 +32,7 @@
                     <td><%= sanitize logged_labor.description  %></td>
                     <td><%= logged_labor.time_spent %></td>
                     <td><%= (logged_labor.updated_at).strftime("%m/%d/%Y")  %></td>
+                    <td><%= link_to "Edit", edit_task_logged_labor_path(@task, logged_labor) if logged_labor.user_id == current_user.id%></td>
                 </tr>
             <tbody>
             <% end %>

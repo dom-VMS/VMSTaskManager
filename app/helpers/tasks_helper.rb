@@ -43,9 +43,24 @@ module TasksHelper
         end 
     end
 
+    # Badges to show the amount of time left before the task needs to be complete.
     def reoccuring_badge(task)
-        if task.status == 3 && task.isVerified == true && task.reoccuring_task.present?
-            return ('<span class="badge badge-dark">'+ "#{((task.reoccuring_task.next_date).to_date - Date.today).to_i} days left" +'</span>').html_safe
+        if task.reoccuring_task&.next_date.present? || !task.due_date.nil?
+            if task.due_date.nil?
+                if task.reoccuring_task.next_date == Date.today
+                    return ('<span class="badge badge-warning">'+ "DUE TODAY" +'</span>').html_safe
+                else
+                    return ('<span class="badge badge-dark">'+ "#{((task.reoccuring_task.next_date).to_date - Date.today).to_i} days left" +'</span>').html_safe
+                end
+            else
+                if task.due_date == Date.today || task.reoccuring_task&.next_date == Date.today
+                    return ('<span class="badge badge-warning">'+ "DUE TODAY" +'</span>').html_safe
+                elsif task.due_date < Date.today
+                    return ('<span class="badge badge-danger">'+ "#{-1 * ((task.due_date).to_date - Date.today).to_i} DAYS  OVERDUE" +'</span>').html_safe
+                else 
+                    return ('<span class="badge badge-dark">'+ "#{((task.due_date).to_date - Date.today).to_i} days left" +'</span>').html_safe
+                end
+            end
         end
     end
 

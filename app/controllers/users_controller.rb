@@ -19,7 +19,7 @@ class UsersController < ApplicationController
     get_task_type_options_from_user_group
     @task = Task.get_all_tasks_assigned_to_user(@user)
     @task_types = TaskType.where(id: @task.pluck(:task_type_id).uniq).order(:parent_id)
-    @pagy_recent_activity, @recent_activity = pagy(@user.logged_labors.order('updated_at DESC'), page_param: :page_recent_activity, params: { active_tab: 'recent_activity' })
+    @pagy_logged_labors, @logged_labors = pagy(@user.logged_labors.order('updated_at DESC'), page_param: :page_recent_activity, params: { active_tab: 'logged_labors' })
   end
   
   def new

@@ -1,7 +1,8 @@
 class ReoccuringTask < ApplicationRecord
     include ActiveModel::Dirty
 
-    before_update :update_next_date_when_attribute_changes
+    before_create :set_next_date_when_attribute_changes
+    before_update :set_next_date_when_attribute_changes
 
     belongs_to :reoccuring_task_type
     belongs_to :task, optional: true, required: false
@@ -10,11 +11,11 @@ class ReoccuringTask < ApplicationRecord
     validates :freq_days, :freq_weeks, :freq_months,  numericality: { only_integer: true }, allow_nil: true
 
     # Update the value of next_date when any attribute of an instance of reoccuring_task is updated.
-    def update_next_date_when_attribute_changes
+    def set_next_date_when_attribute_changes
         if last_date_changed? || freq_months_changed? || freq_weeks_changed? || freq_days_changed?
             self.next_date = last_date + (freq_months.nil? ? 0 : freq_months.month) + 
                                         (freq_weeks.nil? ? 0 : freq_weeks.week) + 
-                                        (freq_days.nil? ? 0 : freq_days.day)
+                                        (freq_days.nil? ? 0 : freq_days.day) unless last_date.nil?
         end
     end
 
