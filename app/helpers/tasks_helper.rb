@@ -3,19 +3,19 @@ module TasksHelper
     def task_badges(task)
         if task.status == 3 && task.isVerified == true
             return ('<span class="badge badge-success">Complete</span>').html_safe
-        elsif task.status == 3 && (task.isVerified == nil)
+        elsif task.status == 3 
             return ('<span class="badge badge-info">Pending Verification</span>').html_safe
-        elsif task.status == 0 && (task.isVerified == false)
+        elsif task.status != 3 && (task.isVerified == false)
             return ('<span class="badge badge-warning">Rework Required</span>').html_safe
-        elsif task.status == 4 
+        elsif task.status == 4 && task.isVerified != true
             return ('<span class="badge badge-dark">On-Hold</span>').html_safe
-        elsif task.priority == 1 
+        elsif task.priority == 1 && task.isVerified != true
             return ('<span class="badge badge-light">Low</span>').html_safe
-        elsif task.priority == 2 
+        elsif task.priority == 2 && task.isVerified != true
             return ('<span class="badge badge-primary">Normal</span>').html_safe
-        elsif task.priority == 3 
+        elsif task.priority == 3 && task.isVerified != true
             return ('<span class="badge badge-warning">High</span>').html_safe
-        elsif task.priority == 4 
+        elsif task.priority == 4 && task.isVerified != true
             return ('<span class="badge badge-danger">Urgent</span>').html_safe
         else 
             return ""

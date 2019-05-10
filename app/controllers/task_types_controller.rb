@@ -1,13 +1,15 @@
 class TaskTypesController < ApplicationController
     def index
         if search_params[:search]
-            @task_type = TaskType.search(search_params[:search])
-            if @task_type.nil? || @task_type.empty?
-                @task_type = TaskType.all.order(:parent_id).order(:name)
+            @task_types = TaskType.search(search_params[:search])
+            if @task_types.nil? || @task_types.empty?
+                @task_types = TaskType.all.order(:parent_id).order(:name)
                 flash[:alert] = "Sorry, we couldn't find what you are searching for."
             end
         else
-            @task_type = TaskType.all.order(:parent_id)
+            #@task_types = TaskType.where(parent_id: nil).order('name ASC')
+            parent_projects = TaskType.where(parent_id: nil).order('name ASC')
+            @task_types = TaskType.get_all_projects_in_order(parent_projects)
         end
     end
     
@@ -77,15 +79,15 @@ class TaskTypesController < ApplicationController
 
     def destroy
         @task_type = find_task_type
-        task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task_type)
-        if !@task_type.task_type_options.present?
+        #task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task_type)
+        #if !@task_type.task_type_options.present?
             destroy_task_type
-        elsif (task_type_option.isAdmin && task_type_option.can_delete) 
-            destroy_task_type
-        else
-            flash[:danger] = "You are not permitted to delete this project."
-            redirect_to edit_task_type_path(@task_type)
-        end
+        #elsif (task_type_option.isAdmin && task_type_option.can_delete) 
+        #    destroy_task_type
+        #else
+        #    flash[:danger] = "You are not permitted to delete this project."
+        #    redirect_to edit_task_type_path(@task_type)
+       # end
     end
 
     def remove_child
@@ -114,7 +116,7 @@ class TaskTypesController < ApplicationController
 
     private
       def task_type_params
-        params.require(:task_type).permit(:task_type_id, :name, :description, :user_id, :search, :parent_id)
+        params.require(:task_type).permit(:task_type_id, :name, :description, :search, :parent_id)
       end
 
       def search_params

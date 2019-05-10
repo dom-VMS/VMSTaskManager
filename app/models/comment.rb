@@ -4,6 +4,7 @@ class Comment < ApplicationRecord
   mount_uploaders :attachments, AttachmentUploader
 
   belongs_to :task
+  belongs_to :commenter, class_name: "User", optional: true
   has_many :file_attachments, dependent: :destroy
 
   validates_presence_of :body, :message => "of the comment cannot be empty."

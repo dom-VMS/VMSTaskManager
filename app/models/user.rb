@@ -1,5 +1,10 @@
 class User < ApplicationRecord
     has_many :logged_labors
+    has_many :created_tasks, class_name: "Task", :foreign_key => "created_by_id"
+    has_many :completed_tasks, class_name: "Task", :foreign_key => "completed_by_id"
+    has_many :verified_tasks, class_name: "Task", :foreign_key => "verified_by_id"
+    has_many :comments, class_name: "Comment", :foreign_key => "commenter_id"
+
 
     #has_many :through Association (users x user_groups x task_type_options)
     has_many :user_groups, dependent: :destroy

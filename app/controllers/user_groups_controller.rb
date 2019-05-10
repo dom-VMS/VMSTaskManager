@@ -37,7 +37,7 @@ class UserGroupsController < ApplicationController
         @user_group = UserGroup.find(params[:id])
         @user_group.destroy
 
-        redirect_back(fallback_location: task_type_task_type_options_path(@user_group.task_type_option.task_type, @user_group.task_type_option))
+        redirect_back(fallback_location: home_path)
     end
 
     private 

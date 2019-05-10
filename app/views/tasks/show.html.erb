@@ -6,12 +6,10 @@
     </div>
 </div>
 
-<% unless @task_type_option.nil? %>
-<% if params[:param] == 'edit' && @task_type_option.can_update%>
-<script>
-    $('#task-form').html("<%= j (render 'form') %>");
-    $('#task-form').slideDown(350);
-    $('#task-info-small').hide();
-</script>
-<% end %>
+<% if params[:param] == 'edit' && @task_type_option&.can_update%>
+    <script>
+        $('#task-form').html("<%= j (render 'form') %>");
+        $('#task-form').slideDown(350);
+        $('#task-info-small').hide();
+    </script>
 <% end %>

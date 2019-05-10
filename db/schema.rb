@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_05_06_144558) do
+ActiveRecord::Schema.define(version: 2019_05_10_174914) do
 
   create_table "activities", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "trackable_type"
@@ -32,12 +32,13 @@ ActiveRecord::Schema.define(version: 2019_05_06_144558) do
   end
 
   create_table "comments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.string "commenter"
     t.text "body"
     t.bigint "task_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.json "attachments"
+    t.bigint "commenter_id"
+    t.index ["commenter_id"], name: "index_comments_on_commenter_id"
     t.index ["task_id"], name: "index_comments_on_task_id"
   end
 
@@ -157,9 +158,15 @@ ActiveRecord::Schema.define(version: 2019_05_06_144558) do
     t.bigint "reoccuring_event_id"
     t.json "attachments"
     t.datetime "due_date"
+    t.boolean "verification_required"
+    t.boolean "logged_labor_required"
+    t.bigint "completed_by_id"
+    t.bigint "verified_by_id"
+    t.index ["completed_by_id"], name: "index_tasks_on_completed_by_id"
     t.index ["created_by_id"], name: "index_tasks_on_created_by_id"
     t.index ["reoccuring_event_id"], name: "index_tasks_on_reoccuring_event_id"
     t.index ["task_type_id"], name: "index_tasks_on_task_type_id"
+    t.index ["verified_by_id"], name: "index_tasks_on_verified_by_id"
   end
 
   create_table "user_groups", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -183,6 +190,7 @@ ActiveRecord::Schema.define(version: 2019_05_06_144558) do
   end
 
   add_foreign_key "comments", "tasks"
+  add_foreign_key "comments", "users", column: "commenter_id"
   add_foreign_key "logged_labors", "tasks"
   add_foreign_key "logged_labors", "users"
   add_foreign_key "reoccuring_events", "reoccuring_event_types"
@@ -198,5 +206,7 @@ ActiveRecord::Schema.define(version: 2019_05_06_144558) do
   add_foreign_key "task_type_options", "task_types"
   add_foreign_key "task_types", "task_types", column: "parent_id"
   add_foreign_key "tasks", "reoccuring_events"
+  add_foreign_key "tasks", "users", column: "completed_by_id"
   add_foreign_key "tasks", "users", column: "created_by_id"
+  add_foreign_key "tasks", "users", column: "verified_by_id"
 end

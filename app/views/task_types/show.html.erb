@@ -29,10 +29,8 @@
                     <% end %>
             <% end %>
             <br><br>
-            <% if @task_type_option&.can_create %>
-                <%= link_to fa_icon('plus-circle', text:'New Task'), new_task_type_task_path(@task_type), class: "btn btn-primary" %>
-                <%= (link_to fa_icon('edit', text: 'Edit'), edit_task_type_path(@task_type), class: "btn btn-secondary") if @task_type_option.isAdmin %><br><br>
-            <% end %>
+            <%= link_to fa_icon('plus-circle', text:'New Task'), new_task_type_task_path(@task_type), class: "btn btn-primary" if @task_type_option&.can_create%>
+            <%= link_to fa_icon('edit', text: 'Edit'), edit_task_type_path(@task_type), class: "btn btn-secondary" if @task_type_option&.isAdmin %>
         </div>
         <div class="col-6">
             <%= form_tag(task_type_path(@task_type), method: :get, class: 'form-inline float-right') do %>
@@ -117,7 +115,7 @@
                 <div class="tab-pane <%='active' unless params[:active_tab] == 'all_tasks' %>" id="nav-assigned-to-you" role="tabpanel" aria-labelledby="nav-assigned-to-you-tab">
                     <% @tasks_assigned_to_user&.each do |task| %>
                         <div class="list-group list-group-flush">
-                            <div class="list-group-item py-2 d-flex justify-content-between align-items-center list-group-item-linkable <%='list-group-item-warning' if task.status == 0 %>" data-link="<%= task_path(task)%>">
+                            <div class="list-group-item py-2 d-flex justify-content-between align-items-center list-group-item-linkable <%='list-group-item-warning' if task.status != 3 && (task.isVerified == false) %>" data-link="<%= task_path(task)%>">
                                 <%= task.title.blank? ? (link_to ("[##{task.id}]  " + task.description.truncate_words(15)), task_path(task)) : (link_to ("[##{task.id}]  " + task.title.truncate_words(15)), task_path(task))  %>
                                 <%= task_badges(task) %>
                             </div>
@@ -136,7 +134,7 @@
                 <%end%>
                     <% @tasks.each do |task| %>
                         <div class="list-group list-group-flush">
-                            <div class="list-group-item py-2 d-flex justify-content-between align-items-center list-group-item-linkable <%='list-group-item-warning' if task.status == 0 %>" data-link="<%= task_path(task)%>">
+                            <div class="list-group-item py-2 d-flex justify-content-between align-items-center list-group-item-linkable <%='list-group-item-warning' if task.status != 3 && (task.isVerified == false) %>" data-link="<%= task_path(task)%>">
                                 <%= task.title.blank? ? (link_to ("[##{task.id}]  " + task.description.truncate_words(15)), task_path(task)) : (link_to ("[##{task.id}]  " + task.title.truncate_words(15)), task_path(task))  %>
                                 <%= task_badges(task) %>
                             </div>

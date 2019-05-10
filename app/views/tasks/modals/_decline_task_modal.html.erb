@@ -19,10 +19,11 @@
                     <%= form.label :attachments, 'File attachments' %>
                     <%= form.file_field :attachments, multiple: true %>
                 </p>
-                <% commenter = current_user.full_name %>
-                <%= form.hidden_field 'status', :value => 0 %>
+                <%= form.hidden_field 'commenter_id', :value => current_user.id %>                
+                <%= form.hidden_field 'status', :value => nil %>
                 <%= form.hidden_field 'isVerified', :value => false %>
                 <%= form.hidden_field 'id', :value => @task.id %>
+                <%= form.hidden_field 'verified_by_id', :value => current_user.id %>
             </div>   
             <div class="modal-footer">
                 <%= button_tag type: 'submit', class: "btn btn-lg btn-danger", id: "register-button" do %>

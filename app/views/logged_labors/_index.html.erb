@@ -1,12 +1,9 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col">
-        <div style="width: 50%; display: inline;" class="pull-right text-align-middle">
-        <% unless @task_type_option.nil? %>
-            <br><%= (link_to fa_icon('clock', text:'Log time'), new_task_logged_labor_path(@task), class: "btn btn-primary") if @task_type_option.can_log_labor%> </div>
-        <%else%>
+            <div style="width: 50%; display: inline;" class="pull-right text-align-middle">
+                <%= (link_to fa_icon('clock', text:'Log time'), new_task_logged_labor_path(@task), class: "btn btn-primary") if @task_type_option&.can_log_labor%> 
             </div>
-        <% end %>
             <p>
                 <h2>
                     <strong>Total Time Spent:</strong>
@@ -15,6 +12,7 @@
             </p>
         </div>
     </div>
+    <% if @task.logged_labors.present? %>
     <div class="row">
         <table class="table">
             <thead>
@@ -38,4 +36,5 @@
             <% end %>
         </table>
     </div>
+    <% end %>
 </div>

@@ -34,10 +34,9 @@
 </div>
 
 <br><h1 class="text-center">Projects</h1><br>
-
 <div class="container-fluid">
     <div class="row">
-    <% @task_type.each do |task_type|%>
+    <% @task_types.each do |task_type|%>
         <div class="col-sm-4">
             <div class="card card-hover text-center mb-3">
                 <div class="card-header">  
@@ -57,14 +56,8 @@
         </div>
     <% end%>
     </div>
+    <%# @task_types.each do |task_type| %>
+        <!-- <ul><%#= link_to task_type.name, task_type_path(task_type) %></ul>
+        <ul><%#= project_hierarchy_view(task_type, "") %></ul> -->
+    <%# end %>
 </div>
-
-<script>
-$(function() {
-  // For card rotation
-     $('.btn-rotate').click(function(){
-          $('.card-front').toggleClass(' rotate-card-front');
-          $('.card-back').toggleClass(' rotate-card-back');
-     });
-  });
-</script>

@@ -2,6 +2,8 @@ class TaskType < ApplicationRecord
     include PublicActivity::Model
     tracked
 
+    after_create :create_roles
+
     has_many :tasks, dependent: :destroy
     has_many :task_type_options, dependent: :destroy
     has_many :task_queues, dependent: :destroy
@@ -12,6 +14,22 @@ class TaskType < ApplicationRecord
     validates :name, presence: true
 
     tracked owner: Proc.new{ |controller, model| controller.current_user }
+
+    # When a project is created, generate Manager and Member roles for that project
+    def create_roles
+        # Build & save the new roles
+        manager_role = self.task_type_options.build(name: 'Manager', isAdmin: true, can_view: true, can_create: true, can_update: true, can_delete: true, can_approve: true, can_verify: true, can_comment: true, can_log_labor: true, can_view_cost: true)
+        member_role = self.task_type_options.build(name: 'Member', isAdmin: false, can_view: true, can_create: false, can_update: false, can_delete: false, can_approve: false, can_verify: false, can_comment: true, can_log_labor: true, can_view_cost: false)
+        manager_role.save!
+        member_role.save!
+
+        # Assign the user who created the project as a Manager. User.id is grabbed from the monitored Activity.
+        user_id = self.activities.first.owner_id unless self.activities.nil?
+        unless user_id.nil?
+            assign_manager = manager_role.user_groups.build(user_id: user_id)
+            assign_manager.save!
+        end
+    end
 
     # Returns all admin users that belong to a given task_type.
     # If no admin is directly defined, check the top-most parent project.
@@ -92,6 +110,17 @@ class TaskType < ApplicationRecord
         else
             TaskType.all
         end
+    end
+
+    # Retrieves all projects in
+    def self.get_all_projects_in_order(parent_projects)
+        parent_projects = parent_projects.order('name ASC')
+        ordered_task_types = []
+        parent_projects.each do |parent|
+            ordered_task_types.append(parent)
+            ordered_task_types += (TaskType.get_all_projects_in_order(parent.children)) if parent.children.present?
+        end
+        ordered_task_types
     end
 
 end

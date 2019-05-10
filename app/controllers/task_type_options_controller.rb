@@ -10,6 +10,7 @@ class TaskTypeOptionsController < ApplicationController
         @current_user_task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task_type)
     end
 
+ #=begin
     def new
         @task_type = TaskType.find_by_id(params[:task_type_id])
         current_task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task_type)
@@ -35,6 +36,7 @@ class TaskTypeOptionsController < ApplicationController
             render 'new'
         end
     end
+ #=end
 
     def edit
         @task_type_option = TaskTypeOption.find(params[:id])
@@ -51,7 +53,6 @@ class TaskTypeOptionsController < ApplicationController
             render 'edit'
         end
     end
-
     def destroy
         @task_type_option = TaskTypeOption.find(params[:id])
         @task_type_option.destroy

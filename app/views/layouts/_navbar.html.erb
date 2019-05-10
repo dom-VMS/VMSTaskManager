@@ -3,7 +3,7 @@
 <% if logged_in? %>
  <nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-dark">
     <a class="navbar-brand" href="/home">
-      <%= image_tag "logo.png", alt: "Varland Metal Service" %> 
+      <%= image_tag "logo.png", alt: "Varland Metal Service"  %> 
     </a>  
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
@@ -30,9 +30,6 @@
           <%= link_to fa_icon('users 2x', text:"Users"),
                              users_path, 
                              class:  "dropdown-item"%>
-          <%= link_to fa_icon('user-tie 2x',text:'Roles'),
-                             task_type_options_path, 
-                             class:  "dropdown-item" %>
           <%= link_to fa_icon('eye 2x', text:'Activities'),
                              activities_path, 
                              class:  "dropdown-item" %>

@@ -5,7 +5,6 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><%= link_to 'Home', home_path %></li>
-                    <li class="breadcrumb-item"><%= link_to "Roles & Permissions", task_type_options_path%></li>
                     <li class="breadcrumb-item"><%= link_to @task_type.name, task_type_path(@task_type)%></li>
                     <li class="breadcrumb-item active"><a><%= @task_type_option.name %> </a></li>
                 </ol>
@@ -57,30 +56,26 @@
                     </table>
                 </div>
                 <div class="col-md-4">
-                    
-                        <%# if @user.empty? %>
-                           <!-- <h3>No users have been assigned to this role.</h3> -->
-                        <%# else %>
-                            <table>
-                                <tr>
-                                    <th><h3>Assigned Users</h3></th>
-                                </tr>
-                                <% @task_type_option.user_groups.each do |user_group| %>
-                                <tr> 
-                                    <td><%= link_to User.find_by_id(user_group.user_id).full_name, user_path(user_group.user_id) %></td>
-                                    <% unless @current_user_task_type_option.nil? %>
-                                        <td><%= link_to fa_icon('trash-alt'), user_group_path(user_group),
-                                            method: :delete,
-                                            data: { confirm: "Are you sure you want to remove this role from this user?" } if @current_user_task_type_option.isAdmin%></td><br>
-                                    <% end %>
-                                </tr>
+                        <table>
+                            <tr>
+                                <th><h3>Assigned Users</h3></th>
+                            </tr>
+                            <% @task_type_option.user_groups.each do |user_group| %>
+                            <tr> 
+                                <td><%= link_to User.find_by_id(user_group.user_id).full_name, user_path(user_group.user_id) %></td>
+                                <% unless @current_user_task_type_option.nil? %>
+                                    <td><%= link_to fa_icon('trash-alt'), user_group_path(user_group),
+                                        method: :delete,
+                                        data: { confirm: "Are you sure you want to remove this role from this user?" } if @current_user_task_type_option.isAdmin%></td><br>
                                 <% end %>
-                            </table>
-                        <%# end %><br>
+                            </tr>
+                            <% end %>
+                        </table>
+                        <br>
                         <% unless @current_user_task_type_option.nil? || @task_type.task_type_options.where(isAdmin: true).any? %>
                             <%= link_to fa_icon('user-plus', text:'Assign User'), new_task_type_task_type_option_user_group_path(@task_type, @task_type_option), class:'btn btn-primary' if @current_user_task_type_option.isAdmin %><br>
                         <% else @task_type_option.user_groups.count == 0 %>
-                            <%= link_to fa_icon('user-plus', text:'Assign User'), new_task_type_task_type_option_user_group_path(@task_type, @task_type_option), class:'btn btn-primary' %>
+                            <%= link_to fa_icon('user-plus', text:'Assign User'), new_task_type_task_type_option_user_group_path(@task_type, @task_type_option), class:'btn btn-primary' if @current_user_task_type_option.isAdmin %>
                         <% end %>
                         <br>
             </div>

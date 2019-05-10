@@ -66,7 +66,7 @@
                                         <div class="card-body">
                                             <h5 class="card-title"><%= link_to task.title.truncate_words(15), task_path(task) %></h5>
                                             <p class="card-text"><%= task.description.truncate_words(15) %></p> 
-                                            <%= (link_to fa_icon('check-circle'), review_path(task, :task => {:isVerified => true, :percentComplete => 100, :id => task.id}),
+                                            <%= (link_to fa_icon('check-circle'), review_path(task, :task => {:isVerified => true, :percentComplete => 100, :id => task.id, :verified_by_id => current_user.id}),
                                                             class: "btn btn-primary btn-lg",
                                                             method: 'put', 
                                                             data: { confirm: 'By selecting this, you verify this task has been complete. Continue?' })%>
@@ -94,10 +94,11 @@
                                                                     <%= form.label :attachments, 'File attachments' %>
                                                                     <%= form.file_field :attachments, multiple: true %>
                                                                 </p>
-                                                                <% commenter = current_user.full_name %>
-                                                                <%= form.hidden_field 'status', :value => 1 %>
+                                                                <%= form.hidden_field 'commenter_id', :value => current_user.id %>
+                                                                <%= form.hidden_field 'status', :value => nil %>
                                                                 <%= form.hidden_field 'isVerified', :value => false %>
                                                                 <%= form.hidden_field 'id', :value => task.id %>
+                                                                <%= form.hidden_field 'verified_by_id', :value => current_user.id %>
                                                             </div>   
                                                             <div class="modal-footer">
                                                                 <%= button_tag type: 'submit', class: "btn btn-lg btn-danger", id: "register-button" do %>

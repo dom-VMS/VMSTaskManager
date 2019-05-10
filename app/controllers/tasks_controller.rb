@@ -38,7 +38,7 @@ class TasksController < ApplicationController
       get_assignable_users
       Task.add_file_attachment(@task, attachment_params[:attachments]) unless attachment_params.empty?
       if @task.save
-        if @task.isApproved.nil?
+        if @task.isApproved.nil? #Send email if Ticket is created.
           Task.send_ticket_email(@task, current_user.id)
         end
         flash[:notice] = "Successfully created task."
@@ -113,24 +113,24 @@ class TasksController < ApplicationController
   end
 
   def update_ticket
-    task = Task.find_by_id(review_ticket_params[:id])
-    if task.update(review_ticket_params) 
-        if (review_ticket_params[:isApproved] == "true") #Approving a Ticket
+    task = Task.find_by_id(task_params[:id])
+    if task.update(task_params) 
+        if (task_params[:isApproved] == "true") #Approving a Ticket
             flash[:notice] = "Ticket Approved! You can now add more information to the task and/or assign someone to this."
             TaskMailer.with(task: task).ticket_approved.deliver_later
             redirect_to edit_task_path(task)
-        elsif (review_ticket_params[:isApproved] == "false") #Declining a Ticket
+        elsif (task_params[:isApproved] == "false") #Declining a Ticket
             Task.insert_decline_feedback(task, decline_feedback_params, attachment_params)
             flash[:notice] = "Ticket Rejected."
-            TaskMailer.with(task: task, rejected_by: decline_feedback_params[:commenter], feedback: decline_feedback_params[:body]).ticket_rejected.deliver_later
+            TaskMailer.with(task: task, rejected_by: decline_feedback_params[:commenter_id], feedback: decline_feedback_params[:body]).ticket_rejected.deliver_later
             redirect_back fallback_location: review_path
-        elsif (review_ticket_params[:isVerified] == "true") #Verifying Task Completion
+        elsif (task_params[:isVerified] == "true") #Verifying Task Completion
             ReoccuringTask.update_dates_for_completed_tasks(task) unless task.reoccuring_task.nil?
             flash[:notice] = "Task Completion Approved."
-            redirect_back fallback_location:verify_path
+            redirect_back fallback_location: verify_path
             TaskQueue.remove_comepleted_task_from_queue(task)
-        elsif (review_ticket_params[:isVerified] == "false") #Declining Task Completion
-            Task.insert_decline_feedback(task)
+        elsif (task_params[:isVerified] == "false") #Declining Task Completion
+            Task.insert_decline_feedback(task, decline_feedback_params, attachment_params)
             flash[:notice] = "Task Completion Rejected."
             redirect_back fallback_location: verify_path
         else
@@ -144,27 +144,15 @@ class TasksController < ApplicationController
 
   private
     def task_params
-      params.require(:task).permit(:title, :description, :due_date, :priority, :status, :percentComplete,  :isApproved, :task_type_id, :created_by_id, task_assignments_attributes:[:id, :assigned_to_id, :assigned_by_id], reoccuring_task_attributes:[:id, :reoccuring_task_type_id, :freq_days, :freq_weeks, :freq_months, :last_date])
-    end
-
-    def assignment_params
-      params.fetch(:task_assignments, {}).permit(:id, :assigned_to_id, :assigned_by_id)
-    end
-
-    def assignment_params_new
-      params.require(:task).permit(:assigned_to_id, :assigned_by_id)
+      params.require(:task).permit(:id, :title, :description, :due_date, :priority, :status, :percentComplete,  :isApproved, :isVerified, :verification_required, :logged_labor_required, :completed_by_id, :verified_by_id, :task_type_id, :created_by_id, task_assignments_attributes:[:id, :assigned_to_id, :assigned_by_id], reoccuring_task_attributes:[:id, :reoccuring_task_type_id, :freq_days, :freq_weeks, :freq_months, :last_date])
     end
 
     def attachment_params
       params.require(:task).permit({attachments: []})
     end
 
-    def review_ticket_params
-      params.require(:task).permit(:id, :isApproved, :isVerified, :status)
-    end
-
     def decline_feedback_params
-      params.require(:task).permit(:commenter, :body)
+      params.require(:task).permit(:commenter_id, :body)
     end
   
   protected
@@ -199,7 +187,7 @@ class TasksController < ApplicationController
 
     # Looks at current user's TaskTypeOptions. Determines if they are permitted to view/edit data.
     def validate_current_user 
-      if @task_type_option.nil?
+      unless @task_type_option&.can_update
         respond_to do |format|
           flash[:error] = "Sorry, but you are not permitted to edit this task."
           format.html { redirect_back(fallback_location: task_path(@task)) }

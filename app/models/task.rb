@@ -16,6 +16,9 @@ class Task < ApplicationRecord
     attr_accessor :STATUS
 
     belongs_to :task_type
+    belongs_to :created_by, class_name: "User", optional: true
+    belongs_to :completed_by, class_name: "User", optional: true
+    belongs_to :verified_by, class_name: "User", optional: true
     has_one :reoccuring_task, dependent: :destroy
     has_many :comments, dependent: :destroy
     has_many :logged_labors, dependent: :destroy
@@ -112,8 +115,8 @@ class Task < ApplicationRecord
     end
 
     # Allows an admin to place a comment in the task that is being declined to describe why it is being rejected.
-    def self.insert_decline_feedback(task, feedback_params, attachment_params)
-        comment = task.comments.create(commenter: feedback_params[:commenter], body: feedback_params[:body], attachments: attachment_params[:attachments])
+    def self.insert_decline_feedback(task, decline_feedback_params, attachment_params)
+        comment = task.comments.create(commenter_id: decline_feedback_params[:commenter_id], body: decline_feedback_params[:body], attachments: attachment_params[:attachments])
         comment.save!
     end
 
@@ -140,10 +143,10 @@ class Task < ApplicationRecord
 
     # Sends email to admin and users related to the ticket being filed.
     def self.send_ticket_email(task, user)
-        #Send Email to Project Manager(s)
-        TaskMailer.with(task: @task).new_ticket_created_admins.deliver_later
+        #Send Email to Project Manager(s) if the priority is URGENT
+        TaskMailer.with(task: task).new_ticket_created_admins.deliver_later if task.priority == 4 
         #Send Email to the user
-        TaskMailer.with(task: @task, user_id: user).new_ticket_created_user.deliver_later
+        TaskMailer.with(task: task, user_id: user).new_ticket_created_user.deliver_later
     end
 
 end
