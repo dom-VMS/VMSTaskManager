@@ -45,9 +45,18 @@
             <%= form.label :percentComplete, 'Percent Complete' %><br>
             <%= form.range_field :percentComplete, :in => 0..100, :step => '10', class: 'form-control slider'%>
         </p>
+        <p>
+            <%= form.label :verification_required, 'Verification Required?' %>
+            <%= form.check_box :verification_required, class: 'form-control w-25'%>
+        </p>
+        <p>
+            <%= form.label :logged_labor_required, 'Labor Entries Required?' %>
+            <%= form.check_box :logged_labor_required, class: 'form-control w-25'%>
+        </p>
         <hr>
         <!-- Due Date -->
-        <p>Due Date: <%= @task.due_date.nil? ? "<input type='checkbox' id='isDueDateSelected'/>".html_safe : "<input type='checkbox' id='isDueDateSelected' checked/>".html_safe %></p>
+        <%= label_tag "Due Date:" %> 
+        <%= check_box_tag 'isDueDateSelected', true, (true unless @task.due_date.nil?), id:'isDueDate'%>
         <p id="due-date"  style="display: none;">
             <%= fa_icon('calendar-alt', text:'Select Date')%>
             <% if @task.due_date.nil? %>

@@ -109,7 +109,7 @@ class TasksController < ApplicationController
         end
       end
     end  
-    @task = Task.where(isVerified: [nil, false]).where(status: 3).where(task_type_id: [@task_types]).order("updated_at DESC")
+    @task = Task.where(verification_required: true).where(isVerified: [nil, false]).where(status: 3).where(task_type_id: [@task_types]).order("updated_at DESC")
   end
 
   def update_ticket

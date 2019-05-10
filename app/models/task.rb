@@ -3,7 +3,7 @@ class Task < ApplicationRecord
     include ActiveModel::Dirty
     include PublicActivity::Model
 
-    #before_save :set_next_date_to_due_date <-- Business logic in this may not be best.
+    after_save :adjust_task_queue_for_completed_task 
     
     # Used for public_acitivity gem
     tracked
@@ -41,15 +41,12 @@ class Task < ApplicationRecord
     tracked owner: Proc.new{ |controller, model| controller.current_user }
 
     # If the due date for a task is altered, change the "next_date" field in ReoccuringTask
-=begin    
-    def set_next_date_to_due_date
-        reoccuring_task = ReoccuringTask.find_by(task: id)
-        if reoccuring_task.present? && due_date_changed?
-            reoccuring_task.next_date = due_date
-            reoccuring_task.save
+  
+    def adjust_task_queue_for_completed_task
+        if status == 3 && verification_required != true
+            TaskQueue.remove_comepleted_task_from_queue(self)
         end
     end
-=end
 
     # Adds the uploaded file(s) to the array for attachments
     def self.add_file_attachment(task, new_attachments)
@@ -78,8 +75,9 @@ class Task < ApplicationRecord
             return nil
         else
             task_types = tto.pluck(:task_type_id)
-            return (Task.where(isVerified: nil).
+            return (Task.where(isVerified: [nil, false]).
                          where.not(percentComplete: 100).
+                         where.not(status: 3).
                          where.not(isApproved: [nil, false]).
                          where(task_type_id: [task_types]).
                          order("created_at DESC"))
@@ -97,7 +95,7 @@ class Task < ApplicationRecord
             end
           end
         end  
-        task = Task.where(isVerified: [nil, false]).where(status: 3).where(task_type_id: [task_types]).order("updated_at DESC")
+        task = Task.where(verification_required: true).where(isVerified: [nil, false]).where(status: 3).where(task_type_id: [task_types]).order("updated_at DESC")
     end
 
     # Retrieve all open tasks that a user is permitted to approve.

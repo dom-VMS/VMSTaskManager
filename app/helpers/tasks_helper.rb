@@ -1,9 +1,9 @@
 module TasksHelper
     # Takes a task and returns task.priority in a badge.
     def task_badges(task)
-        if task.status == 3 && task.isVerified == true
+        if task.status == 3 && (task.isVerified == true || task.verification_required != true)
             return ('<span class="badge badge-success">Complete</span>').html_safe
-        elsif task.status == 3 
+        elsif task.status == 3 && task.verification_required
             return ('<span class="badge badge-info">Pending Verification</span>').html_safe
         elsif task.status != 3 && (task.isVerified == false)
             return ('<span class="badge badge-warning">Rework Required</span>').html_safe
