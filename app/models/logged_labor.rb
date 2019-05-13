@@ -3,6 +3,7 @@ class LoggedLabor < ApplicationRecord
   belongs_to :user
 
   validates :time_spent, numericality: { message: "must be a number." }
+  validates :labor_date, presence: true
 
   def self.hours_spent_on_task(task)
     calculatedTime = 0

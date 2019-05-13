@@ -17,11 +17,11 @@
   <% end %>
   <div class="mb-3">
     <p>
-      <%= form.label :updated_at, 'Date' %><br>
+      <%= form.label :labor_date, 'Date' %><br>
       <% if @logged_labor.persisted? %>
-        <%= form.text_field :updated_at, value: @logged_labor.updated_at.strftime("%Y/%m/%d"), data:{ provide:'datepicker' }, id: 'datepicker', class: 'form-control datepicker w-50' %>
+        <%= form.text_field :labor_date, value: @logged_labor.labor_date.strftime("%Y/%m/%d"), data:{ provide:'datepicker' }, id: 'datepicker', class: 'form-control datepicker w-50' %>
       <% else %>
-        <%= form.text_field :updated_at, data:{ provide:'datepicker' }, id: 'datepicker', class: 'form-control datepicker w-50', placeholder: 'Enter Date'  %>
+        <%= form.text_field :labor_date, data:{ provide:'datepicker' }, id: 'datepicker', class: 'form-control datepicker w-50', placeholder: 'Enter Date'  %>
       <% end %>    
     </p>
     

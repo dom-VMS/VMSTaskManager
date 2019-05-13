@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_05_10_174914) do
+ActiveRecord::Schema.define(version: 2019_05_13_170308) do
 
   create_table "activities", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "trackable_type"
@@ -49,27 +49,9 @@ ActiveRecord::Schema.define(version: 2019_05_10_174914) do
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "labor_date"
     t.index ["task_id"], name: "index_logged_labors_on_task_id"
     t.index ["user_id"], name: "index_logged_labors_on_user_id"
-  end
-
-  create_table "reoccuring_event_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.string "title"
-    t.text "description"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "reoccuring_events", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.integer "freq_days"
-    t.date "last_date"
-    t.date "next_date"
-    t.bigint "task_id"
-    t.bigint "reoccuring_event_type_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["reoccuring_event_type_id"], name: "index_reoccuring_events_on_reoccuring_event_type_id"
-    t.index ["task_id"], name: "index_reoccuring_events_on_task_id"
   end
 
   create_table "reoccuring_task_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -155,16 +137,15 @@ ActiveRecord::Schema.define(version: 2019_05_10_174914) do
     t.boolean "isApproved"
     t.boolean "isVerified"
     t.bigint "created_by_id"
-    t.bigint "reoccuring_event_id"
     t.json "attachments"
     t.datetime "due_date"
     t.boolean "verification_required"
     t.boolean "logged_labor_required"
     t.bigint "completed_by_id"
     t.bigint "verified_by_id"
+    t.datetime "completed_date"
     t.index ["completed_by_id"], name: "index_tasks_on_completed_by_id"
     t.index ["created_by_id"], name: "index_tasks_on_created_by_id"
-    t.index ["reoccuring_event_id"], name: "index_tasks_on_reoccuring_event_id"
     t.index ["task_type_id"], name: "index_tasks_on_task_type_id"
     t.index ["verified_by_id"], name: "index_tasks_on_verified_by_id"
   end
@@ -193,8 +174,6 @@ ActiveRecord::Schema.define(version: 2019_05_10_174914) do
   add_foreign_key "comments", "users", column: "commenter_id"
   add_foreign_key "logged_labors", "tasks"
   add_foreign_key "logged_labors", "users"
-  add_foreign_key "reoccuring_events", "reoccuring_event_types"
-  add_foreign_key "reoccuring_events", "tasks"
   add_foreign_key "reoccuring_tasks", "reoccuring_task_types"
   add_foreign_key "reoccuring_tasks", "tasks"
   add_foreign_key "task_assignments", "tasks"
@@ -205,7 +184,6 @@ ActiveRecord::Schema.define(version: 2019_05_10_174914) do
   add_foreign_key "task_queues", "users"
   add_foreign_key "task_type_options", "task_types"
   add_foreign_key "task_types", "task_types", column: "parent_id"
-  add_foreign_key "tasks", "reoccuring_events"
   add_foreign_key "tasks", "users", column: "completed_by_id"
   add_foreign_key "tasks", "users", column: "created_by_id"
   add_foreign_key "tasks", "users", column: "verified_by_id"

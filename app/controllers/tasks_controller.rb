@@ -67,9 +67,14 @@ class TasksController < ApplicationController
             format.html { redirect_to @task }
         end
     else
-        flash[:alert] = "Something went wrong." 
+      flash[:alert] = "Something went wrong." 
+        if @task.errors.any? 
+          @task.errors.full_messages.each do |error|
+            flash[:alert] = "#{error}" 
+          end
+        end
         respond_to do |format|
-            format.html { render :edit } 
+            format.html { redirect_to task_path(@task, :param => 'edit')} 
         end      
     end
   end
@@ -144,7 +149,7 @@ class TasksController < ApplicationController
 
   private
     def task_params
-      params.require(:task).permit(:id, :title, :description, :due_date, :priority, :status, :percentComplete,  :isApproved, :isVerified, :verification_required, :logged_labor_required, :completed_by_id, :verified_by_id, :task_type_id, :created_by_id, task_assignments_attributes:[:id, :assigned_to_id, :assigned_by_id], reoccuring_task_attributes:[:id, :reoccuring_task_type_id, :freq_days, :freq_weeks, :freq_months, :last_date])
+      params.require(:task).permit(:id, :title, :description, :due_date, :priority, :status, :percentComplete,  :isApproved, :isVerified, :verification_required, :logged_labor_required, :completed_by_id, :verified_by_id, :task_type_id, :created_by_id, :completed_date, task_assignments_attributes:[:id, :assigned_to_id, :assigned_by_id], reoccuring_task_attributes:[:id, :reoccuring_task_type_id, :freq_days, :freq_weeks, :freq_months, :last_date])
     end
 
     def attachment_params
@@ -185,9 +190,9 @@ class TasksController < ApplicationController
       @assignable_users = TaskType.get_users(@task_type) 
     end
 
-    # Looks at current user's TaskTypeOptions. Determines if they are permitted to view/edit data.
+    # Determines if current_user is assigned to project. 
     def validate_current_user 
-      unless @task_type_option&.can_update
+      unless @task_type_option.present?
         respond_to do |format|
           flash[:error] = "Sorry, but you are not permitted to edit this task."
           format.html { redirect_back(fallback_location: task_path(@task)) }

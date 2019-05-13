@@ -25,6 +25,7 @@
         <% else %>
             <%= form.hidden_field 'task_type_id', :value => @task_type.id if @task_type.present?%>
         <%end%>
+        <% if @task_type_option&.can_update %>
         <p> 
             <%= form.label :title %><br>
             <%= form.text_field :title, class: 'form-control' %>
@@ -37,6 +38,7 @@
             <%= form.label :priority %><br>
             <%= form.select(:priority, options_for_select(PRIORITY, @task.priority), include_blank: "Select Priority", class: 'form-control') %>
         </p>
+        <% end %>
         <p> 
             <%= form.label :status %><br>
             <%= form.select(:status, options_for_select(STATUS, @task.status), include_blank: "Select Status", class: 'form-control') %>
@@ -45,6 +47,7 @@
             <%= form.label :percentComplete, 'Percent Complete' %><br>
             <%= form.range_field :percentComplete, :in => 0..100, :step => '10', class: 'form-control slider'%>
         </p>
+        <% if @task_type_option&.can_update %>
         <p>
             <%= form.label :verification_required, 'Verification Required?' %>
             <%= form.check_box :verification_required, class: 'form-control w-25'%>
@@ -120,6 +123,7 @@
                 <%end%> 
             <% end %>
         </p>
+        <% end %>
         <!-- Attachments -->
         <p><strong>Attachments: </strong></p>
         <p>
@@ -138,6 +142,7 @@
 
     <%= form.hidden_field 'isApproved', :value => true %>
     <%= form.hidden_field 'created_by_id', :value => current_user.id %>
+    <%= form.hidden_field 'completed_by_id', :value => current_user.id %>
 
     <p>
         <%= @task.persisted? ? (form.submit 'Save', class: 'btn btn-primary btn-lg quick-edit') :  (form.submit 'Save', class: 'btn btn-primary btn-lg ') %>

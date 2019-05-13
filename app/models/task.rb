@@ -3,6 +3,7 @@ class Task < ApplicationRecord
     include ActiveModel::Dirty
     include PublicActivity::Model
 
+    before_save :complete_tasks
     after_save :adjust_task_queue_for_completed_task 
     
     # Used for public_acitivity gem
@@ -37,14 +38,32 @@ class Task < ApplicationRecord
     #validates :created_by_id_exists
     validates_presence_of :task_type_id
     validates :created_by_id, numericality: true
+    validate :logged_labors_must_be_present_if_required
 
     tracked owner: Proc.new{ |controller, model| controller.current_user }
 
     # If the due date for a task is altered, change the "next_date" field in ReoccuringTask
-  
     def adjust_task_queue_for_completed_task
         if status == 3 && verification_required != true
             TaskQueue.remove_comepleted_task_from_queue(self)
+        end
+    end
+
+    # If a user chooses to mark a task as complete w/o using the "Complete" button, this will assure all fields are set properly.
+    def complete_tasks
+        if status == 3
+            self.percentComplete = 100
+            self.completed_date = DateTime.now
+        else
+            self.completed_by_id = nil
+            self.completed_date = nil
+        end
+    end
+
+    # If a task requires logged_labors, validate a time entry has been added before a task is marked as "Complete"
+    def logged_labors_must_be_present_if_required
+        if logged_labor_required && self.logged_labors.present? == false && status == 3
+            errors.add(:status, "can't be marked as complete until you record labor entries.")
         end
     end
 
