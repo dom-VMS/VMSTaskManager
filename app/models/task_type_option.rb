@@ -40,13 +40,4 @@ class TaskTypeOption < ApplicationRecord
 
   end
 
-  # Params:
-  # user - current user in the session.
-  def self.get_user_task_types(user)
-    tto = user.task_type_options #Grab the current user's role(s).
-    return nil if tto.empty?
-
-    user_task_types = tto.pluck(:task_type_id) #Returns projects the user belongs to.
-  end
-
 end

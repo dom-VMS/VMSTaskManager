@@ -36,8 +36,8 @@
 <br><h1 class="text-center">Projects</h1><br>
 <div class="container-fluid">
     <div class="row">
-    <% @task_types.each do |task_type|%>
-        <div class="col-sm-4">
+    <% TaskType.get_all_projects_in_order(@task_types).each do |task_type|%>
+        <div class="col-sm-4 d-lg-none">
             <div class="card card-hover text-center mb-3">
                 <div class="card-header">  
                  <strong><%= task_type.name %></strong>
@@ -56,8 +56,14 @@
         </div>
     <% end%>
     </div>
-    <%# @task_types.each do |task_type| %>
-        <!-- <ul><%#= link_to task_type.name, task_type_path(task_type) %></ul>
-        <ul><%#= project_hierarchy_view(task_type, "") %></ul> -->
-    <%# end %>
+    <!-- Maybe worth revisiting -->
+    <div class="d-none d-lg-block">
+        <% @task_types.each do |task_type| %>
+        <h2>
+            <ul><%= link_to task_type.name, task_type_path(task_type) %></ul>
+            <ul><%= project_hierarchy_view(task_type, "", 0) %></ul>
+        </h2>
+        <% end %>
+        <br>
+    </div>
 </div>

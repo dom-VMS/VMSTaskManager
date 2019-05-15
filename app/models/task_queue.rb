@@ -17,15 +17,7 @@ class TaskQueue < ApplicationRecord
       end
     end
   end
-
-  def self.retrieve_tasks(user, task_type)
-    tasks = []
-    queue = user.task_queues.where(task_type_id: task_type).order(:position)
-    queue.each do |item|
-      tasks.push(Task.find_by_id(item.task_id))
-    end
-  end
-
+  
   # When a task is verified as complete, this funciton is called to remove the given task from any queue with it present.
   def self.remove_comepleted_task_from_queue(task)
     queue_items = TaskQueue.where(task_id: task.id)

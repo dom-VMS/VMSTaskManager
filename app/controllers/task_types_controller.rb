@@ -3,13 +3,12 @@ class TaskTypesController < ApplicationController
         if search_params[:search]
             @task_types = TaskType.search(search_params[:search])
             if @task_types.nil? || @task_types.empty?
-                @task_types = TaskType.all.order(:parent_id).order(:name)
+                @task_types = TaskType.where(parent_id: nil).order('name ASC') 
                 flash[:alert] = "Sorry, we couldn't find what you are searching for."
             end
         else
-            #@task_types = TaskType.where(parent_id: nil).order('name ASC')
-            parent_projects = TaskType.where(parent_id: nil).order('name ASC')
-            @task_types = TaskType.get_all_projects_in_order(parent_projects)
+            @task_types = TaskType.where(parent_id: nil).order('name ASC') 
+            #@task_types = TaskType.get_all_projects_in_order(parent_projects)
         end
     end
     

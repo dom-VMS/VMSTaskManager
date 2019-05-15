@@ -52,14 +52,4 @@ class User < ApplicationRecord
         end
     end
 
-    # 
-    def self.isAdmin(current_user)
-        task_type_options = current_user.task_type_options.where(isAdmin: true)
-        if task_type_options.present?
-            task_type_options.each do |tto|
-                return true if (TaskType.find_by_id(tto.task_type_id).parent_id.nil?)
-            end
-        end
-        return false
-    end
 end

@@ -66,16 +66,6 @@ class TaskType < ApplicationRecord
         projects.uniq
     end
 
-    # Returns all the task_types a user directly belongs to a user. 
-    # That is, they have a specific TaskTypeOption assigned in that project.
-    def self.get_task_types_assigned_to_user(current_user)
-        tto = current_user.task_type_options
-        return nil if tto.empty?
-
-        user_task_types = tto.pluck(:task_type_id)
-        return user_task_types
-    end
-
     # Given a task_type, this method will iterate task_type.parent until it has reached 
     # the highest level project. (parent)
     def self.get_top_most_parent(task_type)
@@ -105,14 +95,15 @@ class TaskType < ApplicationRecord
 
     # Search function for TaskTypes.
     def self.search(search)
-        unless search.empty?
-            TaskType.where('name LIKE ?', "%#{sanitize_sql_like(search)}%")
+        if search.empty?
+            #TaskType.all
         else
-            TaskType.all
+            puts "\n\nTHIS BITCH EMPTY, YEET\n\n"
+            TaskType.where('name LIKE ?', "%#{sanitize_sql_like(search)}%")
         end
     end
 
-    # Retrieves all projects in
+    # Retrieves all projects in hierarchical order
     def self.get_all_projects_in_order(parent_projects)
         parent_projects = parent_projects.order('name ASC')
         ordered_task_types = []
