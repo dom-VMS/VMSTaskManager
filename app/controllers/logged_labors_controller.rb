@@ -14,7 +14,7 @@ class LoggedLaborsController < ApplicationController
         current_task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, task_type)
         puts "\n\ncurrent_task_type_option: #{current_task_type_option.to_json}\n\n"
         if current_task_type_option.nil? || current_task_type_option.can_log_labor == false
-            flash[:error] = "Sorry, but you do not have permission to log time for Task ##{@task.id}"
+            flash.now[:error] = "Sorry, but you do not have permission to log time for Task ##{@task.id}"
             redirect_to task_path(@task)
         else
             @logged_labor = LoggedLabor.new  
@@ -25,10 +25,10 @@ class LoggedLaborsController < ApplicationController
         @task = Task.find(params[:task_id])
         @logged_labor = @task.logged_labors.create(logged_labor_params)
         if @logged_labor.valid? 
-            flash[:success] = "Labor entry added."
+            flash.now[:success] = "Labor entry added."
             redirect_to task_path(@task)
         else
-            flash[:error] = "Labor entry failed."
+            flash.now[:error] = "Labor entry failed."
             render 'new'
         end
         
@@ -40,7 +40,7 @@ class LoggedLaborsController < ApplicationController
         @logged_labor = LoggedLabor.find_by_id(params[:id])
         current_task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, task_type)
         if current_task_type_option.nil? || current_user.id != @logged_labor.user_id
-            flash[:error] = "Sorry, but you do not have permission to log time for Task ##{@task.id}"
+            flash.now[:error] = "Sorry, but you do not have permission to log time for Task ##{@task.id}"
             redirect_to task_path(@task)
         end
     end
@@ -49,10 +49,10 @@ class LoggedLaborsController < ApplicationController
         @task = @task = Task.find(params[:task_id])
         @logged_labor = LoggedLabor.find_by_id(params[:id])
         if @logged_labor.update(logged_labor_params)
-            flash[:success] = "Labor entry updated."
+            flash.now[:success] = "Labor entry updated."
             redirect_to @task
         else
-            flash[:error] = "Update failed."
+            flash.now[:error] = "Update failed."
           render 'edit'
         end
     end

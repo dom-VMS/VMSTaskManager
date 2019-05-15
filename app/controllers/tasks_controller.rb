@@ -13,7 +13,7 @@ class TasksController < ApplicationController
   
   def new
     if @task_type_option.nil? # Check if user has the proper permissions to create a task for the given project.
-        flash[:error] = "Sorry, but you do not have permission to create #{@task_type.name} task."
+        flash.now[:error] = "Sorry, but you do not have permission to create #{@task_type.name} task."
         redirect_to  task_type_path(@task_type)
     else
         @task = @task_type.tasks.build
@@ -41,10 +41,10 @@ class TasksController < ApplicationController
         if @task.isApproved.nil? #Send email if Ticket is created.
           Task.send_ticket_email(@task, current_user.id)
         end
-        flash[:notice] = "Successfully created task."
+        flash.now[:notice] = "Successfully created task."
         redirect_to task_path(@task)
       else
-        flash[:error] = "Task creation failed. "
+        flash.now[:error] = "Task creation failed. "
         render 'new'
       end  
     else 
@@ -62,15 +62,15 @@ class TasksController < ApplicationController
       task_parameters = task_params.except :reoccuring_task_attributes
     end
     if @task.update(task_parameters)
-        flash[:notice] = "Task updated!"
+        flash.now[:notice] = "Task updated!"
         respond_to do |format|
             format.html { redirect_to @task }
         end
     else
-      flash[:alert] = "Something went wrong." 
+      flash.now[:alert] = "Something went wrong." 
         if @task.errors.any? 
           @task.errors.full_messages.each do |error|
-            flash[:alert] = "#{error}" 
+            flash.now[:alert] = "#{error}" 
           end
         end
         respond_to do |format|
@@ -81,7 +81,7 @@ class TasksController < ApplicationController
   
   def destroy
     @task.destroy
-    flash[:notice] = "Successfully deleted Task ##{@task.id}" 
+    flash.now[:notice] = "Successfully deleted Task ##{@task.id}" 
     redirect_to task_type_path(@task.task_type_id)
   end
 
@@ -121,25 +121,25 @@ class TasksController < ApplicationController
     task = Task.find_by_id(task_params[:id])
     if task.update(task_params) 
         if (task_params[:isApproved] == "true") #Approving a Ticket
-            flash[:notice] = "Ticket Approved! You can now add more information to the task and/or assign someone to this."
+            flash.now[:notice] = "Ticket Approved! You can now add more information to the task and/or assign someone to this."
             TaskMailer.with(task: task).ticket_approved.deliver_later
             redirect_to edit_task_path(task)
         elsif (task_params[:isApproved] == "false") #Declining a Ticket
             Task.insert_decline_feedback(task, decline_feedback_params, attachment_params)
-            flash[:notice] = "Ticket Rejected."
+            flash.now[:notice] = "Ticket Rejected."
             TaskMailer.with(task: task, rejected_by: decline_feedback_params[:commenter_id], feedback: decline_feedback_params[:body]).ticket_rejected.deliver_later
             redirect_back fallback_location: review_path
         elsif (task_params[:isVerified] == "true") #Verifying Task Completion
             ReoccuringTask.update_dates_for_completed_tasks(task) unless task.reoccuring_task.nil?
-            flash[:notice] = "Task Completion Approved."
+            flash.now[:notice] = "Task Completion Approved."
             redirect_back fallback_location: verify_path
             TaskQueue.remove_comepleted_task_from_queue(task)
         elsif (task_params[:isVerified] == "false") #Declining Task Completion
             Task.insert_decline_feedback(task, decline_feedback_params, attachment_params)
-            flash[:notice] = "Task Completion Rejected."
+            flash.now[:notice] = "Task Completion Rejected."
             redirect_back fallback_location: verify_path
         else
-            flash[:notice] = "Something went wrong"
+            flash.now[:notice] = "Something went wrong"
             redirect_back fallback_location: home_path
         end
     else
@@ -194,7 +194,7 @@ class TasksController < ApplicationController
     def validate_current_user 
       unless @task_type_option.present?
         respond_to do |format|
-          flash[:error] = "Sorry, but you are not permitted to edit this task."
+          flash.now[:error] = "Sorry, but you are not permitted to edit this task."
           format.html { redirect_back(fallback_location: task_path(@task)) }
         end
       end
@@ -206,7 +206,7 @@ class TasksController < ApplicationController
     def task_creation_for_not_signed_in_user(params)
       employee_number = params[:created_by_id]
       if User.find_by_employee_number(employee_number).nil?
-        flash[:error] = "The employee number you entered does not exsist."
+        flash.now[:error] = "The employee number you entered does not exsist."
         redirect_to ticket_path
       else
         params[:created_by_id] = User.find_by_employee_number(employee_number).id
@@ -214,10 +214,10 @@ class TasksController < ApplicationController
         Task.add_file_attachment(@task, attachment_params[:attachments]) unless attachment_params.empty?
         if @task.save!
           Task.send_ticket_email(@task, params[:created_by_id])
-          flash[:notice] = "Successfully created ticket."
+          flash.now[:notice] = "Successfully created ticket."
           redirect_to root_path
         else
-          flash[:error] = "Ticket creation failed. "
+          flash.now[:error] = "Ticket creation failed. "
           redirect_to ticket_path
         end
       end

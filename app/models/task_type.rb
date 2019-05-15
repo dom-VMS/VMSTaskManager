@@ -98,7 +98,6 @@ class TaskType < ApplicationRecord
         if search.empty?
             #TaskType.all
         else
-            puts "\n\nTHIS BITCH EMPTY, YEET\n\n"
             TaskType.where('name LIKE ?', "%#{sanitize_sql_like(search)}%")
         end
     end

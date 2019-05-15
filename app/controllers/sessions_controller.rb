@@ -12,7 +12,7 @@ class SessionsController < ApplicationController
             redirect_to home_path
         else
             #Create an error message
-            flash[:danger] = 'Invalid employee #/password combination'
+            flash.now.now[:error] = 'Invalid employee #/password combination'
             render 'new'
         end
     end

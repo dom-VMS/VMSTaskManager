@@ -16,7 +16,7 @@ class TaskTypeOptionsController < ApplicationController
         current_task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task_type)
         unless @task_type.task_type_options.empty?
             if current_task_type_option.nil?
-                flash[:error] = "Sorry, but you do not have permission to create #{@task_type.name} roles."
+                flash.now[:error] = "Sorry, but you do not have permission to create #{@task_type.name} roles."
                 redirect_to task_type_options_path
             else
                 @task_type_option = TaskTypeOption.new

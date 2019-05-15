@@ -6,7 +6,7 @@ class UsersController < ApplicationController
       @users = User.search(search_params[:search])
       if @users.nil? || @users.empty?
         @users = User.all.order(:employee_number)
-        flash[:notice] = "Sorry, we couldn't find what you are searching for."
+        flash.now[:notice] = "Sorry, we couldn't find what you are searching for."
       end
     else
       @users = User.all.order(:employee_number)
@@ -55,7 +55,7 @@ class UsersController < ApplicationController
   def update
     unless verify_if_current_user_can_edit(@user, current_user)
       respond_to do |format|
-        flash[:error] = "You are not permitted to update this user's info."
+        flash.now[:error] = "You are not permitted to update this user's info."
         format.html { redirect_to user_path(@user) }
       end
     end
