@@ -16,6 +16,7 @@ class Task < ApplicationRecord
     attr_accessor :PRIORITY
     attr_accessor :STATUS
 
+    ## Active Record Associations
     belongs_to :task_type
     belongs_to :created_by, class_name: "User", optional: true
     belongs_to :completed_by, class_name: "User", optional: true
@@ -32,6 +33,23 @@ class Task < ApplicationRecord
     has_many :task_assignments, dependent: :destroy 
     has_many :users, through: :task_assignments, source: 'assigned_to'
 
+    ## Scopes
+    # Task.status
+    scope :incomplete, -> { where(status: 1) }
+    scope :in_progress, -> { where(status: 2) }
+    scope :complete, -> { where(status: 3) }
+    scope :on_hold, -> { where(status: 4) }
+
+    # Task.priority
+    scope :low_priority, -> { where(priority: 1) }
+    scope :normal_priority, -> { where(priority: 2) }
+    scope :high_priority, -> { where(priority: 3) }
+    scope :urgent_priority, -> { where(priority: 4) }
+
+    # Task.task_type_id
+    scope :project, -> (task_type) { where(task_type_id: task_type)}
+
+    # Nested Attributes
     accepts_nested_attributes_for :task_assignments
     accepts_nested_attributes_for :reoccuring_task, reject_if: :all_blank
     
@@ -76,14 +94,14 @@ class Task < ApplicationRecord
 
     # Returns all tasks assigned to a current user, combined with their task queue.
     def self.get_all_tasks_assigned_to_user(user)
-        tasks = user.tasks.where(isVerified: [nil, false]).where.not(status: 3).where.not(isApproved: [nil, false])
+        tasks = user.tasks.where(isVerified: [nil, false]).where(status: [nil, 1, 2, 4]).where.not(isApproved: [nil, false])
         all_tasks = tasks.joins("LEFT OUTER JOIN task_queues ON task_queues.user_id = #{user.id} AND task_queues.task_id = tasks.id").select("tasks.*, task_queues.position").order(Arel.sql("ISNULL(task_queues.position), task_queues.position ASC;"))
         return all_tasks
     end
 
     # Returns all assigned tasks given to a user based on a particular task_type.
     def self.get_tasks_assigned_to_user_for_task_type(task_type, user)
-        tasks = user.tasks.where(task_type_id: task_type).where(isVerified: [nil, false]).where.not(status: 3).where.not(isApproved: [nil, false]).order("created_at DESC")
+        tasks = user.tasks.where(task_type_id: task_type).where(isVerified: [nil, false]).where(status: [nil, 1, 2, 4]).where.not(isApproved: [nil, false]).order("created_at DESC")
     end
 
     # Retrieve all open tasks that a user is permitted to work on.

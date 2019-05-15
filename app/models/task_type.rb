@@ -9,7 +9,7 @@ class TaskType < ApplicationRecord
     has_many :task_queues, dependent: :destroy
 
     belongs_to :parent, class_name: "TaskType", optional: true
-    has_many :children, class_name: "TaskType", :foreign_key => "parent_id"
+    has_many :children, class_name: "TaskType", :foreign_key => "parent_id", dependent: :destroy
 
     validates :name, presence: true
 

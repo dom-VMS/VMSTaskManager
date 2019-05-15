@@ -102,7 +102,19 @@ class TaskTypesController < ApplicationController
         end
     end
 
-    def destroy_task_type
+    def edit_parent
+        parent = TaskType.find(params[:id])
+        task_type = TaskType.find(params[:child_id])
+
+
+    end 
+
+    private
+      def task_type_params
+        params.require(:task_type).permit(:task_type_id, :name, :description, :search, :parent_id)
+      end
+
+      def destroy_task_type
         @task_type.destroy
         if @task_type.destroyed?
             flash[:success] = "#{@task_type.name} has been removed."
@@ -111,18 +123,16 @@ class TaskTypesController < ApplicationController
             flash[:danger] = "Something went wrong."
             redirect_to edit_task_type_path(@task_type)
         end
-    end
+      end
 
-    private
-      def task_type_params
-        params.require(:task_type).permit(:task_type_id, :name, :description, :search, :parent_id)
+      def find_task_type
+        TaskType.find(params[:id])
       end
 
       def search_params
         params.permit(:search)
       end
 
-      def find_task_type
-        TaskType.find(params[:id])
-      end
+      
+
 end
