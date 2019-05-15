@@ -46,7 +46,7 @@ class TaskTypesController < ApplicationController
         if @task_type_options.present?
             current_user_task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task_type)
             if current_user_task_type_option.nil? || current_user_task_type_option.isAdmin == false 
-                flash.now[:error] = "Sorry, but you do not have permission to edit #{@task_type.name}."
+                flash[:error] = "Sorry, but you do not have permission to edit #{@task_type.name}."
                 redirect_to @task_type
             end
         end
@@ -56,7 +56,7 @@ class TaskTypesController < ApplicationController
         @task_type = TaskType.new(task_type_params)
  
         if @task_type.save
-            flash.now[:success] = "#{@task_type.name} has been created!"
+            flash[:success] = "#{@task_type.name} has been created!"
             redirect_to edit_task_type_path(@task_type)
         else
             flash.now[:error] = "Oops! Something went wrong."
@@ -68,7 +68,7 @@ class TaskTypesController < ApplicationController
         @task_type = find_task_type
        
         if @task_type.update(task_type_params)
-          flash.now[:success] = "#{@task_type.name} has been updated!"
+          flash[:success] = "#{@task_type.name} has been updated!"
           redirect_to @task_type
         else
           flash.now[:error] = "Oops! Something went wrong. #{@task_type.name} wasn't updated."
@@ -84,7 +84,7 @@ class TaskTypesController < ApplicationController
         #elsif (task_type_option.isAdmin && task_type_option.can_delete) 
         #    destroy_task_type
         #else
-        #    flash.now[:error] = "You are not permitted to delete this project."
+        #    flash[:error] = "You are not permitted to delete this project."
         #    redirect_to edit_task_type_path(@task_type)
        # end
     end
@@ -94,10 +94,10 @@ class TaskTypesController < ApplicationController
         parent = TaskType.find(child.parent.id)
 
         if child.update(parent_id: nil)
-            flash.now[:success] = "#{child.name} has been removed from #{parent.name}."            
+            flash[:success] = "#{child.name} has been removed from #{parent.name}."            
             redirect_to edit_task_type_path(parent)
         else
-            flash.now[:danger] = "Something went wrong. #{child.name} was not removed from #{parent.name} "
+            flash[:danger] = "Something went wrong. #{child.name} was not removed from #{parent.name} "
             redirect_to edit_task_type_path(@task_type)
         end
     end
@@ -105,10 +105,10 @@ class TaskTypesController < ApplicationController
     def destroy_task_type
         @task_type.destroy
         if @task_type.destroyed?
-            flash.now[:success] = "#{@task_type.name} has been removed."
+            flash[:success] = "#{@task_type.name} has been removed."
             redirect_to task_types_path
         else
-            flash.now[:danger] = "Something went wrong."
+            flash[:danger] = "Something went wrong."
             redirect_to edit_task_type_path(@task_type)
         end
     end

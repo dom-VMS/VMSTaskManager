@@ -3,7 +3,7 @@ class CommentsController < ApplicationController
         @task = Task.find(params[:task_id])
         @comment = @task.comments.create(comment_params)
         add_file_attachment(attachment_params[:attachments]) unless attachment_params.empty?
-        @comment.save! ? (flash.now[:notice] = "Successfully created comment.") : (flash.now[:error] = "Failed to create comment")
+        @comment.save! ? (flash[:notice] = "Successfully created comment.") : (flash[:error] = "Failed to create comment")
         respond_to do |format|
           format.html { redirect_to @task }
         end

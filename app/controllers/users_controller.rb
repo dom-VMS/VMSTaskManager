@@ -55,7 +55,7 @@ class UsersController < ApplicationController
   def update
     unless verify_if_current_user_can_edit(@user, current_user)
       respond_to do |format|
-        flash.now[:error] = "You are not permitted to update this user's info."
+        flash[:error] = "You are not permitted to update this user's info."
         format.html { redirect_to user_path(@user) }
       end
     end
