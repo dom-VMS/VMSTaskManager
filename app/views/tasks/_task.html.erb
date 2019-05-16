@@ -43,9 +43,9 @@
 <div id="task-info-small">
     <h2><%= sanitize @task.title.html_safe unless @task.title.nil? %>  <%= task_badges(@task) %> <%= reoccuring_badge(@task) unless @task.status == 3 %></h2>
     <p>
-        <h5><small><%= fa_icon('clock')%> Created By: <%= @task.created_by.full_name%>, <%= time_ago_in_words(@task.created_at) %> ago</small></h5>
-        <h5><small><%= fa_icon('check-circle') + " Completed By: #{@task.completed_by.full_name}" if @task.status == 3 && @task.completed_by.present? %><%= ", #{time_ago_in_words(@task.completed_date)} ago" if @task.completed_date.present?%> </small></h5>
-        <h5><small><%= fa_icon('user-check') + " Verified By: #{@task.verified_by.full_name}" if @task.isVerified  && @task.verified_by_id.present? %></small></h5>
+        <h5><small><%= fa_icon('clock')%> Created By: <%= @task.created_by&.full_name%>, <%= time_ago_in_words(@task&.created_at) %> ago</small></h5>
+        <h5><small><%= fa_icon('check-circle') + " Completed By: #{@task.completed_by&.full_name}" if @task.status == 3 && @task.completed_by.present? %><%= ", #{time_ago_in_words(@task&.completed_date)} ago" if @task.completed_date.present?%> </small></h5>
+        <h5><small><%= fa_icon('user-check') + " Verified By: #{@task.verified_by&.full_name}" if @task.isVerified  && @task.verified_by_id.present? %></small></h5>
     </p>
     <p>
         <strong>Project:</strong> 
@@ -53,7 +53,7 @@
     </p>
     <p>
         <strong>Description:</strong> 
-        <%= sanitize @task.description.html_safe unless @task.description.nil? %>
+        <%= sanitize @task&.description.html_safe %>
     </p> 
     <p>
         <strong>Assignee(s):</strong><br>

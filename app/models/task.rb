@@ -39,15 +39,25 @@ class Task < ApplicationRecord
     scope :in_progress, -> { where(status: 2) }
     scope :complete, -> { where(status: 3) }
     scope :on_hold, -> { where(status: 4) }
-
+    scope :not_complete, -> { where(status: [nil, 1, 2, 4]) }
     # Task.priority
     scope :low_priority, -> { where(priority: 1) }
     scope :normal_priority, -> { where(priority: 2) }
     scope :high_priority, -> { where(priority: 3) }
     scope :urgent_priority, -> { where(priority: 4) }
-
+    # Task.percentComplete
+    scope :not_100_percent, -> { where(percentComplete: [nil, 0..99]) }
+    scope :at_100_percent, -> { where(percentComplete: 100) }
+    # Task.isApproved
+    scope :isApproved, -> { where(isApproved: true) }
+    scope :not_approved, -> { where(isApproved: [nil, false]) }
+    scope :needs_approval, -> { where(isApproved: [nil]) }
+    # Task.isVerified
+    scope :isVerified, -> { where(isVerified: true) }
+    scope :not_verified, -> { where(isVerified: [nil, false]) }
     # Task.task_type_id
     scope :project, -> (task_type) { where(task_type_id: task_type)}
+    scope :recently_complete, -> {where("completed_date > ?", 14.days.ago)}
 
     # Nested Attributes
     accepts_nested_attributes_for :task_assignments
@@ -82,6 +92,7 @@ class Task < ApplicationRecord
     def logged_labors_must_be_present_if_required
         if logged_labor_required && self.logged_labors.present? == false && status == 3
             errors.add(:status, "can't be marked as complete until you record labor entries.")
+            #redirect_to new_task_logged_labor(self)
         end
     end
 
@@ -94,14 +105,14 @@ class Task < ApplicationRecord
 
     # Returns all tasks assigned to a current user, combined with their task queue.
     def self.get_all_tasks_assigned_to_user(user)
-        tasks = user.tasks.where(isVerified: [nil, false]).where(status: [nil, 1, 2, 4]).where.not(isApproved: [nil, false])
+        tasks = user.tasks.not_verified.not_complete.isApproved
         all_tasks = tasks.joins("LEFT OUTER JOIN task_queues ON task_queues.user_id = #{user.id} AND task_queues.task_id = tasks.id").select("tasks.*, task_queues.position").order(Arel.sql("ISNULL(task_queues.position), task_queues.position ASC;"))
         return all_tasks
     end
 
     # Returns all assigned tasks given to a user based on a particular task_type.
     def self.get_tasks_assigned_to_user_for_task_type(task_type, user)
-        tasks = user.tasks.where(task_type_id: task_type).where(isVerified: [nil, false]).where(status: [nil, 1, 2, 4]).where.not(isApproved: [nil, false]).order("created_at DESC")
+        tasks = user.tasks.project(task_type).not_verified.not_complete.isApproved.order("created_at DESC")
     end
 
     # Retrieve all open tasks that a user is permitted to work on.
@@ -112,11 +123,11 @@ class Task < ApplicationRecord
             return nil
         else
             task_types = tto.pluck(:task_type_id)
-            return (Task.where(isVerified: [nil, false]).
-                         where.not(percentComplete: 100).
-                         where.not(status: 3).
-                         where.not(isApproved: [nil, false]).
-                         where(task_type_id: [task_types]).
+            return (Task.not_verified.
+                         not_100_percent.
+                         not_complete.
+                         isApproved.
+                         project(task_types).
                          order("created_at DESC"))
         end
     end
@@ -132,7 +143,7 @@ class Task < ApplicationRecord
             end
           end
         end  
-        task = Task.where(verification_required: true).where(isVerified: [nil, false]).where(status: 3).where(task_type_id: [task_types]).order("updated_at DESC")
+        task = Task.where(verification_required: true).not_verified.complete.project(task_types).order("updated_at DESC")
     end
 
     # Retrieve all open tasks that a user is permitted to approve.
@@ -146,7 +157,7 @@ class Task < ApplicationRecord
                 end
             end
         end  
-        task = Task.where(isApproved: [nil]).where(task_type_id: [task_types]).order("updated_at DESC")
+        task = Task.needs_approval.project(task_types).order("updated_at DESC")
     end
 
     # Allows an admin to place a comment in the task that is being declined to describe why it is being rejected.
@@ -167,12 +178,12 @@ class Task < ApplicationRecord
     def self.search_with_task_type(search, task_type)
         unless search.empty?
             if regex_is_number? search
-                Task.where(task_type_id: task_type).where(id: search)
+                Task.project(task_type).where(id: search)
             else
-                Task.where(task_type_id: task_type).where('title LIKE ?', "%#{sanitize_sql_like(search)}%")
+                Task.project(task_type).where('title LIKE ?', "%#{sanitize_sql_like(search)}%")
             end
         else
-            Task.where(task_type_id: task_type)
+            Task.project(task_type)
         end
     end
 

@@ -11,6 +11,8 @@ class TaskType < ApplicationRecord
     belongs_to :parent, class_name: "TaskType", optional: true
     has_many :children, class_name: "TaskType", :foreign_key => "parent_id", dependent: :destroy
 
+    scope :top_parent, -> { where(parent_id: nil) }
+
     validates :name, presence: true
 
     tracked owner: Proc.new{ |controller, model| controller.current_user }
@@ -95,9 +97,7 @@ class TaskType < ApplicationRecord
 
     # Search function for TaskTypes.
     def self.search(search)
-        if search.empty?
-            #TaskType.all
-        else
+        unless search.empty?
             TaskType.where('name LIKE ?', "%#{sanitize_sql_like(search)}%")
         end
     end

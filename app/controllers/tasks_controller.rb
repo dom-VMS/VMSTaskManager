@@ -74,7 +74,7 @@ class TasksController < ApplicationController
           end
         end
         respond_to do |format|
-            format.html { redirect_to task_path(@task, :param => 'edit')} 
+            format.html { redirect_to task_path(@task)} 
         end      
     end
   end
