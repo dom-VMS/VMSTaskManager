@@ -17,8 +17,8 @@ class ReoccuringTask < ApplicationRecord
     def set_next_date_when_attribute_changes
         if last_date_changed? || freq_months_changed? || freq_weeks_changed? || freq_days_changed?
             self.next_date = last_date + (freq_months.nil? ? 0 : freq_months.month) + 
-                                        (freq_weeks.nil? ? 0 : freq_weeks.week) + 
-                                        (freq_days.nil? ? 0 : freq_days.day) unless last_date.nil?
+                                         (freq_weeks.nil? ? 0 : freq_weeks.week) + 
+                                         (freq_days.nil? ? 0 : freq_days.day) unless last_date.nil?
         end
     end
 

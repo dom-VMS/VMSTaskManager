@@ -6,12 +6,7 @@ class TaskTypeOption < ApplicationRecord
   has_many :user_groups, dependent: :destroy
   has_many :users, through: :user_groups
 
-  # Some users belong to multiple task_types (projects). Their associated TaskTypeOptions (roles)
-  # may vary by TaskType. To ensure the user is granted their appropriate permissions, 
-  # call this method to grab that specific set of TaskTypeOptions for a user. If the user does not belong to a given
-  # task_type, search to see if that TaskType has a parent. If the user has a TaskTypeOption there, return it.
-  # Keep repeating until you've found a TaskTypeOption or reached the top-most parent project.
-  # If there is no TaskTypeOption that can be applied, return nil.
+  # Finds the TaskTypeOption (Role) for a user given a TaskType (project).
   def self.get_task_type_specific_options(user, task_type)
     task_type_option = (user.task_type_options).where(task_type_id: task_type.id)
     # In the case a user has multiple task_type_options for a task_type, see if any is an admin. If so, return that option.
@@ -19,10 +14,9 @@ class TaskTypeOption < ApplicationRecord
       return TaskTypeOption.find_by_id(task_type_option.where(isAdmin: true).pluck(:id)) if task_type_option.where(isAdmin: true).any?
     end
     return TaskTypeOption.find_by_id(task_type_option.pluck(:id)) unless task_type_option.empty?
-
-    # No TaskTypeOption matching that User & TaskType was found.
-    # Iterate through the parent projects (if any) until there is a TaskTypeOption the user is assigned to.
+    # No TaskTypeOption matching that User & TaskType was found. 
     if task_type.parent.present?
+      # Iterate through the parent projects (if any) until there is a TaskTypeOption the user is assigned to.
       task_type_option = TaskTypeOption.get_task_type_specific_options(user, task_type.parent)
       return task_type_option unless task_type_option.nil?
     end

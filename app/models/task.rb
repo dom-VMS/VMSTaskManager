@@ -92,7 +92,6 @@ class Task < ApplicationRecord
     def logged_labors_must_be_present_if_required
         if logged_labor_required && self.logged_labors.present? == false && status == 3
             errors.add(:status, "can't be marked as complete until you record labor entries.")
-            #redirect_to new_task_logged_labor(self)
         end
     end
 

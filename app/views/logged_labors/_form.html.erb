@@ -6,7 +6,7 @@
     <div id="error_explanation">
       <h2>
         <%= pluralize(@logged_labor.errors.count, "error") %> prohibited
-        this task from being saved:
+        this labor entry from being saved:
       </h2>
       <ul>
         <% @logged_labor.errors.full_messages.each do |msg| %>

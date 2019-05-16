@@ -21,11 +21,13 @@ class UserGroupsController < ApplicationController
     def create
         @task_type_option = TaskTypeOption.find_by_id(params[:task_type_option_id])
         @task_type = @task_type_option.task_type
-        @user_group = UserGroup.new(user_group_params)
-
-        if @user_group.save!
+        @user_group = UserGroup.create(user_group_params)
+        if @user_group.valid?
             redirect_to task_type_task_type_option_path(@task_type, @user_group.task_type_option)
         else
+            @user_group.errors.full_messages.each do |msg|
+                flash.now[:error] = "#{msg}"
+            end
             render 'new'
         end
     end
