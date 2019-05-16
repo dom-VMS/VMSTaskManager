@@ -54,13 +54,22 @@
                             </tr>
                         <tbody>
                     </table>
+                    <% if @current_user_task_type_option&.isAdmin %>
+                        <p class='float-right'>
+                            <%= link_to fa_icon('edit', text:'Edit'), edit_task_type_task_type_option_path(@task_type, @task_type_option), class: 'btn btn-secondary'%>
+                            <%= link_to fa_icon('trash-alt', text:'Delete'), task_type_task_type_option_path(@task_type, @task_type_option),
+                                                class: 'btn btn-danger',
+                                                method: :delete,
+                                                data: { confirm: 'Are you sure you want to delete this role?' }%>
+                        </p>
+                    <% end %>
                 </div>
                 <div class="col-md-4">
-                        <table>
-                            <tr>
-                                <th><h3>Assigned Users</h3></th>
-                            </tr>
-                            <% @task_type_option.user_groups.each do |user_group| %>
+                    <table>
+                        <tr>
+                            <th><h3>Assigned Users</h3></th>
+                        </tr>
+                        <% @task_type_option.user_groups.each do |user_group| %>
                             <tr> 
                                 <td><%= link_to User.find_by_id(user_group.user_id).full_name, user_path(user_group.user_id) %></td>
                                 <% unless @current_user_task_type_option.nil? %>
@@ -69,23 +78,17 @@
                                         data: { confirm: "Are you sure you want to remove this role from this user?" } if @current_user_task_type_option.isAdmin%></td><br>
                                 <% end %>
                             </tr>
-                            <% end %>
-                        </table>
-                        <br>
-                        <% unless @current_user_task_type_option.nil? || @task_type.task_type_options.where(isAdmin: true).any? %>
-                            <%= link_to fa_icon('user-plus', text:'Assign User'), new_task_type_task_type_option_user_group_path(@task_type, @task_type_option), class:'btn btn-primary' if @current_user_task_type_option.isAdmin %><br>
-                        <% else @task_type_option.user_groups.count == 0 %>
-                            <%= link_to fa_icon('user-plus', text:'Assign User'), new_task_type_task_type_option_user_group_path(@task_type, @task_type_option), class:'btn btn-primary' if @current_user_task_type_option.isAdmin %>
                         <% end %>
-                        <br>
+                    </table>
+                    <br>
+                    <% unless @current_user_task_type_option.nil? || @task_type.task_type_options.where(isAdmin: true).any? %>
+                        <%= link_to fa_icon('user-plus', text:'Assign User'), new_task_type_task_type_option_user_group_path(@task_type, @task_type_option), class:'btn btn-primary' if @current_user_task_type_option.isAdmin %><br>
+                    <% else @task_type_option.user_groups.count == 0 %>
+                        <%= link_to fa_icon('user-plus', text:'Assign User'), new_task_type_task_type_option_user_group_path(@task_type, @task_type_option), class:'btn btn-primary' if @current_user_task_type_option.isAdmin %>
+                    <% end %>
+                    <br>
+                </div>
             </div>
-            <br>
-            <% unless @current_user_task_type_option.nil? %>
-                <%= link_to fa_icon('edit', text:'Edit'), edit_task_type_task_type_option_path(@task_type, @task_type_option) if @current_user_task_type_option.isAdmin %><br>
-                <%= link_to fa_icon('trash-alt', text:'Delete'), task_type_task_type_option_path(@task_type, @task_type_option),
-                                    method: :delete,
-                                    data: { confirm: 'Are you sure you want to delete this role?' } if @current_user_task_type_option.isAdmin %><br>
-            <% end %>
         </div>
         <div class="col-sm-1 bg-light"></div>
     </div>

@@ -180,7 +180,7 @@ class Task < ApplicationRecord
             if regex_is_number? search
                 Task.project(task_type).where(id: search)
             else
-                Task.project(task_type).where('title LIKE ?', "%#{sanitize_sql_like(search)}%")
+                Task.project(task_type).where('title LIKE ?', "%#{sanitize_sql_like(search)}%").not_complete
             end
         else
             Task.project(task_type)

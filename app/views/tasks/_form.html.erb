@@ -59,7 +59,7 @@
         <hr>
         <!-- Due Date -->
         <%= label_tag "Due Date:" %> 
-        <%= check_box_tag 'isDueDateSelected', true, (true unless @task.due_date.nil?), id:'isDueDate'%>
+        <%= check_box_tag 'isDueDateSelected', true, (true unless @task.due_date.nil?), id:'isDueDateSelected'%>
         <p id="due-date"  style="display: none;">
             <%= fa_icon('calendar-alt', text:'Select Date')%>
             <% if @task.due_date.nil? %>
