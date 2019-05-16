@@ -1,20 +1,21 @@
 require 'my_utilities'
 class Task < ApplicationRecord
     include ActiveModel::Dirty
-    include PublicActivity::Model
 
-    before_save :complete_tasks
-    after_save :adjust_task_queue_for_completed_task 
-    
-    # Used for public_acitivity gem
+    ## PublicActivity Set-up
+    include PublicActivity::Model
     tracked
 
-    # File uploader for attchaments
-    mount_uploaders :attachments, AttachmentUploader
-
-    # config/initializers/task_constants.rb
+    ## config/initializers/task_constants.rb
     attr_accessor :PRIORITY
     attr_accessor :STATUS
+
+    ## Carrierwave Set-up
+    mount_uploaders :attachments, AttachmentUploader
+
+    ## ActiveRecord Callbacks
+    before_save :complete_tasks
+    after_save :adjust_task_queue_for_completed_task 
 
     ## Active Record Associations
     belongs_to :task_type
@@ -24,11 +25,9 @@ class Task < ApplicationRecord
     has_one :reoccuring_task, dependent: :destroy
     has_many :comments, dependent: :destroy
     has_many :logged_labors, dependent: :destroy
-
     #has_many :through association (users x task_queues x tasks)
     has_many :task_queues, dependent: :destroy
     has_many :users, through: :task_queues
-
     #has_many :through association (users x task_assignments x tasks)
     has_many :task_assignments, dependent: :destroy 
     has_many :users, through: :task_assignments, source: 'assigned_to'
@@ -59,15 +58,16 @@ class Task < ApplicationRecord
     scope :project, -> (task_type) { where(task_type_id: task_type)}
     scope :recently_complete, -> {where("completed_date > ?", 14.days.ago)}
 
-    # Nested Attributes
+    ## Nested Attributes
     accepts_nested_attributes_for :task_assignments
     accepts_nested_attributes_for :reoccuring_task, reject_if: :all_blank
     
-    #validates :created_by_id_exists
+    ## ActiveRecord Validations
     validates_presence_of :task_type_id
     validates :created_by_id, numericality: true
     validate :logged_labors_must_be_present_if_required
 
+    ## PublicActivity
     tracked owner: Proc.new{ |controller, model| controller.current_user }
 
     # If the due date for a task is altered, change the "next_date" field in ReoccuringTask

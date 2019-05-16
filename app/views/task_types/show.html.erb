@@ -7,7 +7,7 @@
             <% if @task_type.id == project.id%>
                 <li class="breadcrumb-item active" aria-current="page"><%= project.name %></li>
             <% else %>
-                <li class="breadcrumb-item "><%= link_to project.name , task_type_path(project) %></li>
+                <li class="breadcrumb-item "><%= link_to project.name , project %></li>
             <% end %>
         <% end %>
     </ol>
@@ -25,7 +25,7 @@
                 <p>
                     <strong>Sub-projects:</strong>
                     <% (@task_type.children).each do |child| %>
-                        <%= link_to child.name, task_type_path(child) %><%= ',' unless child.id == (@task_type.children.last).id%>
+                        <%= link_to child.name, child %><%= ',' unless child.id == (@task_type.children.last).id%>
                     <% end %>
             <% end %>
             <br><br>
@@ -58,7 +58,7 @@
                 <p>
                     <strong>Sub-projects:</strong>
                     <% (@task_type.children).each do |child| %>
-                        <%= link_to child.name, task_type_path(child) %><%= ',' unless child.id == (@task_type.children.last).id%>
+                        <%= link_to child.name, child %><%= ',' unless child.id == (@task_type.children.last).id%>
                     <% end %>
                 </p>                
             <% end %>
@@ -68,7 +68,7 @@
         <div class="col-5">
             <% if @task_type_option&.can_create %>
                 <%= link_to fa_icon('plus-circle', text:'New Task'), new_task_type_task_path(@task_type), class: "btn btn-primary" %>
-                <%= (link_to fa_icon('edit', text: 'Edit'), edit_task_type_path(@task_type), class: "btn btn-secondary", style: "margin-top: 5px") if @task_type_option.isAdmin %><br><br>
+                <%= (link_to fa_icon('edit', text: 'Edit'), edit_task_type_path(@task_type), class: "btn btn-secondary", style: "margin-top: 5px") if @task_type_option&.isAdmin %><br><br>
             <% end %>
         </div>
          <div class="col-7">
@@ -116,7 +116,7 @@
                     <% @tasks_assigned_to_user&.each do |task| %>
                         <div class="list-group list-group-flush">
                             <div class="list-group-item py-2 d-flex justify-content-between align-items-center list-group-item-linkable <%='list-group-item-warning' if task.status != 3 && (task.isVerified == false) %>" data-link="<%= task_path(task)%>">
-                                <%= task.title.blank? ? (link_to ("[##{task.id}]  " + task.description.truncate_words(15)), task_path(task)) : (link_to ("[##{task.id}]  " + task.title.truncate_words(15)), task_path(task))  %>
+                                <%= task.title.blank? ? (link_to ("[##{task.id}]  " + task.description.truncate_words(15)), task) : (link_to ("[##{task.id}]  " + task.title.truncate_words(15)), task)  %>
                                 <%= task_badges(task) %>
                             </div>
                         </div> 
@@ -135,7 +135,7 @@
                     <% @tasks.each do |task| %>
                         <div class="list-group list-group-flush">
                             <div class="list-group-item py-2 d-flex justify-content-between align-items-center list-group-item-linkable <%='list-group-item-warning' if task.status != 3 && (task.isVerified == false) %>" data-link="<%= task_path(task)%>">
-                                <%= task.title.blank? ? (link_to ("[##{task.id}]  " + task.description.truncate_words(15)), task_path(task)) : (link_to ("[##{task.id}]  " + task.title.truncate_words(15)), task_path(task))  %>
+                                <%= task.title.blank? ? (link_to ("[##{task.id}]  " + task.description.truncate_words(15)), task) : (link_to ("[##{task.id}]  " + task.title.truncate_words(15)), task)  %>
                                 <%= task_badges(task) %>
                             </div>
                         </div> 
@@ -150,7 +150,7 @@
                         <% (@tasks_recently_complete).each do |task| %>
                             <div class="list-group list-group-flush">
                                 <div class="list-group-item py-2 d-flex justify-content-between align-items-center list-group-item-linkable" data-link="<%= task_path(task)%>">
-                                    <%= task.title.blank? ? (link_to ("[##{task.id}]  " + task.description.truncate_words(15)), task_path(task)) : (link_to ("[##{task.id}]  " + task.title.truncate_words(15)), task_path(task))  %>
+                                    <%= task.title.blank? ? (link_to ("[##{task.id}]  " + task.description.truncate_words(15)), task) : (link_to ("[##{task.id}]  " + task.title.truncate_words(15)), task)  %>
                                     <%= task_badges(task) %>
                                 </div>
                             </div> 

@@ -1,38 +1,33 @@
 class User < ApplicationRecord
-
     attr_accessor :remember_token
 
+    ## Active Record Associations
     has_many :logged_labors
     has_many :created_tasks, class_name: "Task", :foreign_key => "created_by_id"
     has_many :completed_tasks, class_name: "Task", :foreign_key => "completed_by_id"
     has_many :verified_tasks, class_name: "Task", :foreign_key => "verified_by_id"
     has_many :comments, class_name: "Comment", :foreign_key => "commenter_id"
-
-
-    #has_many :through Association (users x user_groups x task_type_options)
+    # has_many :through Association (users x user_groups x task_type_options)
     has_many :user_groups, dependent: :destroy
     has_many :task_type_options, through: :user_groups
-
-    #has_many :through Association (users x task_queues x tasks)
+    # has_many :through Association (users x task_queues x tasks)
     has_many :task_queues, dependent: :destroy
     has_many :tasks, through: :task_queues
-
-    #has_many :through Association (users x task_assignments x tasks)
+    # has_many :through Association (users x task_assignments x tasks)
     has_many :task_assignments, dependent: :destroy, foreign_key: 'assigned_to_id'
     has_many :tasks, through: :task_assignments
 
+    ## BCrypt/Authentication
     has_secure_password
 
+    ## Active Record Validations
     validates :f_name,  presence: true, length: { maximum: 25 }
     validates :l_name,  presence: true, length: { maximum: 25 }
-
     VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
-    validates :email, presence: true, length: { maximum: 255 },
-                format: {with: VALID_EMAIL_REGEX}
-
-    validates_presence_of :employee_number
+    validates :email, presence: true, length: { maximum: 255 }, format: {with: VALID_EMAIL_REGEX}
     validates :password, presence: true, length: { :within => 3..40 }, on: :create 
     validates :password, allow_blank: true, length: { :within => 3..40 }, on: :update 
+    validates_presence_of :employee_number
 
     # Returns full name of a user.
     def full_name
@@ -85,6 +80,5 @@ class User < ApplicationRecord
             User.all
         end
     end
-
 
 end

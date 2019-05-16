@@ -1,12 +1,15 @@
 class ReoccuringTask < ApplicationRecord
     include ActiveModel::Dirty
 
+    ## Active Record Callbacks
     before_create :set_next_date_when_attribute_changes
     before_update :set_next_date_when_attribute_changes
 
+    ## Active Record Associations
     belongs_to :reoccuring_task_type
     belongs_to :task, optional: true, required: false
 
+    ## Active Record Validations
     validates_presence_of :reoccuring_task_type_id
     validates :freq_days, :freq_weeks, :freq_months,  numericality: { only_integer: true }, allow_nil: true
 

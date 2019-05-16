@@ -47,10 +47,10 @@
                     <% if task_type.children.any? %><p class="card-text text-center"> 
                         Sub-project(s):
                         <% task_type.children.each do |sub_project| %>
-                            <%= link_to sub_project.name, task_type_path(sub_project)%><%= ',' unless sub_project == task_type.children.last %>
+                            <%= link_to sub_project.name, sub_project %><%= ',' unless sub_project == task_type.children.last %>
                         <% end %>
                     <p><% end %>
-                    <%= link_to "View Project", task_type_path(task_type), class: "btn btn-primary text-center"%>
+                    <%= link_to "View Project", task_type, class: "btn btn-primary text-center"%>
                 </div>
             </div>
         </div>
@@ -60,7 +60,7 @@
     <div class="d-none d-lg-block">
         <% @task_types.each do |task_type| %>
         <h2>
-            <ul><%= link_to task_type.name, task_type_path(task_type) %></ul>
+            <ul><%= link_to task_type.name, task_type %></ul>
             <ul><%= project_hierarchy_view(task_type, "", 0) %></ul>
         </h2>
         <% end %>

@@ -1,9 +1,12 @@
 class TaskQueue < ApplicationRecord
+  ## RailsSortable Set-up
   include RailsSortable::Model
   set_sortable :position
 
+  ## Active Record Callback
   after_destroy :reposition_queue
   
+  ## Active Record Associations
   belongs_to :task
   belongs_to :user
   belongs_to :task_type

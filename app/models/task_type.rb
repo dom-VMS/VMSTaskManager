@@ -1,20 +1,25 @@
 class TaskType < ApplicationRecord
+    ## Public Activity Set-up
     include PublicActivity::Model
     tracked
 
+    ## Active Record Callback
     after_create :create_roles
 
+    ## Active Record Associations
     has_many :tasks, dependent: :destroy
     has_many :task_type_options, dependent: :destroy
     has_many :task_queues, dependent: :destroy
-
     belongs_to :parent, class_name: "TaskType", optional: true
     has_many :children, class_name: "TaskType", :foreign_key => "parent_id", dependent: :destroy
 
+    ## Scopes
     scope :top_parent, -> { where(parent_id: nil) }
 
+    ## Validations
     validates :name, presence: true
 
+    ## PublicActivity
     tracked owner: Proc.new{ |controller, model| controller.current_user }
 
     # When a project is created, generate Manager and Member roles for that project
