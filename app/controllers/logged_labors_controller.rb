@@ -12,7 +12,6 @@ class LoggedLaborsController < ApplicationController
         @task = Task.find(params[:task_id])
         task_type = @task.task_type
         current_task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, task_type)
-        puts "\n\ncurrent_task_type_option: #{current_task_type_option.to_json}\n\n"
         if current_task_type_option.nil? || current_task_type_option.can_log_labor == false
             flash[:error] = "Sorry, but you do not have permission to log time for Task ##{@task.id}"
             redirect_to task_path(@task)

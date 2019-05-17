@@ -5,6 +5,7 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><%= link_to 'Home', home_path %></li>
+                    <li class="breadcrumb-item"><%= link_to 'Projects', task_types_path %></li>
                     <li class="breadcrumb-item"><%= link_to @task_type.name, task_type_path(@task_type)%></li>
                     <li class="breadcrumb-item active"><a><%= @task_type_option.name %> </a></li>
                 </ol>

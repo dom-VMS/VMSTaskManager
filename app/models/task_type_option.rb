@@ -6,9 +6,12 @@ class TaskTypeOption < ApplicationRecord
   has_many :user_groups, dependent: :destroy
   has_many :users, through: :user_groups
 
+  ## Scopes
+  scope :project, -> (task_type) { where(task_type_id: task_type) }
+
   # Finds the TaskTypeOption (Role) for a user given a TaskType (project).
   def self.get_task_type_specific_options(user, task_type)
-    task_type_option = (user.task_type_options).where(task_type_id: task_type.id)
+    task_type_option = user.task_type_options.project(task_type)
     # In the case a user has multiple task_type_options for a task_type, see if any is an admin. If so, return that option.
     if task_type_option&.size > 1
       return TaskTypeOption.find_by_id(task_type_option.where(isAdmin: true).pluck(:id)) if task_type_option.where(isAdmin: true).any?

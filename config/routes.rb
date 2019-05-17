@@ -22,11 +22,11 @@ Rails.application.routes.draw do
   # Tasks and Tickets
   get   '/ticket',   to: 'tasks#ticket'
   get   '/review',   to: 'tasks#review'
-  patch '/review',   to: 'tasks#update_ticket'
-  put   '/review',   to: 'tasks#update_ticket'
+  patch '/review',   to: 'tasks#ticket_review'
+  put   '/review',   to: 'tasks#ticket_review'
   get   '/verify',   to: 'tasks#verify'
-  patch '/verify',   to: 'tasks#update_ticket'
-  put   '/verify',   to: 'tasks#update_ticket'
+  patch '/verify',   to: 'tasks#task_verification'
+  put   '/verify',   to: 'tasks#task_verification'
 
   resources :task_types, path: "projects" do
     resources :user, only: [] do 

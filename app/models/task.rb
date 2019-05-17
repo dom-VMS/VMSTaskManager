@@ -62,7 +62,7 @@ class Task < ApplicationRecord
     accepts_nested_attributes_for :task_assignments
     accepts_nested_attributes_for :reoccuring_task, reject_if: :all_blank
     
-    ## ActiveRecord Validations
+    ## Active Record Validations
     validates_presence_of :task_type_id
     validates :created_by_id, numericality: true
     validate :logged_labors_must_be_present_if_required

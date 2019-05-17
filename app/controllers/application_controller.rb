@@ -1,6 +1,5 @@
 class ApplicationController < ActionController::Base
   before_action :require_login
-  #before_action :get_current_user_role
 
   protect_from_forgery with: :exception
   include SessionsHelper

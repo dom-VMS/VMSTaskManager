@@ -1,5 +1,3 @@
-<%#= form_with model: [@task, @task.logged_labors.build], local: true do |form| %>
-<% puts "Loggedlabor.persisted: #{@logged_labor}"%>
 <%= form_with model: [@task, (@logged_labor.persisted? ? @logged_labor : @task.logged_labors.build)], local: true, html: { autocomplete: "off" } do |form| %>
  <!-- Error Messages -->
   <% if @logged_labor.errors.any? %>
@@ -50,6 +48,5 @@
 <script type="text/javascript">
   $(function() {
     $('.datepicker').datepicker({dateFormat: 'yy-mm-dd ', timeFormat: 'hh:mm:ss ', ampm: true});
-    //$(".datepicker").datepicker("setDate", null);
   });
 </script>

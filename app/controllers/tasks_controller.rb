@@ -1,5 +1,5 @@
 class TasksController < ApplicationController
-  skip_before_action :require_login, only: [:ticket, :create]
+  skip_before_action :require_login, only: [:ticket, :create, :show]
   before_action :all_tasks, only: [:update]
   before_action :find_task, only: [:show, :edit, :update, :destroy]
   before_action :find_task_type, only: [:show, :edit, :update, :new]
@@ -92,32 +92,42 @@ class TasksController < ApplicationController
   end
 
   def review # Tickets
-    @task_types = TaskType.find(current_user.task_type_options.where(can_approve: true).pluck(:task_type_id))
-    unpermitted_task_types = TaskType.find(current_user.task_type_options.where(can_approve: false).pluck(:task_type_id))
-    @task_types.each do |task_type|
-      if task_type.children.any?
-        task_type.children.each do |child|
-          @task_types.append(child) unless ((@task_types.any? {|task_type| task_type == child}) || (unpermitted_task_types.any? {|unpermitted| unpermitted == child}))
+    if current_user.task_type_options.where(can_approve: true).present?
+      @task_types = TaskType.find(current_user.task_type_options.where(can_approve: true).pluck(:task_type_id))
+      unpermitted_task_types = TaskType.find(current_user.task_type_options.where(can_approve: false).pluck(:task_type_id))
+      @task_types.each do |task_type|
+        if task_type.children.any?
+          task_type.children.each do |child|
+            @task_types.append(child) unless ((@task_types.any? {|task_type| task_type == child}) || (unpermitted_task_types.any? {|unpermitted| unpermitted == child}))
+          end
         end
-      end
-    end  
-    @task = Task.where(isApproved: [nil]).where(task_type_id: [@task_types]).order("updated_at DESC")
+      end  
+      @task = Task.where(isApproved: [nil]).where(task_type_id: [@task_types]).order("updated_at DESC")
+    else
+      flash[:alert] = "You do not have permission to review tickets."
+      redirect_back fallback_location: home_path
+    end
   end
 
   def verify
-    @task_types = TaskType.find(current_user.task_type_options.where(can_verify: true).pluck(:task_type_id))
-    unpermitted_task_types = TaskType.find(current_user.task_type_options.where(can_verify: false).pluck(:task_type_id))
-    @task_types.each do |task_type|
-      if task_type.children.any?
-        task_type.children.each do |child|
-          @task_types.append(child) unless ((@task_types.any? {|task_type| task_type == child}) || (unpermitted_task_types.any? {|unpermitted| unpermitted == child}))
+    if current_user.task_type_options.where(can_verify: true).present?
+      @task_types = TaskType.find(current_user.task_type_options.where(can_verify: true).pluck(:task_type_id))
+      unpermitted_task_types = TaskType.find(current_user.task_type_options.where(can_verify: false).pluck(:task_type_id))
+      @task_types.each do |task_type|
+        if task_type.children.any?
+          task_type.children.each do |child|
+            @task_types.append(child) unless ((@task_types.any? {|task_type| task_type == child}) || (unpermitted_task_types.any? {|unpermitted| unpermitted == child}))
+          end
         end
-      end
-    end  
-    @task = Task.where(verification_required: true).where(isVerified: [nil, false]).where(status: 3).where(task_type_id: [@task_types]).order("updated_at DESC")
+      end  
+      @task = Task.where(verification_required: true).where(isVerified: [nil, false]).where(status: 3).where(task_type_id: [@task_types]).order("updated_at DESC")
+    else 
+      flash[:alert] = "You do not have permission to verify task completion."
+      redirect_back fallback_location: home_path
+    end
   end
 
-  def update_ticket
+  def ticket_review
     task = Task.find_by_id(task_params[:id])
     if task.update(task_params) 
         if (task_params[:isApproved] == "true") #Approving a Ticket
@@ -129,19 +139,31 @@ class TasksController < ApplicationController
             flash[:notice] = "Ticket Rejected."
             TaskMailer.with(task: task, rejected_by: decline_feedback_params[:commenter_id], feedback: decline_feedback_params[:body]).ticket_rejected.deliver_later
             redirect_back fallback_location: review_path
-        elsif (task_params[:isVerified] == "true") #Verifying Task Completion
-            ReoccuringTask.update_dates_for_completed_tasks(task) unless task.reoccuring_task.nil?
-            flash[:notice] = "Task Completion Approved."
-            redirect_back fallback_location: verify_path
-            TaskQueue.remove_comepleted_task_from_queue(task)
-        elsif (task_params[:isVerified] == "false") #Declining Task Completion
-            Task.insert_decline_feedback(task, decline_feedback_params, attachment_params)
-            flash[:notice] = "Task Completion Rejected."
-            redirect_back fallback_location: verify_path
         else
             flash[:notice] = "Something went wrong"
             redirect_back fallback_location: home_path
         end
+    else
+      render 'edit'
+    end
+  end
+
+  def task_verification
+    task = Task.find_by_id(task_params[:id])
+    if task.update(task_params) 
+      if (task_params[:isVerified] == "true") #Verifying Task Completion
+        ReoccuringTask.update_dates_for_completed_tasks(task) unless task.reoccuring_task.nil?
+        flash[:notice] = "Task Completion Approved."
+        redirect_back fallback_location: verify_path
+        TaskQueue.remove_comepleted_task_from_queue(task)
+      elsif (task_params[:isVerified] == "false") #Declining Task Completion
+        Task.insert_decline_feedback(task, decline_feedback_params, attachment_params)
+        flash[:notice] = "Task Completion Rejected."
+        redirect_back fallback_location: verify_path
+      else
+        flash[:notice] = "Something went wrong"
+        redirect_back fallback_location: home_path
+      end
     else
       render 'edit'
     end
