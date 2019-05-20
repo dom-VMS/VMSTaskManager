@@ -137,7 +137,7 @@
     <!-- Comments -->
     <div class="tab-pane fade show active"  id="nav-comment" role="tabpanel" aria-labelledby="nav-comment-tab">
         <div class="row">
-            <%= render @task.comments %>
+            <%= render @task.comments.includes(:commenter) %>
         </div>
         <% if @task_type_option&.can_comment %>
             <h4>Leave a Comment:</h4>

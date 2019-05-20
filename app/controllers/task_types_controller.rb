@@ -7,7 +7,7 @@ class TaskTypesController < ApplicationController
                 flash.now[:alert] = "Sorry, we couldn't find what you are searching for."
             end
         else
-            @task_types = TaskType.top_parent.order('name ASC') 
+            @task_types = TaskType.includes(:children).top_parent.order('name ASC') 
             #@task_types = TaskType.get_all_projects_in_order(parent_projects)
         end
     end

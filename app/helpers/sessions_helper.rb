@@ -46,13 +46,7 @@ module SessionsHelper
 
     # Checks if the user is an Admin in any department
     def isAdmin?
-        task_type_options = current_user.task_type_options.where(isAdmin: true)
-        if task_type_options.present?
-            task_type_options.each do |tto|
-                return true if ((TaskType.find_by_id(tto.task_type_id).parent_id).nil?)
-            end
-        end
-        return false
+        current_user.task_type_options.where(isAdmin: true).present? ? true : false
     end
 
     # Checks if the current user can verify task completion for any department.

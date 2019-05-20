@@ -15,6 +15,7 @@ class TaskType < ApplicationRecord
 
     ## Scopes
     scope :top_parent, -> { where(parent_id: nil) }
+    scope :siblings, -> { where(parent_id: self.parent_id)}
 
     ## Validations
     validates :name, presence: true
@@ -54,7 +55,7 @@ class TaskType < ApplicationRecord
     # Returns an array of all the sub-projects related to a task_type.
     # Not just first-level children. This will return ALL children to a task_type.
     def self.get_all_sub_projects(task_type)
-        sub_projects = task_type.children
+        sub_projects = task_type.children.includes(:children)
         sub_projects.each do |sub_project|
             if sub_project.children.any?
                 sub_projects += TaskType.get_all_sub_projects(sub_project)
@@ -67,9 +68,9 @@ class TaskType < ApplicationRecord
     # Used in task#edit.
     def self.get_assignable_projects(task_type)
         projects = []
-        parent_project = TaskType.get_top_most_parent(task_type) 
+        parent_project = TaskType.includes(:children).get_top_most_parent(task_type) 
         projects.append(parent_project)
-        projects += TaskType.get_all_sub_projects(parent_project)
+        projects += TaskType.includes(:children).get_all_sub_projects(parent_project)
         projects.uniq
     end
 

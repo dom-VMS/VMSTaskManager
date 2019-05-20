@@ -36,7 +36,7 @@
 <br><h1 class="text-center">Projects</h1><br>
 <div class="container-fluid">
     <div class="row">
-    <% TaskType.get_all_projects_in_order(@task_types).each do |task_type|%>
+    <% @task_types.each do |task_type|%>
         <div class="col-sm-4 d-lg-none">
             <div class="card card-hover text-center mb-3">
                 <div class="card-header">  

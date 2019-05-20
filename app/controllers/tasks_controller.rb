@@ -26,7 +26,7 @@ class TasksController < ApplicationController
     validate_current_user # Check if user has the proper permissions to edit a task for the given project.
     @assignees = @task.users
     get_assignable_users
-    @assignable_projects = TaskType.get_assignable_projects(@task_type)
+    @assignable_projects = TaskType.includes(:children).get_assignable_projects(@task_type)
   end
 
   def create
@@ -93,11 +93,11 @@ class TasksController < ApplicationController
 
   def review # Tickets
     if current_user.task_type_options.where(can_approve: true).present?
-      @task_types = TaskType.find(current_user.task_type_options.where(can_approve: true).pluck(:task_type_id))
-      unpermitted_task_types = TaskType.find(current_user.task_type_options.where(can_approve: false).pluck(:task_type_id))
+      @task_types = TaskType.includes(:children).find(current_user.task_type_options.where(can_approve: true).pluck(:task_type_id))
+      unpermitted_task_types = TaskType.includes(:children).find(current_user.task_type_options.where(can_approve: false).pluck(:task_type_id))
       @task_types.each do |task_type|
         if task_type.children.any?
-          task_type.children.each do |child|
+          (task_type.children.includes(:children)).each do |child|
             @task_types.append(child) unless ((@task_types.any? {|task_type| task_type == child}) || (unpermitted_task_types.any? {|unpermitted| unpermitted == child}))
           end
         end
@@ -111,8 +111,8 @@ class TasksController < ApplicationController
 
   def verify
     if current_user.task_type_options.where(can_verify: true).present?
-      @task_types = TaskType.find(current_user.task_type_options.where(can_verify: true).pluck(:task_type_id))
-      unpermitted_task_types = TaskType.find(current_user.task_type_options.where(can_verify: false).pluck(:task_type_id))
+      @task_types = TaskType.includes(:children).find(current_user.task_type_options.where(can_verify: true).pluck(:task_type_id))
+      unpermitted_task_types = TaskType.includes(:children).find(current_user.task_type_options.where(can_verify: false).pluck(:task_type_id))
       @task_types.each do |task_type|
         if task_type.children.any?
           task_type.children.each do |child|
@@ -149,15 +149,18 @@ class TasksController < ApplicationController
   end
 
   def task_verification
-    task = Task.find_by_id(task_params[:id])
-    if task.update(task_params) 
+    @task = Task.find_by_id(task_params[:id])
+    @task_type = @task.task_type
+    get_current_user_task_type_options
+    get_assignable_users
+    if @task.update(task_params) 
       if (task_params[:isVerified] == "true") #Verifying Task Completion
-        ReoccuringTask.update_dates_for_completed_tasks(task) unless task.reoccuring_task.nil?
+        ReoccuringTask.update_dates_for_completed_tasks(@task) unless @task.reoccuring_task.nil?
         flash[:notice] = "Task Completion Approved."
         redirect_back fallback_location: verify_path
-        TaskQueue.remove_comepleted_task_from_queue(task)
+        TaskQueue.remove_comepleted_task_from_queue(@task)
       elsif (task_params[:isVerified] == "false") #Declining Task Completion
-        Task.insert_decline_feedback(task, decline_feedback_params, attachment_params)
+        Task.insert_decline_feedback(@task, decline_feedback_params, attachment_params)
         flash[:notice] = "Task Completion Rejected."
         redirect_back fallback_location: verify_path
       else
@@ -190,7 +193,7 @@ class TasksController < ApplicationController
 
     # Retrieves a task by its id
     def find_task
-      @task = Task.find(params[:id])
+      @task = Task.includes(:users).find(params[:id])
     end
 
     # Finds task_type by task_type_id (used when creating a new task)
@@ -198,7 +201,7 @@ class TasksController < ApplicationController
       unless @task.nil?
         @task_type = @task.task_type
       else
-        @task_type = TaskType.find_by_id(params[:task_type_id]) 
+        @task_type = TaskType.find_by_id(params[:task_type_id])
       end
     end
 

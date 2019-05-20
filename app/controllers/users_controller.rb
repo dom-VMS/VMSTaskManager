@@ -15,7 +15,7 @@ class UsersController < ApplicationController
 
   def show
     @can_edit = verify_if_current_user_can_edit(@user, current_user)
-    @user_group = @user.user_groups   
+    @user_group = @user.user_groups.includes(:task_type_option) 
     get_task_type_options_from_user_group
     @task = Task.get_all_tasks_assigned_to_user(@user)
     @task_types = TaskType.where(id: @task.pluck(:task_type_id).uniq).order(:parent_id)
@@ -32,7 +32,7 @@ class UsersController < ApplicationController
         format.html { redirect_to user_path(@user) }
       end
     end
-    @user_group = @user.user_groups   
+    @user_group = @user.user_groups.includes(:task_type_option)   
     get_task_type_options_from_user_group
   end
 
@@ -100,13 +100,13 @@ class UsersController < ApplicationController
       return false if current_user&.task_type_options.nil? #If current_user has no roles, they may not edit @user.
       
       user_task_types = TaskType.find(user.task_type_options.pluck(:task_type_id)) #TaskTypes the user is assigned to.
-      current_user_admin_task_types = TaskType.find(current_user.task_type_options.where(isAdmin: true).pluck(:task_type_id)) #TaskTypes where current_user is directly assigned as an admin.
+      current_user_admin_task_types = TaskType.includes(:children).find(current_user.task_type_options.where(isAdmin: true).pluck(:task_type_id)) #TaskTypes where current_user is directly assigned as an admin.
       current_user_non_admin_task_types = TaskType.find(current_user.task_type_options.where(isAdmin: false).pluck(:task_type_id)) #TaskTypes where current_user is not assigned as an admin.
       
       # This process finds all TaskTypes where current_user is an admin, based on parent/child association.
       current_user_admin_task_types.each do |task_type|
         if task_type.children.any?
-          task_type.children.each do |child|
+          (task_type.children.includes(:children)).each do |child|
             current_user_admin_task_types.append(child) unless (current_user_admin_task_types.any? {|task_type| task_type == child}) || (current_user_non_admin_task_types.any? {|unpermitted| unpermitted == child})
           end
         end

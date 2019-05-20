@@ -16,8 +16,8 @@ class TaskAssignment < ApplicationRecord
   # Validates that the user assigned to a task is a member of the project (or related project)
   def assignee_must_be_in_project
     assignee = User.find_by_id(assigned_to_id)
-    unless assignee.nil?
-      task = Task.find_by_id(task_id)
+    task = Task.find_by_id(task_id)
+    unless assignee.nil? || task.nil?
       task_type = task.task_type
       unless TaskTypeOption.get_task_type_specific_options(assignee, task_type).present?
         errors.add(:assigned_to, "must belong to this project before being assigned to this task.")

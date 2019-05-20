@@ -25,10 +25,10 @@ class Task < ApplicationRecord
     has_one :reoccuring_task, dependent: :destroy
     has_many :comments, dependent: :destroy
     has_many :logged_labors, dependent: :destroy
-    #has_many :through association (users x task_queues x tasks)
+    # has_many :through association (users x task_queues x tasks)
     has_many :task_queues, dependent: :destroy
     has_many :users, through: :task_queues
-    #has_many :through association (users x task_assignments x tasks)
+    # has_many :through association (users x task_assignments x tasks)
     has_many :task_assignments, dependent: :destroy 
     has_many :users, through: :task_assignments, source: 'assigned_to'
 
@@ -56,7 +56,7 @@ class Task < ApplicationRecord
     scope :not_verified, -> { where(isVerified: [nil, false]) }
     # Task.task_type_id
     scope :project, -> (task_type) { where(task_type_id: task_type)}
-    scope :recently_complete, -> {where("completed_date > ?", 14.days.ago)}
+    scope :recently_complete, -> { where("completed_date > ?", 14.days.ago)}
 
     ## Nested Attributes
     accepts_nested_attributes_for :task_assignments
@@ -133,11 +133,11 @@ class Task < ApplicationRecord
 
     # Retrieve all open tasks that a user is permitted to verify.
     def self.get_all_tasks_user_can_verify(user)
-        task_types = TaskType.find(user.task_type_options.where(can_verify: true).pluck(:task_type_id))
-        unpermitted_task_types = TaskType.find(user.task_type_options.where(can_verify: false).pluck(:task_type_id))
+        task_types = TaskType.includes(:children).find(user.task_type_options.where(can_verify: true).pluck(:task_type_id))
+        unpermitted_task_types = TaskType.includes(:children).find(user.task_type_options.where(can_verify: false).pluck(:task_type_id))
         task_types.each do |task_type|
           if task_type.children.any?
-            task_type.children.each do |child|
+            (task_type.children.includes(:children)).each do |child|
               task_types.append(child) unless ((task_types.any? {|task_type| task_type == child}) || (unpermitted_task_types.any? {|unpermitted| unpermitted == child}))
             end
           end
@@ -147,11 +147,11 @@ class Task < ApplicationRecord
 
     # Retrieve all open tasks that a user is permitted to approve.
     def self.get_all_tickets_user_can_approve(user)
-        task_types = TaskType.find(user.task_type_options.where(can_approve: true).pluck(:task_type_id))
-        unpermitted_task_types = TaskType.find(user.task_type_options.where(can_approve: false).pluck(:task_type_id))
+        task_types = TaskType.includes(:children).find(user.task_type_options.where(can_approve: true).pluck(:task_type_id))
+        unpermitted_task_types = TaskType.includes(:children).find(user.task_type_options.where(can_approve: false).pluck(:task_type_id))
         task_types.each do |task_type|
             if task_type.children.any?
-                task_type.children.each do |child|
+                task_type.children.includes(:children).each do |child|
                     task_types.append(child) unless ((task_types.any? {|task_type| task_type == child}) || (unpermitted_task_types.any? {|unpermitted| unpermitted == child}))
                 end
             end
