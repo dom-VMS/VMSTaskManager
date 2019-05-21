@@ -54,6 +54,7 @@ class Task < ApplicationRecord
     # Task.isVerified
     scope :isVerified, -> { where(isVerified: true) }
     scope :not_verified, -> { where(isVerified: [nil, false]) }
+    scope :requires_verification, -> { where(verification_required: true) }
     # Task.task_type_id
     scope :project, -> (task_type) { where(task_type_id: task_type)}
     scope :recently_complete, -> { where("completed_date > ?", 14.days.ago)}
@@ -68,7 +69,7 @@ class Task < ApplicationRecord
     validate :logged_labors_must_be_present_if_required
 
     ## PublicActivity
-    tracked owner: Proc.new{ |controller, model| controller.current_user }
+#    tracked owner: Proc.new{ |controller, model| controller.current_user }
 
     # If the due date for a task is altered, change the "next_date" field in ReoccuringTask
     def adjust_task_queue_for_completed_task
@@ -132,7 +133,7 @@ class Task < ApplicationRecord
     end
 
     # Retrieve all open tasks that a user is permitted to verify.
-    def self.get_all_tasks_user_can_verify(user)
+    def self.count_all_tasks_user_can_verify(user)
         task_types = TaskType.includes(:children).find(user.task_type_options.where(can_verify: true).pluck(:task_type_id))
         unpermitted_task_types = TaskType.includes(:children).find(user.task_type_options.where(can_verify: false).pluck(:task_type_id))
         task_types.each do |task_type|
@@ -142,11 +143,11 @@ class Task < ApplicationRecord
             end
           end
         end  
-        task = Task.where(verification_required: true).not_verified.complete.project(task_types).order("updated_at DESC")
+        Task.requires_verification.not_verified.complete.project(task_types).order("updated_at DESC").count
     end
 
     # Retrieve all open tasks that a user is permitted to approve.
-    def self.get_all_tickets_user_can_approve(user)
+    def self.count_all_tickets_user_can_approve(user)
         task_types = TaskType.includes(:children).find(user.task_type_options.where(can_approve: true).pluck(:task_type_id))
         unpermitted_task_types = TaskType.includes(:children).find(user.task_type_options.where(can_approve: false).pluck(:task_type_id))
         task_types.each do |task_type|
@@ -156,7 +157,7 @@ class Task < ApplicationRecord
                 end
             end
         end  
-        task = Task.needs_approval.project(task_types).order("updated_at DESC")
+        Task.needs_approval.project(task_types).order("updated_at DESC").count
     end
 
     # Allows an admin to place a comment in the task that is being declined to describe why it is being rejected.

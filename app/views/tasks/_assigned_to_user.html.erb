@@ -26,7 +26,7 @@
     <div class="col-sm-12 col-md-12 col-lg-10 col-xl-10">
         <div class="tab-content" id="v-pills-tabContent">
         <!-- Display each project in a pill -->
-        <% (@task_types.includes(:parent)).each do |task_type| %>
+        <% (@task_types).each do |task_type| %>
             <div class="tab-pane fade show <%= 'active' if task_type == @task_types.first %>" id="v-pills-<%=task_type.id%>" role="tabpanel" aria-labelledby="v-pills-<%=task_type.id%>-tab">
                 <% if TaskTypeOption.get_task_type_specific_options(current_user, task_type)&.can_create %>
                     <div class="row">

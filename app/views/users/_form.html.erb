@@ -34,36 +34,36 @@
             <%= form.label :email, 'Email' %><br>
             <%= form.text_field :email, class: 'form-control' %>
         </p>
-
+        <p>
         <% if @user.persisted?%>
-            <strong>Roles/Permissions</strong>
-                <% if @task_type_option.nil? || @user_group.nil?%>
-                    <h2>No roles/permissions assigned to this user</h2>
-                <% else %>
-                    <table class="table table-borderless table-hover table-sm w-25">
-                        <thead>
-                            <tr>
-                                <th>Department</th>
-                                <th>Role</th>
-                            </tr>
-                        </thead>
-                        <% @user.user_groups.each do |user_group|%>  
-                        <tbody> 
-                            <tr>
-                                <td><%= user_group.task_type_option.task_type.name%>
-                                <td><%= user_group.task_type_option.name%></td>
-                                <% if isAdmin? %>
-                                    <td><%= link_to fa_icon('trash-alt'), user_group_path(user_group),
-                                        method: :delete,
-                                        data: { confirm: "Are you sure you want to remove this role from #{@user.full_name}?" } %></td><br>
-                                <% end %>
-                            </tr>
-                        </tbody> 
-                        <% end %>
-                    </table>
-                <% end %><br>
-            <%end%>
-
+        <strong>Roles/Permissions</strong>
+            <% if @user_groups.nil? %>
+                <h2>No roles/permissions assigned to this user</h2>
+            <% else %>
+                <table class="table table-borderless table-hover table-sm w-25">
+                    <thead>
+                        <tr>
+                            <th>Department</th>
+                            <th>Role</th>
+                        </tr>
+                    </thead>
+                    <% @user_groups.each do |user_group|%>  
+                    <tbody> 
+                        <tr>
+                            <td><%= link_to user_group.task_type_option.task_type.name, task_type_path(user_group.task_type_option.task_type) %>
+                            <td><%= link_to user_group.task_type_option.name, task_type_task_type_option_path(user_group.task_type_option.task_type, user_group.task_type_option) %></td>
+                            <% if isAdmin? %>
+                                <td><%= link_to fa_icon('trash-alt'), user_group_path(user_group),
+                                    method: :delete,
+                                    data: { confirm: "Are you sure you want to remove this role from #{@user.full_name}?" } %></td><br>
+                            <% end %>
+                        </tr>
+                    </tbody> 
+                    <% end %>
+                </table>
+            <% end %><br>
+        <% end %>
+        </p>
         <!-- Should Make this a seperate form -->
         <% unless @user.persisted?%>
             <p>

@@ -21,7 +21,7 @@ class TaskType < ApplicationRecord
     validates :name, presence: true
 
     ## PublicActivity
-    tracked owner: Proc.new{ |controller, model| controller.current_user }
+#    tracked owner: Proc.new{ |controller, model| controller.current_user }
 
     # When a project is created, generate Manager and Member roles for that project
     def create_roles
@@ -32,7 +32,7 @@ class TaskType < ApplicationRecord
         member_role.save!
 
         # Assign the user who created the project as a Manager. User.id is grabbed from the monitored Activity.
-        user_id = self.activities.first.owner_id unless self.activities.nil?
+        user_id = created_by_id
         unless user_id.nil?
             assign_manager = manager_role.user_groups.build(user_id: user_id)
             assign_manager.save!

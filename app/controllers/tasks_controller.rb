@@ -102,7 +102,7 @@ class TasksController < ApplicationController
           end
         end
       end  
-      @task = Task.where(isApproved: [nil]).where(task_type_id: [@task_types]).order("updated_at DESC")
+      @task = Task.needs_approval.project([@task_types]).order("updated_at DESC")
     else
       flash[:alert] = "You do not have permission to review tickets."
       redirect_back fallback_location: home_path
@@ -120,7 +120,7 @@ class TasksController < ApplicationController
           end
         end
       end  
-      @task = Task.where(verification_required: true).where(isVerified: [nil, false]).where(status: 3).where(task_type_id: [@task_types]).order("updated_at DESC")
+      @task = Task.requires_verification.not_verified.complete.project([@task_types]).order("updated_at DESC")
     else 
       flash[:alert] = "You do not have permission to verify task completion."
       redirect_back fallback_location: home_path

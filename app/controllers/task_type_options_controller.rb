@@ -10,14 +10,13 @@ class TaskTypeOptionsController < ApplicationController
         @current_user_task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task_type)
     end
 
- #=begin
     def new
         @task_type = TaskType.find_by_id(params[:task_type_id])
         current_task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task_type)
         unless @task_type.task_type_options.empty?
             if current_task_type_option.nil?
                 flash[:error] = "Sorry, but you do not have permission to create #{@task_type.name} roles."
-                redirect_to task_type_options_path
+                redirect_to task_type_path(@task_type)
             else
                 @task_type_option = TaskTypeOption.new
             end
@@ -55,9 +54,10 @@ class TaskTypeOptionsController < ApplicationController
     end
     def destroy
         @task_type_option = TaskTypeOption.find(params[:id])
+        @task_type = @task_type_option.task_type
         @task_type_option.destroy
 
-        redirect_to task_type_options_path
+        redirect_to task_type_path(@task_type)
     end
 
     private

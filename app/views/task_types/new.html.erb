@@ -20,6 +20,7 @@
                 <%= form.text_area :description, class: 'form-control' %>
             </p>
             <%= form.hidden_field 'parent_id', :value => params[:parent_id] if params[:parent_id].present? %>
+            <%= form.hidden_field 'created_by_id', :value => current_user.id %>
         </div>
         <%= form.submit 'Create', class: 'btn btn-primary btn-lg btn-block' %>
     <% end %>

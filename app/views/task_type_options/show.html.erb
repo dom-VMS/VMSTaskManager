@@ -11,7 +11,7 @@
                 </ol>
             </nav>
             <h1> <%= "#{@task_type_option.name}" %> Configurations </h1>
-            <p><h5><small><strong>Department:</strong> <%= sanitize @task_type.name  %></small></h5></p>
+            <p><h5><small><strong>Department:</strong> <%= link_to @task_type.name, @task_type  %></small></h5></p>
             <hr>
             <div class="row">
                 <div class="col-md-8">

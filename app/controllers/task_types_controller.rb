@@ -111,7 +111,7 @@ class TaskTypesController < ApplicationController
 
     private
       def task_type_params
-        params.require(:task_type).permit(:task_type_id, :name, :description, :search, :parent_id)
+        params.require(:task_type).permit(:task_type_id, :name, :description, :search, :parent_id, :created_by_id)
       end
 
       def destroy_task_type

@@ -32,8 +32,7 @@ class UsersController < ApplicationController
         format.html { redirect_to user_path(@user) }
       end
     end
-    @user_group = @user.user_groups.includes(:task_type_option)   
-    get_task_type_options_from_user_group
+    @user_groups = @user.user_groups.includes(:task_type_option)   
   end
 
   def create
@@ -113,6 +112,5 @@ class UsersController < ApplicationController
       end
 
       return current_user_admin_task_types.pluck(:id).any? {|admin_tt| user_task_types.pluck(:id).any?(admin_tt)} # Return true/false if there are any projects that overlap.
-
     end 
 end
