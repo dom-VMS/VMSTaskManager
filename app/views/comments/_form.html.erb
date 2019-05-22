@@ -27,6 +27,6 @@
   <%= form.hidden_field 'commenter_id', :value => current_user.id %>
 
   <p>
-    <%= form.submit %>
+    <%= form.submit 'Leave Comment', class: 'btn btn-primary btn-lg'%>
   </p>
 <% end %>
