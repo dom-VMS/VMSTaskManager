@@ -5,7 +5,7 @@
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><%= link_to 'Home', home_path %></li>
             <li class="breadcrumb-item"><%= link_to "Projects", task_types_path %></li>
-            <li class="breadcrumb-item"><%= link_to TaskType.find(@task.task_type_id).name, task_type_path(@task.task_type_id)%></li>
+            <li class="breadcrumb-item"><%= link_to @task.task_type.name, @task.task_type %></li>
             <li class="breadcrumb-item"><%= link_to "Task # #{@task.id}", task_path(@task)%></li>
             <li class="breadcrumb-item active" aria-current="page">Log Time</li>
         </ol>

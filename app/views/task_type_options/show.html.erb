@@ -1,17 +1,19 @@
 <div class="container-fluid">
     <div class="row content">
-        <div class="col-sm-1 bg-light"></div>
+        <div class="col-sm-1 bg-light"><!--Grey Column--></div>
         <div class="col-sm-10">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><%= link_to 'Home', home_path %></li>
                     <li class="breadcrumb-item"><%= link_to 'Projects', task_types_path %></li>
-                    <li class="breadcrumb-item"><%= link_to @task_type.name, task_type_path(@task_type)%></li>
+                    <li class="breadcrumb-item"><%= link_to @task_type.name, @task_type%></li>
                     <li class="breadcrumb-item active"><a><%= @task_type_option.name %> </a></li>
                 </ol>
             </nav>
             <h1> <%= "#{@task_type_option.name}" %> Configurations </h1>
-            <p><h5><small><strong>Department:</strong> <%= link_to @task_type.name, @task_type  %></small></h5></p>
+            <p>
+                <h5><small><strong>Department:</strong> <%= link_to @task_type.name, @task_type  %></small></h5>
+            </p>
             <hr>
             <div class="row">
                 <div class="col-md-8">
@@ -57,7 +59,9 @@
                     </table>
                     <% if @current_user_task_type_option&.isAdmin %>
                         <p class='float-right'>
+                            <!--Edit Role -->
                             <%= link_to fa_icon('edit', text:'Edit'), edit_task_type_task_type_option_path(@task_type, @task_type_option), class: 'btn btn-secondary'%>
+                            <!--Delete Role-->
                             <%= link_to fa_icon('trash-alt', text:'Delete'), task_type_task_type_option_path(@task_type, @task_type_option),
                                                 class: 'btn btn-danger',
                                                 method: :delete,
@@ -83,14 +87,14 @@
                     </table>
                     <br>
                     <% unless @current_user_task_type_option.nil? || @task_type.task_type_options.where(isAdmin: true).any? %>
-                        <%= link_to fa_icon('user-plus', text:'Assign User'), new_task_type_task_type_option_user_group_path(@task_type, @task_type_option), class:'btn btn-primary' if @current_user_task_type_option.isAdmin %><br>
+                        <%= link_to fa_icon('user-plus', text:'Assign User'), new_task_type_task_type_option_user_group_path(@task_type, @task_type_option), class:'btn btn-primary' if @current_user_task_type_option&.isAdmin %><br>
                     <% else @task_type_option.user_groups.count == 0 %>
-                        <%= link_to fa_icon('user-plus', text:'Assign User'), new_task_type_task_type_option_user_group_path(@task_type, @task_type_option), class:'btn btn-primary' if @current_user_task_type_option.isAdmin %>
+                        <%= link_to fa_icon('user-plus', text:'Assign User'), new_task_type_task_type_option_user_group_path(@task_type, @task_type_option), class:'btn btn-primary' if @current_user_task_type_option&.isAdmin %>
                     <% end %>
                     <br>
                 </div>
             </div>
         </div>
-        <div class="col-sm-1 bg-light"></div>
+        <div class="col-sm-1 bg-light"><!--Grey Column--></div>
     </div>
 </div>

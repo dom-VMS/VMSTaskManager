@@ -56,10 +56,10 @@ class TasksController < ApplicationController
     task_parameters = task_params
     get_assignable_users
     Task.add_file_attachment(@task, attachment_params[:attachments]) unless attachment_params.empty?
-    unless params[:isReoccurring]
-      reoccuring_task = @task.reoccuring_task
-      reoccuring_task.destroy unless reoccuring_task.nil?
-      task_parameters = task_params.except :reoccuring_task_attributes
+    unless params[:isReoccurring] # If task is not recurring:
+      reoccuring_task = @task.reoccuring_task # Find the recurring data,
+      reoccuring_task.destroy unless reoccuring_task.nil? # destroy the recurring information,
+      task_parameters = task_params.except :reoccuring_task_attributes # and remove the recurring data from params.
     end
     if @task.update(task_parameters)
         flash[:notice] = "Task updated!"
@@ -87,14 +87,17 @@ class TasksController < ApplicationController
 
   def ticket
     @task = Task.new
-    @task_type = TaskType.where(parent_id: nil)
+    @task_type = TaskType.top_parents
     @task_assignment = @task.task_assignments.build
   end
 
   def review # Tickets
     if current_user.task_type_options.where(can_approve: true).present?
+      # Get TaskTypes where user is permitted to verify tasks & where they are explicitly not allowed to approve tickets.
       @task_types = TaskType.includes(:children).find(current_user.task_type_options.where(can_approve: true).pluck(:task_type_id))
       unpermitted_task_types = TaskType.includes(:children).find(current_user.task_type_options.where(can_approve: false).pluck(:task_type_id))
+     
+      # Since TaskTypeOptions can funnel down into other projects, get all children projects where a user would be allowed to approve a task.
       @task_types.each do |task_type|
         if task_type.children.any?
           (task_type.children.includes(:children)).each do |child|
@@ -102,6 +105,8 @@ class TasksController < ApplicationController
           end
         end
       end  
+      
+      # Gets all tasks current_user may approve for the given TaskTypes.
       @task = Task.needs_approval.project([@task_types]).order("updated_at DESC")
     else
       flash[:alert] = "You do not have permission to review tickets."
@@ -111,8 +116,11 @@ class TasksController < ApplicationController
 
   def verify
     if current_user.task_type_options.where(can_verify: true).present?
+      # Get TaskTypes where user is permitted to verify tasks & where they are explicitly not allowed to verify tasks.
       @task_types = TaskType.includes(:children).find(current_user.task_type_options.where(can_verify: true).pluck(:task_type_id))
       unpermitted_task_types = TaskType.includes(:children).find(current_user.task_type_options.where(can_verify: false).pluck(:task_type_id))
+      
+      # Since TaskTypeOptions can funnel down into other projects, get all children projects where a user would be allowed to verify a task.
       @task_types.each do |task_type|
         if task_type.children.any?
           task_type.children.each do |child|
@@ -120,6 +128,8 @@ class TasksController < ApplicationController
           end
         end
       end  
+      
+      # Get all tasks current_user may verify for the given TaskTypes.
       @task = Task.requires_verification.not_verified.complete.project([@task_types]).order("updated_at DESC")
     else 
       flash[:alert] = "You do not have permission to verify task completion."
@@ -127,6 +137,7 @@ class TasksController < ApplicationController
     end
   end
 
+  # Action that handles the Approval/Decline of a ticket.
   def ticket_review
     task = Task.find_by_id(task_params[:id])
     if task.update(task_params) 
@@ -148,6 +159,7 @@ class TasksController < ApplicationController
     end
   end
 
+  # Action that handles the Verification/Denial of a Task's Completion
   def task_verification
     @task = Task.find_by_id(task_params[:id])
     @task_type = @task.task_type
@@ -229,13 +241,13 @@ class TasksController < ApplicationController
     # This function finds the user based on their employee_number, validates the data,
     # and either creates the task or sends the user back with an error message.
     def task_creation_for_not_signed_in_user(params)
-      employee_number = params[:created_by_id]
+      employee_number = params[:created_by_id] #Get employee number
       if User.find_by_employee_number(employee_number).nil?
         flash[:error] = "The employee number you entered does not exsist."
         redirect_to ticket_path
       else
-        params[:created_by_id] = User.find_by_employee_number(employee_number).id
-        @task = Task.new(params)
+        params[:created_by_id] = User.find_by_employee_number(employee_number).id #Find User.id based on employee number
+        @task = Task.new(params) #Begin creating task
         Task.add_file_attachment(@task, attachment_params[:attachments]) unless attachment_params.empty?
         if @task.save!
           Task.send_ticket_email(@task, params[:created_by_id])

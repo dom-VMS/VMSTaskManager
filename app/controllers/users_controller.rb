@@ -52,13 +52,6 @@ class UsersController < ApplicationController
   end
 
   def update
-    unless verify_if_current_user_can_edit(@user, current_user)
-      respond_to do |format|
-        flash[:error] = "You are not permitted to update this user's info."
-        format.html { redirect_to user_path(@user) }
-      end
-    end
-    
     if @user.update(user_params)
       redirect_to @user
     else
@@ -95,14 +88,14 @@ class UsersController < ApplicationController
 
     # Verifies if the current_user may edit a given @user information
     def verify_if_current_user_can_edit(user, current_user)
-      return true if (current_user == user) # If current_user is @user, they may edit @user.
+      return true if (current_user == user) # If current_user is @user, they may edit.
       return false if current_user&.task_type_options.nil? #If current_user has no roles, they may not edit @user.
       
-      user_task_types = TaskType.find(user.task_type_options.pluck(:task_type_id)) #TaskTypes the user is assigned to.
-      current_user_admin_task_types = TaskType.includes(:children).find(current_user.task_type_options.where(isAdmin: true).pluck(:task_type_id)) #TaskTypes where current_user is directly assigned as an admin.
-      current_user_non_admin_task_types = TaskType.find(current_user.task_type_options.where(isAdmin: false).pluck(:task_type_id)) #TaskTypes where current_user is not assigned as an admin.
+      user_task_types = TaskType.find(user.task_type_options.pluck(:task_type_id)) #Find projects the user is assigned to.
+      current_user_admin_task_types = TaskType.includes(:children).find(current_user.task_type_options.where(isAdmin: true).pluck(:task_type_id)) #Projects where current_user is directly assigned as an admin.
+      current_user_non_admin_task_types = TaskType.find(current_user.task_type_options.where(isAdmin: false).pluck(:task_type_id)) #Projects where current_user is not assigned as an admin.
       
-      # This process finds all TaskTypes where current_user is an admin, based on parent/child association.
+      # This process finds all projects where current_user is an admin, based on parent/child association.
       current_user_admin_task_types.each do |task_type|
         if task_type.children.any?
           (task_type.children.includes(:children)).each do |child|

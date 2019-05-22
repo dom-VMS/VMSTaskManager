@@ -14,14 +14,15 @@ class TaskType < ApplicationRecord
     has_many :children, class_name: "TaskType", :foreign_key => "parent_id", dependent: :destroy
 
     ## Scopes
-    scope :top_parent, -> { where(parent_id: nil) }
+    scope :project, -> (task_type){ where(id: task_type) }
+    scope :top_parents, -> { where(parent_id: nil) }
     scope :siblings, -> { where(parent_id: self.parent_id)}
 
     ## Validations
     validates :name, presence: true
 
     ## PublicActivity
-#    tracked owner: Proc.new{ |controller, model| controller.current_user }
+    # tracked owner: Proc.new{ |controller, model| controller.current_user } <-- Uncomment this after db:seed has been intiated
 
     # When a project is created, generate Manager and Member roles for that project
     def create_roles
@@ -31,9 +32,9 @@ class TaskType < ApplicationRecord
         manager_role.save!
         member_role.save!
 
-        # Assign the user who created the project as a Manager. User.id is grabbed from the monitored Activity.
+        # Assign the user who created the project as a Manager, unless that project is a child project.
         user_id = created_by_id
-        unless user_id.nil?
+        unless user_id.nil? || self.parent_id != nil
             assign_manager = manager_role.user_groups.build(user_id: user_id)
             assign_manager.save!
         end
@@ -85,7 +86,7 @@ class TaskType < ApplicationRecord
     end
 
     # Returns all users that belongs to a given task_type.
-    # This is all user assigned to the the top-most parent + any other user 
+    # This is all user assigned to the the top-most parent + all children_projects 
     # That may be directly assigned to the given task_type
     def self.get_users(task_type)
         if task_type.parent.present?

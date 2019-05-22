@@ -69,7 +69,7 @@ class Task < ApplicationRecord
     validate :logged_labors_must_be_present_if_required
 
     ## PublicActivity
-#    tracked owner: Proc.new{ |controller, model| controller.current_user }
+    #tracked owner: Proc.new{ |controller, model| controller.current_user } <-- Uncomment this after db:seed has been intiated
 
     # If the due date for a task is altered, change the "next_date" field in ReoccuringTask
     def adjust_task_queue_for_completed_task
@@ -110,11 +110,6 @@ class Task < ApplicationRecord
         return all_tasks
     end
 
-    # Returns all assigned tasks given to a user based on a particular task_type.
-    def self.get_tasks_assigned_to_user_for_task_type(task_type, user)
-        tasks = user.tasks.project(task_type).not_verified.not_complete.isApproved.order("created_at DESC")
-    end
-
     # Retrieve all open tasks that a user is permitted to work on.
     def self.get_all_tasks_user_can_see(user)
         tasks = []
@@ -132,10 +127,19 @@ class Task < ApplicationRecord
         end
     end
 
-    # Retrieve all open tasks that a user is permitted to verify.
+    # Returns all assigned tasks given to a user based on a particular task_type.
+    def self.get_tasks_assigned_to_user_for_task_type(task_type, user)
+        tasks = user.tasks.project(task_type).not_verified.not_complete.isApproved.order("created_at DESC")
+    end
+
+
+    # Counts all open tasks that a user is permitted to verify.
     def self.count_all_tasks_user_can_verify(user)
+        # Get TaskTypes where user is permitted to verify tasks & where they are explicitly not allowed to verify tasks.
         task_types = TaskType.includes(:children).find(user.task_type_options.where(can_verify: true).pluck(:task_type_id))
         unpermitted_task_types = TaskType.includes(:children).find(user.task_type_options.where(can_verify: false).pluck(:task_type_id))
+
+        # Since TaskTypeOptions can funnel down into other projects, get all children projects where a user would be allowed to verify a task.
         task_types.each do |task_type|
           if task_type.children.any?
             (task_type.children.includes(:children)).each do |child|
@@ -143,13 +147,18 @@ class Task < ApplicationRecord
             end
           end
         end  
+
+        # Count all tasks that user may verify for the given TaskTypes.
         Task.requires_verification.not_verified.complete.project(task_types).order("updated_at DESC").count
     end
 
-    # Retrieve all open tasks that a user is permitted to approve.
+    # Counts all open tasks that a user is permitted to approve.
     def self.count_all_tickets_user_can_approve(user)
+        # Get TaskTypes where user is permitted to approve tickets & where they are explicitly not allowed to approve tickets.
         task_types = TaskType.includes(:children).find(user.task_type_options.where(can_approve: true).pluck(:task_type_id))
         unpermitted_task_types = TaskType.includes(:children).find(user.task_type_options.where(can_approve: false).pluck(:task_type_id))
+
+        # Since TaskTypeOptions can funnel down into other projects, get all children projects where a user would be allowed to approve a task.
         task_types.each do |task_type|
             if task_type.children.any?
                 task_type.children.includes(:children).each do |child|
@@ -157,6 +166,8 @@ class Task < ApplicationRecord
                 end
             end
         end  
+
+        # Count all tasks that user may approve for the given TaskTypes.
         Task.needs_approval.project(task_types).order("updated_at DESC").count
     end
 

@@ -1,11 +1,8 @@
 class LoggedLaborsController < ApplicationController
     def index
         @task = Task.find(params[:task_id])
-        @logged_labors = LoggedLabor.where(task_id:  @task.id).order('updated_at DESC')
+        @logged_labors = LoggedLabor.for_task(@task).order('updated_at DESC')
         @hours_spent = LoggedLabor.hours_spent_on_task(@task)
-    end
-
-    def show
     end
 
     def new
@@ -45,7 +42,7 @@ class LoggedLaborsController < ApplicationController
     end
     
     def update
-        @task = @task = Task.find(params[:task_id])
+        @task = Task.find(params[:task_id])
         @logged_labor = LoggedLabor.find_by_id(params[:id])
         if @logged_labor.update(logged_labor_params)
             flash[:success] = "Labor entry updated."

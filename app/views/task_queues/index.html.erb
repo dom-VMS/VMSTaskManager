@@ -8,7 +8,7 @@
 </nav>
 <div class="container-fluid">
     <div class="row content">
-        <div class="col-sm-1 bg-light"></div>
+        <div class="col-sm-1 bg-light"><!--Grey Column--></div>
         <div class="container-fluid col-sm-10">
             <div class="container-fluid">
                 <h1><%=@user.full_name%>'s Queue</h1>
@@ -39,7 +39,7 @@
                     <% end %>
                 <% end %>
                 </div>
-                <% if @task_type_option.isAdmin%>
+                <% if @task_type_option&.isAdmin%>
                 <div class="list-group col-sm-12 col-md-12 col-lg-10 col-xl-10 ">
                     <li class="list-group-item list-group-item-action list-group-item-light text-center">
                         <button type="button" class="btn btn-light" data-toggle="modal" data-target="#addToQueueModal">
@@ -52,12 +52,13 @@
                 <% end %>
             </div>
         </div>
-        <div class="col-sm-1 bg-light"></div>
+        <div class="col-sm-1 bg-light"><!--Grey Column--></div>
     </div>
 </div>
-<% if @task_type_option.isAdmin%>
+<% if @task_type_option&.isAdmin%>
     <script>
         $(function() {
+            // Allows for Drag & Drop 
             $('.sortable').railsSortable();
         });
     </script>

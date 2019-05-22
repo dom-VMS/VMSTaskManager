@@ -1,16 +1,4 @@
 class UserGroupsController < ApplicationController
-    before_action :find_user, only: [:index, :show]
-    
-    def index
-        @user_group = @user.user_groups 
-        @user_group.each do |user_group|
-            @task_type_option = user_group.task_type_option
-        end
-    end
-
-    def show
-        @user_group = UserGroup.find(params[:id])
-    end
 
     def new
         @task_type = TaskType.find_by_id(params[:task_type_id])

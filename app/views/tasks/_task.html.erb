@@ -1,3 +1,4 @@
+<!--Breadcrumbs Wrapper-->
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><%= link_to 'Home', home_path %></li>
@@ -6,40 +7,57 @@
         <li class="breadcrumb-item active" aria-current="page">Task #<%=@task.id%></li>
     </ol>
 </nav>
+
 <h1>Task #<%= @task.id %> <%= large_task_badges(@task)%></h1>
+
 <% if @task.isApproved.nil? %>
+    <!-- Ticket -->
     <% if @task_type_option&.can_verify %>
-    <!-- Approve/Decline Ticket -->
-    <p>
-        <%= (link_to fa_icon('check-circle', text: 'Approve Ticket'), review_path(task, :task => {:isApproved => true, :id => task.id}), 
-                        id: task,
-                        class: "btn btn-primary btn-lg",
-                        method: 'put', 
-                        data: { confirm: 'Are you sure you want to confirm this ticket?' }) %>
-        <button type="button" class="btn btn-danger btn-lg" data-toggle="modal" data-target="#declineTicketModal">
-            <%= fa_icon('times-circle', text:'Decline Ticket') %>
-        </button>  
-        <%= render 'tasks/modals/decline_ticket_modal' %>
-    </p>
+        <p>
+            <!-- Approve Ticket Button -->
+            <%= (link_to fa_icon('check-circle', text: 'Approve Ticket'), review_path(task, :task => {:isApproved => true, :id => task.id}), 
+                            id: task,
+                            class: "btn btn-primary btn-lg",
+                            method: 'put', 
+                            data: { confirm: 'Are you sure you want to confirm this ticket?' }) %>
+            <!--./Approve Ticket Button -->
+
+            <!-- Decline Ticket Button -->
+            <button type="button" class="btn btn-danger btn-lg" data-toggle="modal" data-target="#declineTicketModal">
+                <%= fa_icon('times-circle', text:'Decline Ticket') %>
+            </button>  
+            <%= render 'tasks/modals/decline_ticket_modal' %>
+            <!--./Decline Ticket Button -->
+        </p>
+    <!--./Ticket -->  
     <% end %>
 <% elsif @task.status == 3 && @task.isVerified != true && @task.verification_required %>
+    <!-- Task Verificaiton-->
     <% if @task_type_option&.can_verify? %>
-    <!-- Approve/Decline Task Completion -->
     <p>
+        <!-- Approve Task Completion Button -->
         <%= (link_to fa_icon('check-circle', text: 'Verify Completion'), verify_path(task, :task => {:isVerified => true, :percentComplete => 100, :id => task.id, :verified_by_id => current_user.id}),
                             class: "btn btn-primary btn-lg",
                             method: 'put', 
                             data: { confirm: 'By selecting this, you verify this task has been complete. Continue?' }) %>
+        <!--./Approve Task Completion Button -->
+
+        <!-- Decline Task Completion Button-->
         <button type="button" class="btn btn-danger btn-lg" data-toggle="modal" data-target="#declineTaskModal">
             <%= fa_icon('times-circle', text: 'Decline Completion') %>
         </button> 
         <%= render 'tasks/modals/decline_task_modal'%>
+        <!--./Decline Task Completion Button-->
     </p>
     <% end %>
+    <!--./Task Verificaiton-->
 <% end %>
+
 <hr>
 <!-- tasks/_form -->
 <div id="task-form" style="display:none;"></div>
+
+<!--Task Information-->
 <div id="task-info-small">
     <h2><%= sanitize @task.title.html_safe unless @task.title.nil? %>  <%= task_badges(@task) %> <%= reoccuring_badge(@task) unless @task.status == 3 %></h2>
     <p>
@@ -108,21 +126,28 @@
         <%end%>
     </p>
     <% end %>
+    <p> 
+        <!--Mark as Complete Button -->
+        <%= link_to fa_icon('check-circle', text: "Complete"), task_path(@task, :task => {:id => @task.id, :completed_by_id => current_user.id, :percentComplete => 100, :status => 3, :completed_date => DateTime.now}),
+                    class: "btn btn-success",
+                    method: 'put', 
+                    data: { confirm: 'By selecting this, you verify this task has been complete. Continue?' } if @assignees.any? {|assignee| assignee == current_user} && @task.status != 3%>
 
-<p>
-    <%= link_to fa_icon('check-circle', text: "Complete"), task_path(@task, :task => {:id => @task.id, :completed_by_id => current_user.id, :percentComplete => 100, :status => 3, :completed_date => DateTime.now}),
-                class: "btn btn-success",
-                method: 'put', 
-                data: { confirm: 'By selecting this, you verify this task has been complete. Continue?' } if @assignees.any? {|assignee| assignee == current_user} && @task.status != 3%>
-    <%= link_to fa_icon('edit', text: "Edit"), edit_task_path(@task), remote: true, class: 'btn btn-secondary'  if @task_type_option.present?%>
-    <%= (link_to fa_icon('trash-alt', text:'Delete'), task_path(@task),
-                class: 'btn btn-danger',
-                method: :delete,
-                data: { confirm: 'Are you sure you want to delete this task?' }) if @task_type_option&.can_delete %>
-</p>
+        <!--Edit Task Button -->
+        <%= link_to fa_icon('edit', text: "Edit"), edit_task_path(@task), remote: true, class: 'btn btn-secondary'  if @task_type_option.present?%>
+
+        <!-- Delete Task Button -->
+        <%= (link_to fa_icon('trash-alt', text:'Delete'), task_path(@task),
+                    class: 'btn btn-danger',
+                    method: :delete,
+                    data: { confirm: 'Are you sure you want to delete this task?' }) if @task_type_option&.can_delete %>
+
+    </p>
 </div>
+
 <br>
-<!-- Nav-tabs -->
+
+<!-- Nav-tabs Wrapper -->
 <nav>
     <div class="nav nav-tabs" id="nav-tab" role="tablist">
         <a class="nav-item nav-link active" id="nav-comment-tab" data-toggle="tab" href="#nav-comment" role="tab" aria-controls="nav-comment" aria-selected="true">Comments</a>
@@ -132,7 +157,10 @@
         <a class="nav-item nav-link" id="nav-edit-tab" data-toggle="tab" href="#nav-contact" role="tab" aria-controls="nav-contact" aria-selected="false">Activity</a>
     </div>
 </nav>
+
 <br>
+
+<!--Tab Content Wrapper-->
 <div class="tab-content" id="nav-tabContent">
     <!-- Comments -->
     <div class="tab-pane fade show active"  id="nav-comment" role="tabpanel" aria-labelledby="nav-comment-tab">
@@ -145,14 +173,17 @@
             <br><br>
         <% end %>
     </div>
+
+    <!-- Logged Labors-->
     <% if @task.logged_labor_required %>
-    <!-- Logged Labor -->
     <div class="tab-pane fade" id="nav-time-spent" role="tabpanel" aria-labelledby="nav-time-spent-tab">
         <%= render 'logged_labors/index'%>
     </div>
     <% end %>
-    <!-- Activity -->
+
+    <!-- Activities-->
     <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
         <%= render 'activities/activity'%>
     </div>
+
 </div> 

@@ -1,6 +1,0 @@
-<% if task_type.children.present? %>
-    <% task_type_children.each do |child| %>
-        <ul><%= link_to child.name, task_type_path(child) %></ul>
-        <%= render 'task_types/child_project' if child.children.present?%>
-    <% end %>
-<% end %>

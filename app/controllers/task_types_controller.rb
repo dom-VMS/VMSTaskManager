@@ -1,14 +1,14 @@
 class TaskTypesController < ApplicationController
     def index
+        @can_create_project = current_user.task_type_options.any?{|role| role.isAdmin == true}
         if search_params[:search]
             @task_types = TaskType.search(search_params[:search])
             if @task_types.nil? || @task_types.empty?
-                @task_types = TaskType.top_parent.order('name ASC') 
+                @task_types = TaskType.top_parents.order('name ASC') 
                 flash.now[:alert] = "Sorry, we couldn't find what you are searching for."
             end
         else
-            @task_types = TaskType.includes(:children).top_parent.order('name ASC') 
-            #@task_types = TaskType.get_all_projects_in_order(parent_projects)
+            @task_types = TaskType.includes(:children).all.order('name ASC') 
         end
     end
     
@@ -35,7 +35,12 @@ class TaskTypesController < ApplicationController
     end
     
     def new
-        @task_type = TaskType.new
+        if current_user.task_type_options.any?{|role| role.isAdmin == true}
+            @task_type = TaskType.new
+        else
+            flash[:error] = "Sorry, but you do not have permission to create a project."
+            redirect_back fallback_location: task_types_path
+        end
     end
 
     def edit
@@ -43,18 +48,16 @@ class TaskTypesController < ApplicationController
         @children = @task_type.children
         @task_type_options = @task_type.task_type_options
 
-        if @task_type_options.present?
-            current_user_task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task_type)
-            if current_user_task_type_option.nil? || current_user_task_type_option.isAdmin == false 
-                flash[:error] = "Sorry, but you do not have permission to edit #{@task_type.name}."
-                redirect_to @task_type
-            end
+        current_user_task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task_type)
+        if current_user_task_type_option.nil? || current_user_task_type_option.isAdmin == false 
+            flash[:error] = "Sorry, but you do not have permission to edit #{@task_type.name}."
+            redirect_to @task_type
         end
     end
 
     def create
         @task_type = TaskType.new(task_type_params)
- 
+
         if @task_type.save
             flash[:success] = "#{@task_type.name} has been created!"
             redirect_to edit_task_type_path(@task_type)
@@ -68,27 +71,20 @@ class TaskTypesController < ApplicationController
         @task_type = find_task_type
        
         if @task_type.update(task_type_params)
-          flash[:success] = "#{@task_type.name} has been updated!"
-          redirect_to @task_type
+            flash[:success] = "#{@task_type.name} has been updated!"
+            redirect_to @task_type
         else
-          flash.now[:error] = "Oops! Something went wrong. #{@task_type.name} wasn't updated."
-          render 'edit'
+            flash.now[:error] = "Oops! Something went wrong. #{@task_type.name} wasn't updated."
+            render 'edit'
         end
     end
 
     def destroy
         @task_type = find_task_type
-        #task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task_type)
-        #if !@task_type.task_type_options.present?
-            destroy_task_type
-        #elsif (task_type_option.isAdmin && task_type_option.can_delete) 
-        #    destroy_task_type
-        #else
-        #    flash[:error] = "You are not permitted to delete this project."
-        #    redirect_to edit_task_type_path(@task_type)
-       # end
+        destroy_task_type
     end
 
+    # Unlinks a child project from it's parent
     def remove_child
         child = TaskType.find(params[:id])
         parent = TaskType.find(child.parent.id)
@@ -98,22 +94,20 @@ class TaskTypesController < ApplicationController
             redirect_to edit_task_type_path(parent)
         else
             flash[:danger] = "Something went wrong. #{child.name} was not removed from #{parent.name} "
-            redirect_to edit_task_type_path(@task_type)
+            redirect_to edit_task_type_path(parent)
         end
     end
-
-    def edit_parent
-        parent = TaskType.find(params[:id])
-        task_type = TaskType.find(params[:child_id])
-
-
-    end 
 
     private
       def task_type_params
         params.require(:task_type).permit(:task_type_id, :name, :description, :search, :parent_id, :created_by_id)
       end
 
+      def search_params
+        params.permit(:search)
+      end
+
+      # Deletes a TaskType from the database
       def destroy_task_type
         @task_type.destroy
         if @task_type.destroyed?
@@ -129,9 +123,7 @@ class TaskTypesController < ApplicationController
         TaskType.find(params[:id])
       end
 
-      def search_params
-        params.permit(:search)
-      end
+      
 
       
 

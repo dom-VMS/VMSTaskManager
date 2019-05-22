@@ -11,12 +11,12 @@
                 <% if task_type == @task_types.first %>
                     <a class="nav-link active border border-light" id="v-pills-<%=task_type.id%>-tab" data-toggle="pill" href="#v-pills-<%=task_type.id%>" role="tab" aria-controls="v-pills-<%=task_type.id%>" aria-selected="true">
                         <%=task_type.name%> 
-                        <span class="badge badge-light right"><%= @task.where(task_type_id: task_type.id).count %></span>
+                        <span class="badge badge-light right"><%= @task.project(task_type.id).count %></span>
                     </a>
                 <% else %>
                     <a class="nav-link border border-light" id="v-pills-<%=task_type.id%>-tab" data-toggle="pill" href="#v-pills-<%=task_type.id%>" role="tab" aria-controls="v-pills-<%=task_type.id%>" aria-selected="true">
                         <%=task_type.name%> 
-                        <span class="badge badge-light right"><%= @task.where(task_type_id: task_type.id).count %></span>
+                        <span class="badge badge-light right"><%= @task.project(task_type.id).count %></span>
                     </a>
                 <% end %>
             <% end %>
@@ -31,12 +31,12 @@
                             <% if task_type == @task_types.first %>
                                 <a class="nav-link active border border-primary" id="v-pills-<%=task_type.id%>-tab" data-toggle="pill" href="#v-pills-<%=task_type.id%>" role="tab" aria-controls="v-pills-<%=task_type.id%>" aria-selected="true" style="white-space: nowrap; overflow: hidden;">
                                     <%=task_type.name%> 
-                                    <span class="badge badge-light right"><%= @task.where(task_type_id: task_type.id).count %></span>
+                                    <span class="badge badge-light right"><%= @task.project(task_type.id).count %></span>
                                 </a>
                             <% else %>
                                 <a class="nav-link border border-primary pill-secondary" id="v-pills-<%=task_type.id%>-tab" data-toggle="pill" href="#v-pills-<%=task_type.id%>" role="tab" aria-controls="v-pills-<%=task_type.id%>" aria-selected="true" style="white-space: nowrap; overflow: hidden;">
                                     <%=task_type.name%> 
-                                    <span class="badge badge-light right"><%= @task.where(task_type_id: task_type.id).count %></span>
+                                    <span class="badge badge-light right"><%= @task.project(task_type.id).count %></span>
                                 </a>
                             <% end %>    
                         </li>
@@ -54,7 +54,7 @@
                         <div class="tab-pane fade" id="v-pills-<%=task_type.id%>" role="tabpanel" aria-labelledby="v-pills-<%=task_type.id%>-tab">
                     <%end%>
                             <div class="row">
-                                <% tasks = @task.where(task_type_id: task_type.id) %>
+                                <% tasks = @task.project(task_type.id) %>
                                 <% unless tasks.empty? %>
                                     <% (tasks).each do |task|%>
                                         <div class="col-sm-4">

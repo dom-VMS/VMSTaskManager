@@ -1,6 +1,7 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col">
+            <!-- New LoggedLabor button -->
             <div style="width: 50%; display: inline;" class="pull-right text-align-middle">
                 <%= (link_to fa_icon('clock', text:'Log time'), new_task_logged_labor_path(@task), class: "btn btn-primary") if @task_type_option&.can_log_labor%> 
             </div>
@@ -12,6 +13,7 @@
             </p>
         </div>
     </div>
+    <!--Display Labor Entries for a Task -->
     <% if @task.logged_labors.present? %>
         <% (@task.logged_labors).each do |logged_labor| %>
             <div class="list-group list-group-flush">
