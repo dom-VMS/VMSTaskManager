@@ -1,13 +1,15 @@
 <!--Navbar-->
 <% if logged_in? %>
- <nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-dark">
+  <!--Logged In-->
+  <!--Logo-->
+  <nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-dark">
     <a class="navbar-brand" href="/home">
-      <%= image_tag "logo.png", alt: "Varland Metal Service"  %> 
+      <%= svg('logo') %> 
     </a>  
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
-
+  <!--Nav-items-->
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
       <li class="nav-item">
@@ -85,7 +87,7 @@
     </ul>
   </div>
 </nav>
-
+<!--Not Logged In-->
 <% else %>
   <nav class="navbar navbar-dark bg-dark">
     <a class="navbar-brand" href="/">

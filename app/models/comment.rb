@@ -9,7 +9,6 @@ class Comment < ApplicationRecord
   ## Active Record Associations
   belongs_to :task
   belongs_to :commenter, class_name: "User", optional: true
-  has_many :file_attachments, dependent: :destroy
 
   ## Active Record Validations
   validates_presence_of :body, :message => "of the comment cannot be empty."

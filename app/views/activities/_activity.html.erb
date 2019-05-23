@@ -4,9 +4,8 @@
         <th scope="col">When</th>
     </thead>
     <tbody>
-    <% @activities.each do |activity| %>
-        <tr>
-            <div class="activity">
+        <% @activities.each do |activity| %>
+            <tr>
                 <% if activity.key == "comment.create" %>
                     <td><%= link_to activity.owner.full_name, activity.owner if activity.owner %> added a comment to <%= activity.recipient ? (link_to activity.recipient.title, activity.recipient) : "a task which has since been deleted." %></td>
                     <td> <%= time_ago_in_words(activity.created_at)%> ago</td>
@@ -35,8 +34,7 @@
                     <td><%= link_to activity.owner.full_name, activity.owner if activity.owner %> deleted <%= activity.trackable ? (link_to activity.trackable.name, activity.trackable) : "Task ##{activity.trackable_id}"%></td>
                     <td> <%= time_ago_in_words(activity.created_at)%> ago</td>
                 <% end %>
-            </div>
-        </tr>
+            </tr>
+        <% end %>
     </tbody>
-    <% end %>
 </table>
