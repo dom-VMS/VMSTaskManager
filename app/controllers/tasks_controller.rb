@@ -12,7 +12,7 @@ class TasksController < ApplicationController
   end
   
   def new
-    if @task_type_option.nil? # Check if user has the proper permissions to create a task for the given project.
+    if @task_type_option.nil? || @task_type_option&.can_create != true# Check if user has the proper permissions to create a task for the given project.
         flash[:error] = "Sorry, but you do not have permission to create #{@task_type.name} task."
         redirect_to task_type_path(@task_type)
     else
@@ -23,10 +23,14 @@ class TasksController < ApplicationController
   end
 
   def edit
-    validate_current_user # Check if user has the proper permissions to edit a task for the given project.
-    @assignees = @task.users
-    get_assignable_users
-    @assignable_projects = TaskType.includes(:children).get_assignable_projects(@task_type)
+    if @task_type_option.nil? || @task_type_option&.can_edit != true# Check if user has the proper permissions to create a task for the given project.
+      flash[:error] = "Sorry, but you do not have permission to create #{@task_type.name} task."
+      redirect_back fallback_location: task_type_path(@task_type)
+    else
+      @assignees = @task.users
+      get_assignable_users
+      @assignable_projects = TaskType.includes(:children).get_assignable_projects(@task_type)
+    end
   end
 
   def create
@@ -225,16 +229,6 @@ class TasksController < ApplicationController
     # Retrieves all users that may be assigned to a task.
     def get_assignable_users
       @assignable_users = TaskType.get_users(@task_type) 
-    end
-
-    # Determines if current_user is assigned to project. 
-    def validate_current_user 
-      unless @task_type_option.present?
-        respond_to do |format|
-          flash[:error] = "Sorry, but you are not permitted to edit this task."
-          format.html { redirect_back(fallback_location: task_path(@task)) }
-        end
-      end
     end
 
     # A user may file a ticket (i.e. Create a task) while not being signed in.

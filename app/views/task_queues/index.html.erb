@@ -25,25 +25,25 @@
             <!--Display queue and permit user to adjust-->
             <div class='container-fluid' id='user-queue'>
                 <div class="list-group col-sm-12 col-md-12 col-lg-10 col-xl-10 sortable ">
-                    <% unless @queue.empty?%>
-                        <% (@queue).each_with_sortable_id do |queue, sortable_id|%>
-                            <% task = Task.find_by_id(queue.task_id)%>
-                            <li class="list-group-item d-flex justify-content-between"  id="<%= sortable_id %>">
-                                <div>
-                                    <span class="badge badge-primary"><%= queue.position + 1%></span>
-                                </div>
-                                <div>
-                                    <%= task.title.nil? ? (link_to task.description.truncate_words(10), task_path(task)) : (link_to task.title.truncate_words(10), task_path(task)) %>  
-                                </div>
-                                <div>
-                                    <%= (link_to fa_icon('trash'), task_type_user_task_queue_path(@task_type, @user, queue),
-                                                                        method: :delete,
-                                                                        data: { confirm: "Are you sure you want to remove this task from the queue?" },
-                                                                        remote: true)  if @task_type_option.isAdmin%><br> 
-                                </div>
-                            </li> 
-                        <% end %>
+                    <% (@queue).each_with_sortable_id do |queue, sortable_id|%>
+                        <% task = Task.find_by_id(queue.task_id)%>
+                        <li class="list-group-item d-flex justify-content-between"  id="<%= sortable_id %>">
+                            <div>
+                                <span class="badge badge-primary"><%= queue.position + 1%></span>
+                            </div>
+                            <div>
+                                <%= task.title.nil? ? (link_to task.description.truncate_words(10), task_path(task)) : (link_to task.title.truncate_words(10), task_path(task)) %>  
+                            </div>
+                            <div>
+                                <%= (link_to fa_icon('trash'), task_type_user_task_queue_path(@task_type, @user, queue),
+                                                                    method: :delete,
+                                                                    data: { confirm: "Are you sure you want to remove this task from the queue?" },
+                                                                    remote: true)  if @task_type_option.isAdmin%><br> 
+                            </div>
+                        </li> 
                     <% end %>
+                    <%= "#{@user.f_name} does not currently have any tasks queued for #{@task_type.name}."%>
+                    <br><br>
                 </div>
 
                 <!--Add task to queue-->

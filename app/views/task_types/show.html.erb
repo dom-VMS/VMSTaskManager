@@ -131,6 +131,7 @@
                             </div>
                         </div> 
                     <%end%>
+                    <%= "You have no tasks assigned to for #{@task_type.name}" if @tasks_assigned_to_user.empty?%>
                     <br>
                     <%== pagy_bootstrap_nav @pagy_tasks_assigned_to_user unless @pagy_tasks_assigned_to_user.pages == 1 %>
                 </div>
@@ -150,27 +151,27 @@
                             </div>
                         </div> 
                     <%end%>
+                    <%= "No open tasks for #{@task_type.name}" if @tasks.empty?%>
                     <br>
                     <%== pagy_bootstrap_nav @pagy_all_tasks unless @pagy_all_tasks&.pages == 1 %>
                 </div>
 
                 <!-- Recently Completed Tasks -->
                 <div class="tab-pane fade" id="nav-recently-complete" role="tabpanel" aria-labelledby="nav-recently-complete-tab">
-                    <% unless (@task_type.tasks.where(status: 3)).empty? %>
-                        <% (@tasks_recently_complete).each do |task| %>
-                            <div class="list-group list-group-flush">
-                                <div class="list-group-item py-2 d-flex justify-content-between align-items-center list-group-item-linkable" data-link="<%= task_path(task)%>">
-                                    <%= task.title.blank? ? (link_to ("[##{task.id}]  " + task.description.truncate_words(15)), task) : (link_to ("[##{task.id}]  " + task.title.truncate_words(15)), task)  %>
-                                    <%= task_badges(task) %>
-                                </div>
-                            </div> 
-                        <%end%>
+                    <% (@tasks_recently_complete).each do |task| %>
+                        <div class="list-group list-group-flush">
+                            <div class="list-group-item py-2 d-flex justify-content-between align-items-center list-group-item-linkable" data-link="<%= task_path(task)%>">
+                                <%= task.title.blank? ? (link_to ("[##{task.id}]  " + task.description.truncate_words(15)), task) : (link_to ("[##{task.id}]  " + task.title.truncate_words(15)), task)  %>
+                                <%= task_badges(task) %>
+                            </div>
+                        </div> 
                     <%end%>
+                    <%= "No recently completed tasks for #{@task_type.name}" if @tasks_recently_complete.empty?%>
                 </div>
 
                 <!-- Users -->
                 <div class="tab-pane fade" id="nav-users" role="tabpanel" aria-labelledby="nav-users-tab">
-                    <table class="table text-center">
+                    <table class="table text-center", style="border-collapse:collapse">
                         <thead>
                             <tr>
                                 <th scope="col">Name</th>
@@ -178,17 +179,16 @@
                                 <th scope="col">Queue</th>
                             </tr>
                         <thead>
-                        <% unless @users.empty? %>
-                            <tbody>
-                            <% (@users).each do |user| %> 
-                                <tr>
-                                    <td><%= link_to user.full_name, user_path(user) %></td>
-                                    <td><%= user_task_type_option(user) %></td>
-                                    <td><%= (link_to 'View Queue', task_type_user_task_queues_path(@task_type.id, user.id), class: "btn btn-primary #{'disabled' unless @task_type_option&.isAdmin || current_user == user }" )%></td>
-                                </tr>
-                                <%end%>
-                            </tbody>
-                        <%end%>  
+                        <tbody>
+                        <% (@users).each do |user| %> 
+                            <tr>
+                                <td><%= link_to user.full_name, user_path(user) %></td>
+                                <td><%= user_task_type_option(user) %></td>
+                                <td><%= (link_to 'View Queue', task_type_user_task_queues_path(@task_type.id, user.id), class: "btn btn-primary #{'disabled' unless @task_type_option&.isAdmin || current_user == user }" )%></td>
+                            </tr>
+                            <%end%>
+                        </tbody>
+
                     </table> 
                 </div>
 

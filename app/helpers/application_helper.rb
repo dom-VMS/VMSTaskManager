@@ -10,7 +10,7 @@ module ApplicationHelper
     end
 
     def svg(name)
-        image_tag "#{name}.svg", alt: "Varland Metal Service", size: '50x50'
+        image_tag "#{name}.svg", alt: "Varland Metal Service", size: '50'
     end
 
 end

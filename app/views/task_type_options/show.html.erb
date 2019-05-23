@@ -76,7 +76,7 @@
                         </tr>
                         <% @task_type_option.user_groups.each do |user_group| %>
                             <tr> 
-                                <td><%= link_to User.find_by_id(user_group.user_id).full_name, user_path(user_group.user_id) %></td>
+                                <td><%= link_to User.find_by_id(user_group.user_id).full_name, user_path(user_group.user_id) unless user_group.user_id.nil? %></td>
                                 <% unless @current_user_task_type_option.nil? %>
                                     <td><%= link_to fa_icon('trash-alt'), user_group_path(user_group),
                                         method: :delete,
