@@ -109,8 +109,7 @@
     <p>
         <strong>Percent Complete:</strong> 
         <div class="progress w-50">
-            <div class="progress-bar" role="progressbar" style="width: <%= @task.percentComplete %>%;" 
-                aria-valuenow= "<%= @task.percentComplete %>" aria-valuemin="0" aria-valuemax="100">
+            <div class="progress-bar" role="progressbar" style="width: <%= @task.percentComplete %>%;" aria-valuenow= "<%= @task.percentComplete %>" aria-valuemin="0" aria-valuemax="100">
                 <%= @task.percentComplete %>%
             </div>
         </div>
@@ -163,26 +162,28 @@
 <!--Tab Content Wrapper-->
 <div class="tab-content" id="nav-tabContent">
     <!-- Comments -->
-    <div class="tab-pane fade show active"  id="nav-comment" role="tabpanel" aria-labelledby="nav-comment-tab">
-        <div class="row" id="comment">
+    <div class="tab-pane fade show active comments"  id="nav-comment" role="tabpanel" aria-labelledby="nav-comment-tab">
+        <div class="row comments-container">
             <%= render @task.comments.includes(:commenter) %>
         </div>
-        <% if @task_type_option&.can_comment %>
-            <h4>Leave a Comment:</h4>
-            <%= render 'comments/form' %>
-            <br><br>
-        <% end %>
+        <div class="new-comment-containter">
+            <% if @task_type_option&.can_comment %>
+                <h4>Leave a Comment:</h4>
+                <%= render 'comments/form' %>
+                <br><br>
+            <% end %>
+        </div>
     </div>
 
     <!-- Logged Labors-->
     <% if @task.logged_labor_required %>
-    <div class="tab-pane fade" id="nav-time-spent" role="tabpanel" aria-labelledby="nav-time-spent-tab">
+    <div class="tab-pane fade logged_labor" id="nav-time-spent" role="tabpanel" aria-labelledby="nav-time-spent-tab">
         <%= render 'logged_labors/index'%>
     </div>
     <% end %>
 
     <!-- Activities-->
-    <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
+    <div class="tab-pane fade activities" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
         <%= render 'activities/activity'%>
     </div>
 

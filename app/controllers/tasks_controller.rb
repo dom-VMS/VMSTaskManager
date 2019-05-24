@@ -23,7 +23,7 @@ class TasksController < ApplicationController
   end
 
   def edit
-    if @task_type_option.nil? || @task_type_option&.can_edit != true# Check if user has the proper permissions to create a task for the given project.
+    if @task_type_option.nil? || @task_type_option&.can_update != true# Check if user has the proper permissions to create a task for the given project.
       flash[:error] = "Sorry, but you do not have permission to create #{@task_type.name} task."
       redirect_back fallback_location: task_type_path(@task_type)
     else

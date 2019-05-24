@@ -1,19 +1,25 @@
 class CommentsController < ApplicationController
     def create
-        @task = Task.find(params[:task_id])
-        @comment = @task.comments.create(comment_params)
-        add_file_attachment(attachment_params[:attachments]) unless attachment_params.empty?
-        @comment.save! ? (flash[:notice] = "Successfully created comment.") : (flash[:error] = "Failed to create comment")
-        respond_to do |format|
-          format.html { redirect_to @task }
+      respond_to do |format|
+        format.js do
+          @task = Task.find(params[:task_id])
+          @comment = @task.comments.create(comment_params)
+          add_file_attachment(attachment_params[:attachments]) unless attachment_params.empty?
+          @comment.save! ? (flash.now[:notice] = "Successfully created comment.") : (flash[:error] = "Failed to create comment")
         end
+        format.html { redirect_to @task }
+      end
     end
 
     def destroy
-      @task = Task.find(params[:task_id])
-      @comment = @task.comments.find(params[:id])
-      @comment.destroy
-      redirect_to task_path(@task)
+      respond_to do |format|
+        format.js do
+          @task = Task.find(params[:task_id])
+          @comment = @task.comments.find(params[:id])
+          @comment.destroy
+        end
+        format.html { redirect_to task_path(@task) }
+      end
     end
      
       private

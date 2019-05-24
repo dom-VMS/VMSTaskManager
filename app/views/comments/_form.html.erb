@@ -17,7 +17,7 @@
 
   <p>
     <%= form.label :body, 'Comment' %><br>
-    <%= form.text_area :body, class: 'form-control', placeholder: "Give us some details." %>
+    <%= form.text_area :body, class: 'form-control comment-body', placeholder: "Give us some details." %>
   </p>
   <p>
     <%= form.label :attachments, 'File attachments' %>
@@ -27,6 +27,6 @@
   <%= form.hidden_field 'commenter_id', :value => current_user.id %>
 
   <p>
-    <%= form.submit 'Leave Comment', class: 'btn btn-primary btn-lg'%>
+    <%= form.submit 'Post Comment', class: 'btn btn-primary btn-lg', remote: true%>
   </p>
 <% end %>

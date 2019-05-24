@@ -27,7 +27,7 @@ class TaskQueuesController < ApplicationController
 
   def destroy
     get_queue_item 
-    @queue.destroy #Removes a single item from the queue.
+    @queue_item.destroy #Removes a single item from the queue.
     respond_to do |format|
       flash[:notice] = "Successfully removed task from queue."
       format.html { redirect_back(fallback_location: task_type_user_task_queues_path(@task_type.id, @user.id))}
@@ -54,7 +54,7 @@ class TaskQueuesController < ApplicationController
 
   # Retrieves a single queue item.
   def get_queue_item
-    @queue = TaskQueue.find_by_id(task_queue_params[:id])
+    @queue_item = TaskQueue.find_by_id(task_queue_params[:id])
   end
 
   # Looks at the current_user's roles & permissions to determine if they may view another user's task queue.

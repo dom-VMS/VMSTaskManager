@@ -42,8 +42,8 @@
                             </div>
                         </li> 
                     <% end %>
-                    <%= "#{@user.f_name} does not currently have any tasks queued for #{@task_type.name}."%>
-                    <br><br>
+                    <%= "#{@user.f_name} does not currently have any tasks queued for #{@task_type.name}." if @queue.empty?%>
+                    <br>
                 </div>
 
                 <!--Add task to queue-->

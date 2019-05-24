@@ -1,0 +1,3 @@
+$('.new-comment-container').html("<%= j render 'comments/form', comment: Comment.new, review_id: @task.id%>")
+$('.comments-container').html("<%= j render @task.comments.includes(:commenter), comments: @task.comments%>")
+$('.comment-body').val(null)
