@@ -1,7 +1,6 @@
 <link rel="stylesheet" href="//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css">
 
 <%= form_with model: @task, html: { autocomplete: "off" }, local: true do |form| %>
- 
     <!-- Error Messages -->
     <% if @task.errors.any? %>
         <div id="error_explanation">
@@ -16,35 +15,30 @@
             </ul>
         </div>
     <% end %>
-    <!-- Begin Form -->
+    <!-- Form -->
     <div class="mb-3">
-        <% unless @sub_projects.nil?%>
+        <% if @task_type_option&.isAdmin && @assignable_projects.present? && @task.persisted?%>
         <p>
             <%= form.label :task_type_id, 'Project' %><br>
-            <%= form.select(:task_type_id, options_from_collection_for_select(@sub_projects, 'id', 'name', @task.task_type_id), class: 'form-control') %>
+            <%= form.select(:task_type_id, options_from_collection_for_select(@assignable_projects, 'id', 'name', @task.task_type_id), class: 'form-control') %>
         </p>
+        <% else %>
+            <%= form.hidden_field 'task_type_id', :value => @task_type.id if @task_type.present?%>
         <%end%>
+        <% if @task_type_option&.can_update %>
         <p> 
             <%= form.label :title %><br>
             <%= form.text_field :title, class: 'form-control' %>
         </p>
         <p> 
             <%= form.label :description %><br>
-            <%= form.text_area :description, class: 'form-control' %>
-        </p>
-        <p>Due Date: <%= @task.due_date.nil? ? "<input type='checkbox' id='isDueDateSelected'/>".html_safe : "<input type='checkbox' id='isDueDateSelected' checked/>".html_safe%></p>
-        <p id="due-date"  style="display: none;">
-            <%= fa_icon('calendar-alt', text:'Select Date')%>
-            <% if @task.due_date.nil? %>
-                <%= form.text_field :due_date, data:{ provide:'datepicker' }, id: 'datepicker', class: 'form-control datepicker w-50', placeholder: 'Enter Due Date' %>    
-            <% else %>
-                <%= form.text_field :due_date, value: @task.due_date.strftime("%Y/%m/%d"),data:{ provide:'datepicker' }, id: 'datepicker', class: 'form-control datepicker w-50'%>    
-            <% end %>
+            <%= form.text_area :description, class: 'form-control', size: "60x12" %>
         </p>
         <p>
             <%= form.label :priority %><br>
             <%= form.select(:priority, options_for_select(PRIORITY, @task.priority), include_blank: "Select Priority", class: 'form-control') %>
         </p>
+        <% end %>
         <p> 
             <%= form.label :status %><br>
             <%= form.select(:status, options_for_select(STATUS, @task.status), include_blank: "Select Status", class: 'form-control') %>
@@ -53,6 +47,62 @@
             <%= form.label :percentComplete, 'Percent Complete' %><br>
             <%= form.range_field :percentComplete, :in => 0..100, :step => '10', class: 'form-control slider'%>
         </p>
+        <% if @task_type_option&.can_update %>
+        <p>
+            <%= form.label :verification_required, 'Verification Required?' %>
+            <%= form.check_box :verification_required, class: 'form-control w-25'%>
+        </p>
+        <p>
+            <%= form.label :logged_labor_required, 'Labor Entries Required?' %>
+            <%= form.check_box :logged_labor_required, class: 'form-control w-25'%>
+        </p>
+        <hr>
+        <!-- Due Date -->
+        <%= label_tag "Due Date:" %> 
+        <%= check_box_tag 'isDueDateSelected', true, (true unless @task.due_date.nil?), id:'isDueDateSelected'%>
+        <p id="due-date"  style="display: none;">
+            <%= fa_icon('calendar-alt', text:'Select Date')%>
+            <% if @task.due_date.nil? %>
+                <%= form.text_field :due_date, data:{ provide:'datepicker' }, id: 'datepicker', class: 'form-control datepicker w-50', placeholder: 'Enter Due Date' %>    
+            <% else %>
+                <%= form.text_field :due_date, value: @task.due_date.strftime("%Y/%m/%d"),data:{ provide:'datepicker' }, id: 'datepicker', class: 'form-control datepicker w-50'%>    
+            <% end %>
+        </p>
+        <hr>
+        <!-- Reoccuring Task Information -->
+        <%= label_tag "Reoccurring Task:" %> 
+        <%= check_box_tag 'isReoccurring', true, (true unless @task.reoccuring_task.nil?), id:'isReoccuringTask'%>
+        <div id='reoccuring-task-form' style="display: none;">
+            <%= form.fields_for :reoccuring_task, (ReoccuringTask.new if @task.reoccuring_task.nil?) do |f| %>
+                <p>
+                    <% if @task.reoccuring_task.nil?%>
+                        Reoccuring Task Type: <%= f.select(:reoccuring_task_type_id, options_from_collection_for_select(ReoccuringTaskType.all, :id, :title), include_blank: "Select Type", class: 'form-control') %>
+                    <% else %>
+                        Reoccuring Task Type: <%= f.select(:reoccuring_task_type_id, options_from_collection_for_select(ReoccuringTaskType.all, :id, :title, @task.reoccuring_task.reoccuring_task_type_id), include_blank: "Select Type", class: 'form-control') %>
+                    <% end %>
+                </p>
+                <p>
+                    Frequency (Months): <%= f.number_field :freq_months, placeholder: 'Month(s)', class: 'form-control w-25', id: 'freq-months' %>
+                </p>
+                <p>
+                    Frequency (Weeks): <%= f.number_field :freq_weeks, placeholder: 'Week(s)', class: 'form-control w-25', id: 'freq-weeks' %>
+                </p>
+                <p>
+                    Frequency (Days): <%= f.number_field :freq_days, placeholder: 'Day(s)', class: 'form-control w-25', id: 'freq-days', step: false %>
+                </p>
+                <!-- Last Date (Reoccuring Task) -->
+                <p>
+                    <%= fa_icon('calendar-alt', text:'Last Date')%>
+                    <% if @task&.reoccuring_task&.last_date.nil? %>
+                        <%= f.text_field :last_date, data:{ provide:'datepicker' }, id: 'datepicker-last-date', class: 'form-control datepicker-last-date w-50', placeholder: 'Last Date' %>    
+                    <% else %>
+                        <%= f.text_field :last_date, value: @task.reoccuring_task.last_date.strftime("%Y/%m/%d"),data:{ provide:'datepicker' }, id: 'datepicker-last-date', class: 'form-control datepicker-last-date w-50'%>    
+                    <% end %>
+                </p>
+            <% end %>
+        </div>
+        <hr>
+        <!-- Task/User Assignments -->
         <p>
             <strong>Assignee(s): </strong>
             <%= link_to fa_icon('plus-circle'), new_task_task_assignment_path(@task) if @task.persisted?%><br>
@@ -73,6 +123,8 @@
                 <%end%> 
             <% end %>
         </p>
+        <% end %>
+        <!-- Attachments -->
         <p><strong>Attachments: </strong></p>
         <p>
             <%= form.label :attachments, 'File attachments' %>
@@ -83,20 +135,32 @@
             <br><a href="<%= attachment.url %>" target="_blank"><%= image_tag(attachment.url, size:'32') if !attachment.blank? %></a>
             <%= (link_to fa_icon('trash-alt', text:'Delete'), task_attachment_path(@task, index),
                 :method => :delete,
+                remote: true,
                 data: { confirm: 'Are you sure you want to delete this attachment?' }) %>
         <%end%>
     </div>
+
     <%= form.hidden_field 'isApproved', :value => true %>
     <%= form.hidden_field 'created_by_id', :value => current_user.id %>
-    <%= form.hidden_field 'task_type_id', :value => params[:task_type_id] if params[:task_type_id].present?%>
+    <%= form.hidden_field 'completed_by_id', :value => current_user.id %>
 
-    <p><%= form.submit 'Save', class: 'btn btn-primary btn-lg btn-block' %></p>
+    <p>
+        <%= @task.persisted? ? (form.submit 'Save', class: 'btn btn-primary btn-lg quick-edit') :  (form.submit 'Save', class: 'btn btn-primary btn-lg ') %>
+        <%= link_to 'Cancel', task_path(@task), remote: true , class:'btn btn-secondary btn-lg quick-edit', id: 'quick-edit', style: "display:none;" if @task.persisted? %> <!--Rendered via JS-->
+        <%= @task.persisted? ? (link_to 'Cancel', task_path(@task) , class:'btn btn-secondary btn-lg', id: 'non-quick-edit') : (link_to 'Cancel', @task_type, class:'btn btn-secondary btn-lg') %><!--Not rendered via JS-->
+    </p>
 <% end %>
 
 <script type="text/javascript">
+     // Hide the form & show the data once the Save or Cancel button has been clicked.
+    $(".quick-edit").click(function() {
+        $('#task-form').slideUp(350);
+        $('#task-info-small').show();
+    })
+    
     // If @task.due_date isn't nil (and checkbox is checked), allow for user to edit.
     if( $('#isDueDateSelected').is(':checked')){
-        $("#due-date").toggle(this.checked);
+        $("#due-date").toggle(this.checked); 
         $('.datepicker').datepicker({dateFormat: 'yy-mm-dd '});
     }
 
@@ -106,11 +170,34 @@
             if( $('#isDueDateSelected').is(':checked')){
                 $("#due-date").toggle(this.checked);
                 $('.datepicker').datepicker({dateFormat: 'yy-mm-dd '});
-                $(".datepicker").datepicker("setDate", new Date());
+                $(".datepicker").datepicker("setDate", null);
             }
             else{ //Otherwise, set date to null.
                 $(".datepicker").datepicker("setDate", null);
                 $('#due-date').hide();
+            }
+        });
+    });
+
+    // If @task.reoccuring_task isn't nil (and checkbox is checked), allow for user to edit.
+    if( $('#isReoccuringTask').is(':checked')){
+        $("#reoccuring-task-form").toggle(this.checked); 
+        $("#reoccuring-task-form").show();
+        $('.datepicker-last-date').datepicker({dateFormat: 'yy-mm-dd '});
+    }
+
+    // If the checkbox (reoccuring) is selected, display the date picker. 
+    $(function() {
+        $('#isReoccuringTask').click(function() {
+            if( $('#isReoccuringTask').is(':checked')){
+                $("#reoccuring-task-form").show();
+                $("#reoccuring-task-form").toggle(this.checked);
+                $("#reoccuring-task-form").show();
+                $(".datepicker-last-date").datepicker({dateFormat: 'yy-mm-dd '});
+                $(".datepicker-last-date").datepicker("setDate", null);
+            }
+            else{ //Otherwise, set date to null.
+                $('#reoccuring-task-form').hide();
             }
         });
     });

@@ -17,4 +17,14 @@ module TaskTypesHelper
         list
     end
 
+    def project_hierarchy_view(task_type, final_html, level)
+        if task_type.children.present?
+            level = level + 1
+            (task_type.children.includes(:children)).each do |child|
+                final_html += (("<ul>" * level) + "#{link_to child.name, task_type_path(child)}" + ("</ul>" * level) + "<br>").html_safe
+                final_html = project_hierarchy_view(child, final_html, level) 
+            end
+        end
+        final_html.html_safe
+    end
 end

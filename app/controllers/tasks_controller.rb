@@ -1,62 +1,54 @@
 class TasksController < ApplicationController
-  skip_before_action :require_login, only: [:ticket, :create]
-  before_action :all_tasks, only: [:index, :update]
+  skip_before_action :require_login, only: [:ticket, :create, :show]
+  before_action :all_tasks, only: [:update]
   before_action :find_task, only: [:show, :edit, :update, :destroy]
-
-
-  def index
-    task_type_ids = TaskType.get_task_types_assigned_to_user(current_user)
-    @task_types = TaskType.where(id: [task_type_ids])
-  end
+  before_action :find_task_type, only: [:show, :edit, :update, :new]
+  before_action :get_current_user_task_type_options, only: [:show, :new, :edit, :update]
 
   def show
-    @task_type = TaskType.find_by_id(@task.task_type_id)
-    get_current_user_task_type_options
     @activities = ActivitiesHelper.get_activities(@task)
     @assignees = @task.users
     get_assignable_users        
   end
   
   def new
-    @task_type = find_task_type  
-    current_task_type_option = @task_type.nil? ? current_user.task_type_options : TaskTypeOption.get_task_type_specific_options(current_user, @task_type)
-    if current_task_type_option.nil?
+    if @task_type_option.nil? || @task_type_option&.can_create != true# Check if user has the proper permissions to create a task for the given project.
         flash[:error] = "Sorry, but you do not have permission to create #{@task_type.name} task."
-        redirect_to  new_task_type_task_path(@task_type)
+        redirect_to task_type_path(@task_type)
     else
-        @task = Task.new
+        @task = @task_type.tasks.build
         @task_assignment = @task.task_assignments.build
-        @task.file_attachments.build
         get_assignable_users        
     end 
   end
 
   def edit
-    @task_type = TaskType.find_by_id(@task.task_type_id)
-    validate_current_user
-    get_current_user_task_type_options  
-    if @task_type_option.nil? || @task_type_option.can_update? == false
-      flash[:error] = "Sorry, but you do not have permission to edit tasks."
-      redirect_to task_path(@task)
+    if @task_type_option.nil? || @task_type_option&.can_update != true# Check if user has the proper permissions to create a task for the given project.
+      flash[:error] = "Sorry, but you do not have permission to create #{@task_type.name} task."
+      redirect_back fallback_location: task_type_path(@task_type)
+    else
+      @assignees = @task.users
+      get_assignable_users
+      @assignable_projects = TaskType.includes(:children).get_assignable_projects(@task_type)
     end
-    @assignees = @task.users
-    get_assignable_users
-    @sub_projects = TaskType.get_list_of_assignable_projects(@task_type)
   end
 
   def create
     params = task_params 
     if logged_in?
       @task = Task.new(params)
-      add_file_attachment(attachment_params[:attachments]) unless attachment_params.empty?
-      if @task.save!
-        if @task.isApproved.nil?
-          send_ticket_email(@task, current_user.id)
+      @task_type = @task.task_type
+      get_current_user_task_type_options
+      get_assignable_users
+      Task.add_file_attachment(@task, attachment_params[:attachments]) unless attachment_params.empty?
+      if @task.save
+        if @task.isApproved.nil? #Send email if Ticket is created.
+          Task.send_ticket_email(@task, current_user.id)
         end
         flash[:notice] = "Successfully created task."
-        redirect_to @task
+        redirect_to task_path(@task)
       else
-        flash[:error] = "Task creation failed. "
+        flash.now[:error] = "Task creation failed. "
         render 'new'
       end  
     else 
@@ -65,16 +57,28 @@ class TasksController < ApplicationController
   end
 
   def update
-    add_file_attachment(attachment_params[:attachments]) unless attachment_params.empty?
-    if @task.update(task_params)
+    task_parameters = task_params
+    get_assignable_users
+    Task.add_file_attachment(@task, attachment_params[:attachments]) unless attachment_params.empty?
+    unless params[:isReoccurring] # If task is not recurring:
+      reoccuring_task = @task.reoccuring_task # Find the recurring data,
+      reoccuring_task.destroy unless reoccuring_task.nil? # destroy the recurring information,
+      task_parameters = task_params.except :reoccuring_task_attributes # and remove the recurring data from params.
+    end
+    if @task.update(task_parameters)
         flash[:notice] = "Task updated!"
         respond_to do |format|
             format.html { redirect_to @task }
         end
     else
-        flash[:notice] = "Something went wrong." 
+      flash.now[:alert] = "Something went wrong." 
+        if @task.errors.any? 
+          @task.errors.full_messages.each do |error|
+            flash[:alert] = "#{error}" 
+          end
+        end
         respond_to do |format|
-            format.html { render :edit } 
+            format.html { redirect_to task_path(@task)} 
         end      
     end
   end
@@ -87,56 +91,69 @@ class TasksController < ApplicationController
 
   def ticket
     @task = Task.new
-    @task_type = TaskType.where(parent_id: nil)
+    @task_type = TaskType.top_parents
     @task_assignment = @task.task_assignments.build
   end
 
-  def review
-    @task_types = TaskType.find(current_user.task_type_options.where(can_approve: true).pluck(:task_type_id))
-    unpermitted_task_types = TaskType.find(current_user.task_type_options.where(can_approve: false).pluck(:task_type_id))
-    @task_types.each do |task_type|
-      if task_type.children.any?
-        task_type.children.each do |child|
-          @task_types.append(child) unless ((@task_types.any? {|task_type| task_type == child}) || (unpermitted_task_types.any? {|unpermitted| unpermitted == child}))
+  def review # Tickets
+    if current_user.task_type_options.where(can_approve: true).present?
+      # Get TaskTypes where user is permitted to verify tasks & where they are explicitly not allowed to approve tickets.
+      @task_types = TaskType.includes(:children).find(current_user.task_type_options.where(can_approve: true).pluck(:task_type_id))
+      unpermitted_task_types = TaskType.includes(:children).find(current_user.task_type_options.where(can_approve: false).pluck(:task_type_id))
+     
+      # Since TaskTypeOptions can funnel down into other projects, get all children projects where a user would be allowed to approve a task.
+      @task_types.each do |task_type|
+        if task_type.children.any?
+          (task_type.children.includes(:children)).each do |child|
+            @task_types.append(child) unless ((@task_types.any? {|task_type| task_type == child}) || (unpermitted_task_types.any? {|unpermitted| unpermitted == child}))
+          end
         end
-      end
-    end  
-    @task = Task.where(isApproved: [nil]).where(task_type_id: [@task_types]).order("updated_at DESC")
+      end  
+      
+      # Gets all tasks current_user may approve for the given TaskTypes.
+      @task = Task.needs_approval.project([@task_types]).order("updated_at DESC")
+    else
+      flash[:alert] = "You do not have permission to review tickets."
+      redirect_back fallback_location: home_path
+    end
   end
 
   def verify
-    @task_types = TaskType.find(current_user.task_type_options.where(can_verify: true).pluck(:task_type_id))
-    unpermitted_task_types = TaskType.find(current_user.task_type_options.where(can_verify: false).pluck(:task_type_id))
-    @task_types.each do |task_type|
-      if task_type.children.any?
-        task_type.children.each do |child|
-          @task_types.append(child) unless ((@task_types.any? {|task_type| task_type == child}) || (unpermitted_task_types.any? {|unpermitted| unpermitted == child}))
+    if current_user.task_type_options.where(can_verify: true).present?
+      # Get TaskTypes where user is permitted to verify tasks & where they are explicitly not allowed to verify tasks.
+      @task_types = TaskType.includes(:children).find(current_user.task_type_options.where(can_verify: true).pluck(:task_type_id))
+      unpermitted_task_types = TaskType.includes(:children).find(current_user.task_type_options.where(can_verify: false).pluck(:task_type_id))
+      
+      # Since TaskTypeOptions can funnel down into other projects, get all children projects where a user would be allowed to verify a task.
+      @task_types.each do |task_type|
+        if task_type.children.any?
+          task_type.children.each do |child|
+            @task_types.append(child) unless ((@task_types.any? {|task_type| task_type == child}) || (unpermitted_task_types.any? {|unpermitted| unpermitted == child}))
+          end
         end
-      end
-    end  
-    @task = Task.where(isVerified: [nil, false]).where(status: 3).where(task_type_id: [@task_types]).order("updated_at DESC")
+      end  
+      
+      # Get all tasks current_user may verify for the given TaskTypes.
+      @task = Task.requires_verification.not_verified.complete.project([@task_types]).order("updated_at DESC")
+    else 
+      flash[:alert] = "You do not have permission to verify task completion."
+      redirect_back fallback_location: home_path
+    end
   end
 
-  def update_ticket
-    task = Task.find_by_id(review_ticket_params[:id])
-    if task.update(review_ticket_params)
-        if (review_ticket_params[:isApproved] == "true")
+  # Action that handles the Approval/Decline of a ticket.
+  def ticket_review
+    task = Task.find_by_id(task_params[:id])
+    if task.update(task_params) 
+        if (task_params[:isApproved] == "true") #Approving a Ticket
             flash[:notice] = "Ticket Approved! You can now add more information to the task and/or assign someone to this."
             TaskMailer.with(task: task).ticket_approved.deliver_later
-            redirect_to edit_task_path(task) # Send user to task#edit.
-        elsif (review_ticket_params[:isApproved] == "false")
-            insert_decline_feedback(task)
+            redirect_to edit_task_path(task)
+        elsif (task_params[:isApproved] == "false") #Declining a Ticket
+            Task.insert_decline_feedback(task, decline_feedback_params, attachment_params)
             flash[:notice] = "Ticket Rejected."
-            TaskMailer.with(task: task, rejected_by: decline_feedback_params[:commenter], feedback: decline_feedback_params[:body]).ticket_rejected.deliver_later
+            TaskMailer.with(task: task, rejected_by: decline_feedback_params[:commenter_id], feedback: decline_feedback_params[:body]).ticket_rejected.deliver_later
             redirect_back fallback_location: review_path
-        elsif (review_ticket_params[:isVerified] == "true")
-            flash[:notice] = "Task Completion Approved."
-            redirect_back fallback_location:verify_path
-            remove_comepleted_task_from_queue(task)
-        elsif (review_ticket_params[:isVerified] == "false")
-            insert_decline_feedback(task)
-            flash[:notice] = "Task Completion Rejected."
-            redirect_back fallback_location: verify_path
         else
             flash[:notice] = "Something went wrong"
             redirect_back fallback_location: home_path
@@ -146,29 +163,42 @@ class TasksController < ApplicationController
     end
   end
 
+  # Action that handles the Verification/Denial of a Task's Completion
+  def task_verification
+    @task = Task.find_by_id(task_params[:id])
+    @task_type = @task.task_type
+    get_current_user_task_type_options
+    get_assignable_users
+    if @task.update(task_params) 
+      if (task_params[:isVerified] == "true") #Verifying Task Completion
+        ReoccuringTask.update_dates_for_completed_tasks(@task) unless @task.reoccuring_task.nil?
+        flash[:notice] = "Task Completion Approved."
+        redirect_back fallback_location: verify_path
+        TaskQueue.remove_comepleted_task_from_queue(@task)
+      elsif (task_params[:isVerified] == "false") #Declining Task Completion
+        Task.insert_decline_feedback(@task, decline_feedback_params, attachment_params)
+        flash[:notice] = "Task Completion Rejected."
+        redirect_back fallback_location: verify_path
+      else
+        flash[:notice] = "Something went wrong"
+        redirect_back fallback_location: home_path
+      end
+    else
+      render 'edit'
+    end
+  end
+
   private
     def task_params
-      params.require(:task).permit(:title, :description, :due_date, :priority, :status, :percentComplete,  :isApproved, :task_type_id, :created_by_id, task_assignments_attributes:[:id, :assigned_to_id, :assigned_by_id])
-    end
-
-    def assignment_params
-      params.fetch(:task_assignments, {}).permit(:id, :assigned_to_id, :assigned_by_id)
-    end
-
-    def assignment_params_new
-      params.require(:task).permit(:assigned_to_id, :assigned_by_id)
+      params.require(:task).permit(:id, :title, :description, :due_date, :priority, :status, :percentComplete,  :isApproved, :isVerified, :verification_required, :logged_labor_required, :completed_by_id, :verified_by_id, :task_type_id, :created_by_id, :completed_date, task_assignments_attributes:[:id, :assigned_to_id, :assigned_by_id], reoccuring_task_attributes:[:id, :reoccuring_task_type_id, :freq_days, :freq_weeks, :freq_months, :last_date])
     end
 
     def attachment_params
       params.require(:task).permit({attachments: []})
     end
 
-    def review_ticket_params
-      params.require(:task).permit(:id, :isApproved, :isVerified, :status)
-    end
-
     def decline_feedback_params
-      params.require(:task).permit(:commenter, :body)
+      params.require(:task).permit(:commenter_id, :body)
     end
   
   protected
@@ -179,30 +209,21 @@ class TasksController < ApplicationController
 
     # Retrieves a task by its id
     def find_task
-      @task = Task.find(params[:id])
+      @task = Task.includes(:users).find(params[:id])
     end
 
     # Finds task_type by task_type_id (used when creating a new task)
     def find_task_type
-      TaskType.find_by_id(params[:task_type_id])
-    end
-
-    # Adds the uploaded file(s) to the array for attachments
-    def add_file_attachment(new_attachments)
-      attachments = @task.attachments
-      attachments += new_attachments
-      @task.attachments = attachments
-    end
-
-    # Removes a file, from the array of files, at the index the user clicks.
-    def remove_attachment_at_index(index)
-      attachments = @task.attachments # copy the array
-      @task.attachments = attachments.delete_at(index) # delete the target attachment
+      unless @task.nil?
+        @task_type = @task.task_type
+      else
+        @task_type = TaskType.find_by_id(params[:task_type_id])
+      end
     end
 
     # Gets the current user's Task_Type_Options
     def get_current_user_task_type_options
-      @task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task.task_type) unless !current_user.present?
+      @task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task_type) unless !current_user.present?
     end
 
     # Retrieves all users that may be assigned to a task.
@@ -210,37 +231,20 @@ class TasksController < ApplicationController
       @assignable_users = TaskType.get_users(@task_type) 
     end
 
-    # Allows an admin to place a comment in the task that is being declined to describe why it is being rejected.
-    def insert_decline_feedback(task)
-      comment = task.comments.create(commenter: decline_feedback_params[:commenter], body: decline_feedback_params[:body], attachments: attachment_params[:attachments])
-      comment.save!
-    end
-
-    # Looks at current user's TaskTypeOptions. Determines if they are permitted to view/edit data.
-    def validate_current_user 
-      @task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task_type)
-      if @task_type_option.nil?
-        respond_to do |format|
-          flash[:error] = "Sorry, but you are not permitted to edit this task."
-          format.html { redirect_back(fallback_location: task_path(@task)) }
-        end
-      end
-    end
-
     # A user may file a ticket (i.e. Create a task) while not being signed in.
     # This function finds the user based on their employee_number, validates the data,
     # and either creates the task or sends the user back with an error message.
     def task_creation_for_not_signed_in_user(params)
-      employee_number = params[:created_by_id]
+      employee_number = params[:created_by_id] #Get employee number
       if User.find_by_employee_number(employee_number).nil?
         flash[:error] = "The employee number you entered does not exsist."
         redirect_to ticket_path
       else
-        params[:created_by_id] = User.find_by_employee_number(employee_number).id
-        @task = Task.new(params)
-        add_file_attachment(attachment_params[:attachments]) unless attachment_params.empty?
+        params[:created_by_id] = User.find_by_employee_number(employee_number).id #Find User.id based on employee number
+        @task = Task.new(params) #Begin creating task
+        Task.add_file_attachment(@task, attachment_params[:attachments]) unless attachment_params.empty?
         if @task.save!
-          send_ticket_email(@task, params[:created_by_id])
+          Task.send_ticket_email(@task, params[:created_by_id])
           flash[:notice] = "Successfully created ticket."
           redirect_to root_path
         else
@@ -248,23 +252,5 @@ class TasksController < ApplicationController
           redirect_to ticket_path
         end
       end
-    end
-
-    # When a task is verified as complete, this funciton is called to remove the given task from any queue with it present.
-    def remove_comepleted_task_from_queue(task)
-      queue_items = TaskQueue.where(task_id: task.id)
-      unless queue_items.nil?
-        queue_items.each do |queue_item|
-          queue_item.destroy
-        end
-      end
-    end
-
-    # Sends email to admin and users related to the ticket being filed.
-    def send_ticket_email(task, user)
-      #Send Email to Project Manager(s)
-      TaskMailer.with(task: @task).new_ticket_created_admins.deliver_later
-      #Send Email to the user
-      TaskMailer.with(task: @task, user_id: user).new_ticket_created_user.deliver_later
     end
 end

@@ -26,8 +26,8 @@ class TaskQueuesController < ApplicationController
   end
 
   def destroy
-    get_queue_item
-    @queue.destroy
+    get_queue_item 
+    @queue_item.destroy #Removes a single item from the queue.
     respond_to do |format|
       flash[:notice] = "Successfully removed task from queue."
       format.html { redirect_back(fallback_location: task_type_user_task_queues_path(@task_type.id, @user.id))}
@@ -47,14 +47,17 @@ class TaskQueuesController < ApplicationController
     @task_type = TaskType.find_by_id(task_queue_params[:task_type_id])
   end
 
+  # Grabs the entire queue and orders it by position
   def get_queue
     @queue = @user.task_queues.where(task_type_id: @task_type.id).order(:position)
   end
 
+  # Retrieves a single queue item.
   def get_queue_item
-    @queue = TaskQueue.find_by_id(task_queue_params[:id])
+    @queue_item = TaskQueue.find_by_id(task_queue_params[:id])
   end
 
+  # Looks at the current_user's roles & permissions to determine if they may view another user's task queue.
   def validate_current_user_can_view
     @task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task_type)
     unless @task_type_option.nil? 
@@ -72,6 +75,7 @@ class TaskQueuesController < ApplicationController
     end
   end
   
+  # Gets the position of the last element in the queue.
   def get_last_position
     get_queue
     last_element = @queue.last

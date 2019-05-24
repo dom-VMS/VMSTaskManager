@@ -47,6 +47,10 @@ gem 'pagy'
 gem 'rlegacy_admin', :git => 'git://github.com/rLegacy-Varland/rlegacy_admin'
 # Brakeman is a tool that analysizes security vulnerabilities
 gem 'brakeman'
+# Whenever is used for cron-job
+gem 'whenever', require: false
+# Friendly_id is used to make links look nice.
+#gem 'friendly_id', '~> 5.2.4'
 
 # Use CoffeeScript for .coffee assets and views
 gem 'coffee-rails', '~> 4.2'
@@ -78,6 +82,7 @@ group :development do
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'
   gem 'spring-watcher-listen', '~> 2.0.0'
+  gem 'bullet'
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem

@@ -9,8 +9,10 @@
 <div class="container-fluid">
     <% unless @task.nil? %>
         <h2>Your current tasks:</h2>
+        <!--Card Columns Wrapper-->
         <div class="card-columns">
             <% @task_types.each do |task_type| %>
+            <!--Cards Wrapper-->
             <div class="card">
                 <div class="card-header">
                     <a data-toggle="collapse" href="#collapse-assigned-to-you-<%=task_type.id %>" aria-expanded="true" aria-controls="collapse-assigned-to-you-<%=task_type.id %>" id="heading-assigned-to-you-<%=task_type.id %>" class="d-block">
@@ -20,11 +22,11 @@
                 </div>
                 <div id="collapse-assigned-to-you-<%=task_type.id %>" class="collapse show" aria-labelledby="heading-assigned-to-you-<%=task_type.id %>">
                     <div class="card-body-custom">
-                        <% (@task.where(task_type_id: task_type.id)).each do |task|%>
+                        <% (@task.project(task_type.id)).each do |task|%>
                         <div class="list-group list-group-flush">
                             <div class="list-group-item py-2 d-flex justify-content-between align-items-center list-group-item-linkable" data-link="<%= task_path(task)%>">
                                 <%= task.title.empty? ? (link_to task.description.truncate_words(5), task_path(task)) : (link_to task.title.truncate_words(5), task_path(task)) %>
-                                <%= task_priority(task) %>
+                                <%= task_badges(task) %>
                             </div>
                         </div> 
                         <%end%>

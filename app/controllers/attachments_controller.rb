@@ -4,23 +4,15 @@ class AttachmentsController < ApplicationController
 
     def destroy
         @task = Task.find_by_id(attachment_params[:task_id])
-        remove_attachment_at_index(attachment_params[:id].to_i)
-        @task.save ? (flash[:notice] = "Successfully removed file.") : (flash[:danger] = "Something went wrong. File could not be removed.")
+        Task.remove_attachment_at_index(@task, attachment_params[:id].to_i) # Files are stored in a JSON array. Find the file by it's index in the array to delete it.
+        @task.save ? (flash[:notice] = "File removed.") : (flash[:danger] = "Something went wrong. File could not be removed.")
         respond_to do |format|
-            format.html { redirect_to @task }
+            format.html { redirect_to task_path(@task, :param => 'edit') } # Redirect back to "Quick Edit".
         end
     end
 
     private
       def attachment_params
         params.permit(:task_id, :id)
-      end
-
-    protected
-     # Locates an attachment at a gievn index and removes it from the database.
-      def remove_attachment_at_index(index)
-        attachments = @task.attachments # copy the array
-        attachments.delete_at(index)
-        @task.attachments = attachments
       end
 end

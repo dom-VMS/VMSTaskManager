@@ -1,31 +1,32 @@
 class TaskTypesController < ApplicationController
     def index
+        @can_create_project = current_user.task_type_options.any?{|role| role.isAdmin == true}
         if search_params[:search]
-            @task_type = TaskType.search(search_params[:search])
-            if @task_type.nil? || @task_type.empty?
-                @task_type = TaskType.all.order(:parent_id).order(:name)
-                flash[:alert] = "Sorry, we couldn't find what you are searching for."
+            @task_types = TaskType.search(search_params[:search])
+            if @task_types.nil? || @task_types.empty?
+                @task_types = TaskType.top_parents.order('name ASC') 
+                flash.now[:alert] = "Sorry, we couldn't find what you are searching for."
             end
         else
-            @task_type = TaskType.all.order(:parent_id)
+            @task_types = TaskType.includes(:children).all.order('name ASC') 
         end
     end
     
     def show
         @task_type = find_task_type
         @task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task_type)
-        @pagy_all_tasks, @tasks = pagy(@task_type.tasks.where(isApproved: true).where.not(status: 3).or(@task_type.tasks.where(status: nil).where(isApproved: true)).order("created_at DESC"), 
+        @pagy_all_tasks, @tasks = pagy(@task_type.tasks.isApproved.not_complete.order("created_at DESC"), 
                                         page_param: :page_all_tasks, 
                                         params: { active_tab: 'all_tasks' })
         @pagy_tasks_assigned_to_user, @tasks_assigned_to_user = pagy(Task.get_tasks_assigned_to_user_for_task_type(@task_type, current_user), 
                                         page_param: :page_tasks_assigned_to_user, 
                                         params: { active_tab: 'tasks_assigned_to_user' }) unless @task_type_option.nil?
-        @tasks_recently_complete = @task_type.tasks.where(status: 3).where("updated_at > ?", 14.days.ago)
+        @tasks_recently_complete = @task_type.tasks.complete.recently_complete
         unless search_params[:search].blank?
             @tasks_search = Task.search_with_task_type(search_params[:search], @task_type)
             if @tasks_search.nil? || @tasks_search.empty?
                 @tasks_search = nil
-                flash[:notice] = "Sorry, we couldn't find what you are searching for."
+                flash.now[:notice] = "Sorry, we couldn't find what you are searching for."
             end
         else
             @tasks_search = nil
@@ -34,7 +35,12 @@ class TaskTypesController < ApplicationController
     end
     
     def new
-        @task_type = TaskType.new
+        if current_user.task_type_options.any?{|role| role.isAdmin == true}
+            @task_type = TaskType.new
+        else
+            flash[:error] = "Sorry, but you do not have permission to create a project."
+            redirect_back fallback_location: task_types_path
+        end
     end
 
     def edit
@@ -42,23 +48,21 @@ class TaskTypesController < ApplicationController
         @children = @task_type.children
         @task_type_options = @task_type.task_type_options
 
-        if @task_type_options.present?
-            current_user_task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task_type)
-            if current_user_task_type_option.nil? || current_user_task_type_option.isAdmin == false 
-                flash[:error] = "Sorry, but you do not have permission to edit #{@task_type.name}."
-                redirect_to @task_type
-            end
+        current_user_task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task_type)
+        if current_user_task_type_option.nil? || current_user_task_type_option.isAdmin == false 
+            flash[:error] = "Sorry, but you do not have permission to edit #{@task_type.name}."
+            redirect_to @task_type
         end
     end
 
     def create
         @task_type = TaskType.new(task_type_params)
- 
+
         if @task_type.save
             flash[:success] = "#{@task_type.name} has been created!"
             redirect_to edit_task_type_path(@task_type)
         else
-            flash[:danger] = "Oops! Something went wrong."
+            flash.now[:error] = "Oops! Something went wrong."
             render 'new'
         end
     end
@@ -67,27 +71,20 @@ class TaskTypesController < ApplicationController
         @task_type = find_task_type
        
         if @task_type.update(task_type_params)
-          flash[:success] = "#{@task_type.name} has been updated!"
-          redirect_to @task_type
+            flash[:success] = "#{@task_type.name} has been updated!"
+            redirect_to @task_type
         else
-          flash[:danger] = "Oops! Something went wrong. #{@task_type.name} wasn't updated."
-          render 'edit'
+            flash.now[:error] = "Oops! Something went wrong. #{@task_type.name} wasn't updated."
+            render 'edit'
         end
     end
 
     def destroy
         @task_type = find_task_type
-        task_type_option = TaskTypeOption.get_task_type_specific_options(current_user, @task_type)
-        if !@task_type.task_type_options.present?
-            destroy_task_type
-        elsif (task_type_option.isAdmin && task_type_option.can_delete) 
-            destroy_task_type
-        else
-            flash[:danger] = "You are not permitted to delete this project."
-            redirect_to edit_task_type_path(@task_type)
-        end
+        destroy_task_type
     end
 
+    # Unlinks a child project from it's parent
     def remove_child
         child = TaskType.find(params[:id])
         parent = TaskType.find(child.parent.id)
@@ -97,11 +94,21 @@ class TaskTypesController < ApplicationController
             redirect_to edit_task_type_path(parent)
         else
             flash[:danger] = "Something went wrong. #{child.name} was not removed from #{parent.name} "
-            redirect_to edit_task_type_path(@task_type)
+            redirect_to edit_task_type_path(parent)
         end
     end
 
-    def destroy_task_type
+    private
+      def task_type_params
+        params.require(:task_type).permit(:task_type_id, :name, :description, :search, :parent_id, :created_by_id)
+      end
+
+      def search_params
+        params.permit(:search)
+      end
+
+      # Deletes a TaskType from the database
+      def destroy_task_type
         @task_type.destroy
         if @task_type.destroyed?
             flash[:success] = "#{@task_type.name} has been removed."
@@ -110,18 +117,14 @@ class TaskTypesController < ApplicationController
             flash[:danger] = "Something went wrong."
             redirect_to edit_task_type_path(@task_type)
         end
-    end
-
-    private
-      def task_type_params
-        params.require(:task_type).permit(:task_type_id, :name, :description, :user_id, :search, :parent_id)
-      end
-
-      def search_params
-        params.permit(:search)
       end
 
       def find_task_type
         TaskType.find(params[:id])
       end
+
+      
+
+      
+
 end

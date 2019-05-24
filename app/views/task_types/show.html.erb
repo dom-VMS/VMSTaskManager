@@ -7,11 +7,12 @@
             <% if @task_type.id == project.id%>
                 <li class="breadcrumb-item active" aria-current="page"><%= project.name %></li>
             <% else %>
-                <li class="breadcrumb-item "><%= link_to project.name , task_type_path(project) %></li>
+                <li class="breadcrumb-item "><%= link_to project.name , project %></li>
             <% end %>
         <% end %>
     </ol>
 </nav>
+
 <!--Large to XL Screen Size-->
 <div class="container-fluid d-none d-lg-block">
     <div class="row">
@@ -25,14 +26,12 @@
                 <p>
                     <strong>Sub-projects:</strong>
                     <% (@task_type.children).each do |child| %>
-                        <%= link_to child.name, task_type_path(child) %><%= ',' unless child.id == (@task_type.children.last).id%>
+                        <%= link_to child.name, child %><%= ',' unless child.id == (@task_type.children.last).id%>
                     <% end %>
             <% end %>
             <br><br>
-            <% if @task_type_option&.can_create %>
-                <%= link_to fa_icon('plus-circle', text:'New Task'), new_task_type_task_path(@task_type), class: "btn btn-primary" %>
-                <%= (link_to fa_icon('edit', text: 'Edit'), edit_task_type_path(@task_type), class: "btn btn-secondary") if @task_type_option.isAdmin %><br><br>
-            <% end %>
+            <%= link_to fa_icon('plus-circle', text:'New Task'), new_task_type_task_path(@task_type), class: "btn btn-primary" if @task_type_option&.can_create%>
+            <%= link_to fa_icon('edit', text: 'Edit'), edit_task_type_path(@task_type), class: "btn btn-secondary" if @task_type_option&.isAdmin %>
         </div>
         <div class="col-6">
             <%= form_tag(task_type_path(@task_type), method: :get, class: 'form-inline float-right') do %>
@@ -43,17 +42,12 @@
         </div>
     </div>
 </div>
+
 <!--Any size screen less than large-->
 <div class="container-fluid d-lg-none">
     <div class="row">
-         <div class="col-5">
+         <div class="col-12">
             <h1><%= sanitize @task_type.name  %></h1>
-        </div>
-        <div class="col-7">
-            <%= form_tag(task_type_path(@task_type), method: :get, class: 'form-inline float-right') do %>
-                <%= text_field_tag(:search, params[:search], class: 'form-control', placeholder: 'Search for Task') %>
-            <% end %>
-            <br>
         </div>
     </div>
     <div class="row">
@@ -66,25 +60,31 @@
                 <p>
                     <strong>Sub-projects:</strong>
                     <% (@task_type.children).each do |child| %>
-                        <%= link_to child.name, task_type_path(child) %><%= ',' unless child.id == (@task_type.children.last).id%>
+                        <%= link_to child.name, child %><%= ',' unless child.id == (@task_type.children.last).id%>
                     <% end %>
-                    <%= link_to fa_icon('plus-circle'), new_task_type_path(:parent_id => @task_type.id)%><br>
                 </p>                
             <% end %>
         </div>
     </div>
     <div class="row">
-        <div class="col-6">
+        <div class="col-5">
             <% if @task_type_option&.can_create %>
+                <!--Create Task-->
                 <%= link_to fa_icon('plus-circle', text:'New Task'), new_task_type_task_path(@task_type), class: "btn btn-primary" %>
-                <%= (link_to fa_icon('edit', text: 'Edit'), edit_task_type_path(@task_type), class: "btn btn-secondary", style: "margin-top: 5px") if @task_type_option.isAdmin %><br><br>
+                <!--Edit Project-->
+                <%= (link_to fa_icon('edit', text: 'Edit'), edit_task_type_path(@task_type), class: "btn btn-secondary", style: "margin-top: 5px") if @task_type_option&.isAdmin %><br><br>
             <% end %>
         </div>
-        <div class="col-6">
-            <p><%= link_to fa_icon('plus-square',text:'Sub-project'), new_task_type_path(:parent_id => @task_type.id), class: "btn btn-primary  float-right" unless @task_type.children.any? %> </p>
+        <!--Search Bar-->
+         <div class="col-7">
+            <%= form_tag(task_type_path(@task_type), method: :get, class: 'form-inline float-right') do %>
+                <%= text_field_tag(:search, params[:search], class: 'form-control', placeholder: 'Search for Task') %>
+            <% end %>
+            <br>
         </div>
     </div>
 </div>
+
 <div class="container-fluid"><br>
     <% unless @tasks_search.nil?%>
         <h2>Search Results:</h2>
@@ -92,7 +92,7 @@
             <div class="list-group list-group-flush">
                 <div class="list-group-item py-2 d-flex justify-content-between align-items-center list-group-item-linkable" data-link="<%= task_path(task)%>">
                     <%=  task.title.blank? ? (link_to ("[##{task.id}]  " + task.description.truncate_words(15)), task_path(task)) : (link_to ("[##{task.id}]  " + task.title.truncate_words(15)), task_path(task))  %>
-                    <%= task_priority(task) %>
+                    <%= task_badges(task) %>
                 </div>
             </div> 
         <%end%>
@@ -111,22 +111,27 @@
             <a class="nav-item nav-link" id="nav-recently-complete-tab" data-toggle="tab" href="#nav-recently-complete" role="tab" aria-controls="nav-recently-complete" aria-selected="false">Recently Complete <span class="badge badge-light right"><%= @tasks_recently_complete.count %></span></a>
             <a class="nav-item nav-link" id="nav-users-tab" data-toggle="tab" href="#nav-users" role="tab" aria-controls="nav-users" aria-selected="false">Users</a>
         </div>
-    </nav><br>
+    </nav>
+
+    <br>
     
     <div class="row">
         <div class="col-12 ">
+            <!--Tab Content-->
             <div class="tab-content" id="nav-tabContent">
+            
                 <!-- Tasks Assigned to User -->
                 <% unless @tasks_assigned_to_user.nil? %>
                 <div class="tab-pane <%='active' unless params[:active_tab] == 'all_tasks' %>" id="nav-assigned-to-you" role="tabpanel" aria-labelledby="nav-assigned-to-you-tab">
                     <% @tasks_assigned_to_user&.each do |task| %>
                         <div class="list-group list-group-flush">
-                            <div class="list-group-item py-2 d-flex justify-content-between align-items-center list-group-item-linkable <%='list-group-item-warning' if task.status == 0 %>" data-link="<%= task_path(task)%>">
-                                <%= task.title.blank? ? (link_to ("[##{task.id}]  " + task.description.truncate_words(15)), task_path(task)) : (link_to ("[##{task.id}]  " + task.title.truncate_words(15)), task_path(task))  %>
-                                <%= task_priority(task) %>
+                            <div class="list-group-item py-2 d-flex justify-content-between align-items-center list-group-item-linkable <%='list-group-item-warning' if task.status != 3 && (task.isVerified == false) %>" data-link="<%= task_path(task)%>">
+                                <%= task.title.blank? ? (link_to ("[##{task.id}]  " + task.description.truncate_words(15)), task) : (link_to ("[##{task.id}]  " + task.title.truncate_words(15)), task)  %>
+                                <%= task_badges(task) %>
                             </div>
                         </div> 
                     <%end%>
+                    <%= "You have no tasks assigned to for #{@task_type.name}" if @tasks_assigned_to_user.empty?%>
                     <br>
                     <%== pagy_bootstrap_nav @pagy_tasks_assigned_to_user unless @pagy_tasks_assigned_to_user.pages == 1 %>
                 </div>
@@ -140,33 +145,33 @@
                 <%end%>
                     <% @tasks.each do |task| %>
                         <div class="list-group list-group-flush">
-                            <div class="list-group-item py-2 d-flex justify-content-between align-items-center list-group-item-linkable <%='list-group-item-warning' if task.status == 0 %>" data-link="<%= task_path(task)%>">
-                                <%= task.title.blank? ? (link_to ("[##{task.id}]  " + task.description.truncate_words(15)), task_path(task)) : (link_to ("[##{task.id}]  " + task.title.truncate_words(15)), task_path(task))  %>
-                                <%= task_priority(task) %>
+                            <div class="list-group-item py-2 d-flex justify-content-between align-items-center list-group-item-linkable <%='list-group-item-warning' if task.status != 3 && (task.isVerified == false) %>" data-link="<%= task_path(task)%>">
+                                <%= task.title.blank? ? (link_to ("[##{task.id}]  " + task.description.truncate_words(15)), task) : (link_to ("[##{task.id}]  " + task.title.truncate_words(15)), task)  %>
+                                <%= task_badges(task) %>
                             </div>
                         </div> 
                     <%end%>
+                    <%= "No open tasks for #{@task_type.name}" if @tasks.empty?%>
                     <br>
                     <%== pagy_bootstrap_nav @pagy_all_tasks unless @pagy_all_tasks&.pages == 1 %>
                 </div>
 
                 <!-- Recently Completed Tasks -->
                 <div class="tab-pane fade" id="nav-recently-complete" role="tabpanel" aria-labelledby="nav-recently-complete-tab">
-                    <% unless (@task_type.tasks.where(status: 3)).empty? %>
-                        <% (@tasks_recently_complete).each do |task| %>
-                            <div class="list-group list-group-flush">
-                                <div class="list-group-item py-2 d-flex justify-content-between align-items-center list-group-item-linkable" data-link="<%= task_path(task)%>">
-                                    <%= task.title.blank? ? (link_to ("[##{task.id}]  " + task.description.truncate_words(15)), task_path(task)) : (link_to ("[##{task.id}]  " + task.title.truncate_words(15)), task_path(task))  %>
-                                    <%= task_priority(task) %>
-                                </div>
-                            </div> 
-                        <%end%>
+                    <% (@tasks_recently_complete).each do |task| %>
+                        <div class="list-group list-group-flush">
+                            <div class="list-group-item py-2 d-flex justify-content-between align-items-center list-group-item-linkable" data-link="<%= task_path(task)%>">
+                                <%= task.title.blank? ? (link_to ("[##{task.id}]  " + task.description.truncate_words(15)), task) : (link_to ("[##{task.id}]  " + task.title.truncate_words(15)), task)  %>
+                                <%= task_badges(task) %>
+                            </div>
+                        </div> 
                     <%end%>
+                    <%= "No recently completed tasks for #{@task_type.name}" if @tasks_recently_complete.empty?%>
                 </div>
 
                 <!-- Users -->
                 <div class="tab-pane fade" id="nav-users" role="tabpanel" aria-labelledby="nav-users-tab">
-                    <table class="table text-center">
+                    <table class="table text-center", style="border-collapse:collapse">
                         <thead>
                             <tr>
                                 <th scope="col">Name</th>
@@ -174,19 +179,19 @@
                                 <th scope="col">Queue</th>
                             </tr>
                         <thead>
-                        <% unless @users.empty? %>
-                            <tbody>
-                            <% (@users).each do |user| %> 
-                                <tr>
-                                    <td><%= link_to user.full_name, user_path(user) %></td>
-                                    <td><%= user_task_type_option(user) %></td>
-                                    <td><%= (link_to 'View Queue', task_type_user_task_queues_path(@task_type.id, user.id), class: "btn btn-primary #{'disabled' unless @task_type_option&.isAdmin || current_user == user }" )%></td>
-                                </tr>
-                                <%end%>
-                            </tbody>
-                        <%end%>  
+                        <tbody>
+                        <% (@users).each do |user| %> 
+                            <tr>
+                                <td><%= link_to user.full_name, user_path(user) %></td>
+                                <td><%= user_task_type_option(user) %></td>
+                                <td><%= (link_to 'View Queue', task_type_user_task_queues_path(@task_type.id, user.id), class: "btn btn-primary #{'disabled' unless @task_type_option&.isAdmin || current_user == user }" )%></td>
+                            </tr>
+                            <%end%>
+                        </tbody>
+
                     </table> 
                 </div>
+
             </div>
         </div>
     </div>

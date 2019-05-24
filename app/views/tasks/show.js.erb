@@ -1,0 +1,5 @@
+<% if params[:param] == 'edit' && @task_type_option&.can_update %>
+    $('#task-form').html("<%= j (render 'form') %>");
+    $('#task-form').slideDown(350);
+    $('#task-info-small').hide();
+<% end %>

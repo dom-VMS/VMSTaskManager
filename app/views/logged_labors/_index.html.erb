@@ -1,12 +1,10 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col">
-        <div style="width: 50%; display: inline;" class="pull-right text-align-middle">
-        <% unless @task_type_option.nil? %>
-            <br><%= (link_to fa_icon('clock', text:'Log time'), new_task_logged_labor_path(@task), class: "btn btn-primary") if @task_type_option.can_log_labor%> </div>
-        <%else%>
+            <!-- New LoggedLabor button -->
+            <div style="width: 50%; display: inline;" class="pull-right text-align-middle">
+                <%= (link_to fa_icon('clock', text:'Log time'), new_task_logged_labor_path(@task), class: "btn btn-primary") if @task_type_option&.can_log_labor%> 
             </div>
-        <% end %>
             <p>
                 <h2>
                     <strong>Total Time Spent:</strong>
@@ -15,26 +13,17 @@
             </p>
         </div>
     </div>
-    <div class="row">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th scope="col"> User </th>
-                    <th scope="col"> Description </th>
-                    <th scope="col"> Time Spent </th>
-                    <th scope="col"> Date </th>
-                </tr>
-            </thead>
-            <% (@task.logged_labors).each do |logged_labor| %>
-            <tbody>
-                <tr>
-                    <td><%= logged_labor.user.full_name %></td>
-                    <td><%= sanitize logged_labor.description  %></td>
-                    <td><%= logged_labor.time_spent %></td>
-                    <td><%= (logged_labor.updated_at).strftime("%m/%d/%Y")  %></td>
-                </tr>
-            <tbody>
-            <% end %>
-        </table>
-    </div>
+    <!--Display Labor Entries for a Task -->
+    <% (@task.logged_labors).each do |logged_labor| %>
+        <div class="list-group list-group-flush">
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+                <div class="col-2 float-left"><%= link_to logged_labor.user.full_name, logged_labor.user %></div>
+                <div class="col-2"><%= logged_labor.time_spent.to_f %> Hours</div>
+                <div class="col-6"><%= sanitize logged_labor.description %></div>
+                <div class="col-1"><%= (logged_labor.labor_date).strftime("%m/%d/%Y") if logged_labor.labor_date.present? %></div>
+                <div class="col-1"><%= link_to "Edit", edit_task_logged_labor_path(@task, logged_labor) if logged_labor.user_id == current_user.id%></div>
+            </div>
+        </div> 
+    <% end %>
+    <%= "No labor entries yet." if @task.logged_labors.empty?%>
 </div>

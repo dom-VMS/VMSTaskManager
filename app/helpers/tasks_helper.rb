@@ -1,21 +1,21 @@
 module TasksHelper
     # Takes a task and returns task.priority in a badge.
-    def task_priority(task)
-        if task.status == 3 && task.isVerified == true
+    def task_badges(task)
+        if task.status == 3 && (task.isVerified == true || task.verification_required != true)
             return ('<span class="badge badge-success">Complete</span>').html_safe
-        elsif task.status == 3 && (task.isVerified == nil)
+        elsif task.status == 3 && task.verification_required
             return ('<span class="badge badge-info">Pending Verification</span>').html_safe
-        elsif task.status == 0 && (task.isVerified == false)
+        elsif task.status != 3 && (task.isVerified == false)
             return ('<span class="badge badge-warning">Rework Required</span>').html_safe
-        elsif task.status == 4 
+        elsif task.status == 4 && task.isVerified != true
             return ('<span class="badge badge-dark">On-Hold</span>').html_safe
-        elsif task.priority == 1 
+        elsif task.priority == 1 && task.isVerified != true
             return ('<span class="badge badge-light">Low</span>').html_safe
-        elsif task.priority == 2 
+        elsif task.priority == 2 && task.isVerified != true
             return ('<span class="badge badge-primary">Normal</span>').html_safe
-        elsif task.priority == 3 
+        elsif task.priority == 3 && task.isVerified != true
             return ('<span class="badge badge-warning">High</span>').html_safe
-        elsif task.priority == 4 
+        elsif task.priority == 4 && task.isVerified != true
             return ('<span class="badge badge-danger">Urgent</span>').html_safe
         else 
             return ""
@@ -39,11 +39,32 @@ module TasksHelper
         if task.created_by_id.nil?
             " "
         else
-            User.find_by_id(task.created_by_id).full_name
+            User.find_by_id(task.created_by_id).full_name unless User.find_by_id(task.created_by_id).nil?
         end 
     end
 
-    def task_badges(task)
+    # Badges to show the amount of time left before the task needs to be complete.
+    def reoccuring_badge(task)
+        if task.reoccuring_task&.next_date.present? || !task.due_date.nil?
+            if task.due_date.nil?
+                if task.reoccuring_task.next_date == Date.today
+                    return ('<span class="badge badge-warning">'+ "DUE TODAY" +'</span>').html_safe
+                else
+                    return ('<span class="badge badge-dark">'+ "#{((task.reoccuring_task.next_date).to_date - Date.today).to_i} days left" +'</span>').html_safe
+                end
+            else
+                if task.due_date == Date.today || task.reoccuring_task&.next_date == Date.today
+                    return ('<span class="badge badge-warning">'+ "DUE TODAY" +'</span>').html_safe
+                elsif task.due_date < Date.today
+                    return ('<span class="badge badge-danger">'+ "#{-1 * ((task.due_date).to_date - Date.today).to_i} DAYS  OVERDUE" +'</span>').html_safe
+                else 
+                    return ('<span class="badge badge-dark">'+ "#{((task.due_date).to_date - Date.today).to_i} days left" +'</span>').html_safe
+                end
+            end
+        end
+    end
+
+    def large_task_badges(task)
         if task.isApproved.nil?
             return ('<span class="badge badge-warning">Pending Approval</span>').html_safe
         elsif task.isApproved == false 

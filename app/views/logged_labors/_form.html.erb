@@ -1,14 +1,13 @@
-<%= form_with model: [@task, @task.logged_labors.build], local: true do |form| %>
-
+<%= form_with model: [@task, (@logged_labor.persisted? ? @logged_labor : @task.logged_labors.build)], local: true, html: { autocomplete: "off" } do |form| %>
  <!-- Error Messages -->
-  <% if @logged_labors.errors.any? %>
+  <% if @logged_labor.errors.any? %>
     <div id="error_explanation">
       <h2>
-        <%= pluralize(@logged_labors.errors.count, "error") %> prohibited
-        this task from being saved:
+        <%= pluralize(@logged_labor.errors.count, "error") %> prohibited
+        this labor entry from being saved:
       </h2>
       <ul>
-        <% @logged_labors.errors.full_messages.each do |msg| %>
+        <% @logged_labor.errors.full_messages.each do |msg| %>
           <li><%= msg %></li>
         <% end %>
       </ul>
@@ -16,13 +15,17 @@
   <% end %>
   <div class="mb-3">
     <p>
-      <%= form.label :updated_at, 'Date' %><br>
-      <%= form.text_field :updated_at, data:{ provide:'datepicker' }, id: 'datepicker', class: 'form-control datepicker w-50' %>    
+      <%= form.label :labor_date, 'Date' %><br>
+      <% if @logged_labor.persisted? %>
+        <%= form.text_field :labor_date, value: @logged_labor.labor_date.strftime("%Y/%m/%d"), data:{ provide:'datepicker' }, id: 'datepicker', class: 'form-control datepicker w-50' %>
+      <% else %>
+        <%= form.text_field :labor_date, data:{ provide:'datepicker' }, id: 'datepicker', class: 'form-control datepicker w-50', placeholder: 'Enter Date'  %>
+      <% end %>    
     </p>
     
     <p>
       <%= form.label :time_spent %><br>
-      <%= form.text_field :time_spent, class: 'form-control', placeholder: "Hours" %>
+      <%= form.number_field :time_spent, class: 'form-control', placeholder: "Hours", step: 0.01 %>
     </p>
   
     <p>
@@ -45,6 +48,5 @@
 <script type="text/javascript">
   $(function() {
     $('.datepicker').datepicker({dateFormat: 'yy-mm-dd ', timeFormat: 'hh:mm:ss ', ampm: true});
-    $(".datepicker").datepicker("setDate", new Date());
   });
 </script>

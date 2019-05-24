@@ -1,0 +1,1 @@
+$('.comments-container').html("<%= j render @task.comments.includes(:commenter), comments: @task.comments%>")

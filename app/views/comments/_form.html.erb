@@ -17,18 +17,16 @@
 
   <p>
     <%= form.label :body, 'Comment' %><br>
-    <%= form.text_area :body, class: 'form-control', placeholder: "Give us some details." %>
+    <%= form.text_area :body, class: 'form-control comment-body', placeholder: "Give us some details." %>
   </p>
   <p>
     <%= form.label :attachments, 'File attachments' %>
     <%= form.file_field :attachments, multiple: true %>
   </p>
 
-
-  <% commenter = current_user.full_name %>
-  <%= form.hidden_field 'commenter', :value => commenter%>
+  <%= form.hidden_field 'commenter_id', :value => current_user.id %>
 
   <p>
-    <%= form.submit %>
+    <%= form.submit 'Post Comment', class: 'btn btn-primary btn-lg', remote: true%>
   </p>
 <% end %>

@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class FileAttachmentTest < ActiveSupport::TestCase
+class ReoccuringTaskTest < ActiveSupport::TestCase
   # test "the truth" do
   #   assert true
   # end

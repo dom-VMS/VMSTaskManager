@@ -9,10 +9,11 @@ class SessionsController < ApplicationController
         if user && user.authenticate(params[:session][:password])
             #Log the user in and redirect to home.
             log_in user
+            params[:session][:remember_me] == '1' ? remember(user) : forget(user)
             redirect_to home_path
         else
             #Create an error message
-            flash[:danger] = 'Invalid employee #/password combination'
+            flash.now[:error] = 'Invalid employee #/password combination'
             render 'new'
         end
     end

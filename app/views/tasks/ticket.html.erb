@@ -35,18 +35,14 @@
                 <%= form.label :task_type_id, 'Who is this for?' %><br>
                 <%= form.select(:task_type_id, options_from_collection_for_select(@task_type, "id", "name"),  include_blank: "Select Project", class: 'form-control' )%>
             </p>
-        </div>
-        <div class="mb-3">
             <p> 
                 <%= form.label :description, 'What is the problem?' %><br>
                 <%= form.text_area :description, class: 'form-control', placeholder: "Give us some details." %>
             </p>
-        </div>
-        <div class="mb-3">
-            <%= form.label :priority, 'Is this Urgent?' %>
-            <%= form.check_box :priority, {:class => "form-control"}, 4, nil %>
-        </div>
-        <div class="mb-3">
+            <p>
+                <%= form.label :priority, 'Is this Urgent?' %>
+                <%= form.check_box :priority, {:class => ""}, 4, nil %>
+            </p>
             <p>
                 <%= form.label :attachments, 'File attachments' %>
                 <%= form.file_field :attachments, multiple: true %>

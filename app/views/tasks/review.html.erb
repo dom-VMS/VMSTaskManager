@@ -11,12 +11,12 @@
                 <% if task_type == @task_types.first %>
                     <a class="nav-link active border border-light" id="v-pills-<%=task_type.id%>-tab" data-toggle="pill" href="#v-pills-<%=task_type.id%>" role="tab" aria-controls="v-pills-<%=task_type.id%>" aria-selected="true">
                         <%=task_type.name%> 
-                        <span class="badge badge-light right"><%= @task.where(task_type_id: task_type.id).count %></span>
+                        <span class="badge badge-light right"><%= @task.project(task_type.id).count %></span>
                     </a>
                 <% else %>
                     <a class="nav-link border border-light" id="v-pills-<%=task_type.id%>-tab" data-toggle="pill" href="#v-pills-<%=task_type.id%>" role="tab" aria-controls="v-pills-<%=task_type.id%>" aria-selected="true">
                         <%=task_type.name%> 
-                        <span class="badge badge-light right"><%= @task.where(task_type_id: task_type.id).count %></span>
+                        <span class="badge badge-light right"><%= @task.project(task_type.id).count %></span>
                     </a>
                 <% end %>
             <% end %>
@@ -31,12 +31,12 @@
                             <% if task_type == @task_types.first %>
                                 <a class="nav-link active border border-primary" id="v-pills-<%=task_type.id%>-tab" data-toggle="pill" href="#v-pills-<%=task_type.id%>" role="tab" aria-controls="v-pills-<%=task_type.id%>" aria-selected="true" style="white-space: nowrap; overflow: hidden;">
                                     <%=task_type.name%> 
-                                    <span class="badge badge-light right"><%= @task.where(task_type_id: task_type.id).count %></span>
+                                    <span class="badge badge-light right"><%= @task.project(task_type.id).count %></span>
                                 </a>
                             <% else %>
                                 <a class="nav-link border border-primary pill-secondary" id="v-pills-<%=task_type.id%>-tab" data-toggle="pill" href="#v-pills-<%=task_type.id%>" role="tab" aria-controls="v-pills-<%=task_type.id%>" aria-selected="true" style="white-space: nowrap; overflow: hidden;">
                                     <%=task_type.name%> 
-                                    <span class="badge badge-light right"><%= @task.where(task_type_id: task_type.id).count %></span>
+                                    <span class="badge badge-light right"><%= @task.project(task_type.id).count %></span>
                                 </a>
                             <% end %>    
                         </li>
@@ -54,14 +54,14 @@
                         <div class="tab-pane fade" id="v-pills-<%=task_type.id%>" role="tabpanel" aria-labelledby="v-pills-<%=task_type.id%>-tab">
                     <%end%>
                             <div class="row">
-                                <% tasks = @task.where(task_type_id: task_type.id) %>
+                                <% tasks = @task.project(task_type.id) %>
                                 <% unless tasks.empty? %>
                                     <% (tasks).each do |task|%>
                                         <div class="col-sm-4">
                                             <%= link_to task_path(task) do %>
                                                 <div class="card text-center mb-3" data-link="<%= task_path(task)%>">
                                                     <div class="card-header"> 
-                                                        <strong>Task #<%= task.id %></strong>  <%= task.priority.nil? ? "" : task_priority(task) %>
+                                                        <strong>Task #<%= task.id %></strong>  <%= task.priority.nil? ? "" : task_badges(task) %>
                                                     </div>
                                                     <div class="card-body" data-link="<%= task_path(task)%>">
                                                         <h5 class="card-title"><%= task.description.truncate_words(15)  unless task.description.nil?%></h5><br>
@@ -83,7 +83,7 @@
                                                                         <span aria-hidden="true">&times;</span>
                                                                         </button>
                                                                     </div>
-                                                                    <%= form_with(model: task, url: {action: "update_ticket"}) do |form| %>
+                                                                    <%= form_with(model: task, url: {action: "ticket_review"}) do |form| %>
                                                                     <div class="modal-body">
                                                                         <h4>Why is this task is being declined?</h4>
                                                                         <p>
@@ -94,10 +94,9 @@
                                                                             <%= form.label :attachments, 'File attachments' %>
                                                                             <%= form.file_field :attachments, multiple: true %>
                                                                         </p>
-                                                                        <% commenter = current_user.full_name %>
-                                                                        <%= form.hidden_field 'commenter', :value => commenter %>
+                                                                        <%= form.hidden_field 'commenter_id', :value => current_user.id %>
                                                                         <%= form.hidden_field 'isApproved', :value => false %>
-                                                                        <%= form.hidden_field 'status', :value => 0 %>
+                                                                        <%= form.hidden_field 'status', :value => nil %>
                                                                         <%= form.hidden_field 'id', :value => task.id %>
                                                                     </div>   
                                                                     <div class="modal-footer">

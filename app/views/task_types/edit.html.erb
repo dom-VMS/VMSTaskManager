@@ -22,10 +22,16 @@
             <%= form.label :description %><br>
             <%= form.text_area :description, class: 'form-control' %>
         </p>
-
+        <hr>
+        <% if @task_type.parent.present?%>
+            <h5>Parent-Project</h5>
+            <p>
+                <%= link_to @task_type.parent.name, task_type_path(@task_type.parent) %>
+            <p>
+        <% end %>
         <h5>
             Sub-Projects
-            <%= link_to fa_icon('plus-circle'), new_task_type_path(:parent_id => @task_type.id)%>
+            <%= link_to fa_icon('plus-circle'), new_task_type_path(:parent_id => @task_type.id) unless @current_user_task_type_option&.isAdmin %>
         </h5>
         <% @children.each do |child| %>
             <p>
@@ -35,16 +41,9 @@
                     data: { confirm: "Are you sure you want to remove the connection from #{child.name} to #{@task_type.name}?" } %>
             </p>
         <% end %>
-
-        <h5>
-            Project Roles
-            <%= link_to fa_icon('plus-circle'), new_task_type_task_type_option_path(@task_type) %>
-        </h5>
-        <% @task_type_options.each do |role| %>
-        <p>
-            <%= link_to role.name, task_type_task_type_option_path(@task_type, role) %>
-        </p>
-        <% end %>
+        <hr>
+        <%= render 'task_type_options/index'%>
+        <hr>
         
     </div>
 
@@ -55,4 +54,5 @@
                                   class: 'btn btn-danger btn-lg btn-block',
                                   method: :delete,
                                   data: { confirm: "Are you sure you want to remove this project? All tasks and sub-projects of this will be deleted as well? Continue?"} %>
+    <br><br>
 </div>

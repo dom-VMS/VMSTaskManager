@@ -8,7 +8,7 @@ class TaskMailer < ApplicationMailer
         @url = task_url(@task)
         admins = TaskType.get_admins(@task_type)
         admins.each do |admin|
-            puts "Sending email..."
+            puts "\nSending email...\n"
             mail(to: admin.email, subject: "Project Manager - A New Ticket has Been Filed. (##{@task.id})")
         end
     end 
@@ -19,7 +19,7 @@ class TaskMailer < ApplicationMailer
         @task_type = @task.task_type
         @url = task_url(@task)
         @user = User.find_by_id(params[:user_id])
-        puts "Sending email..."
+        puts "\nSending email...\n"
         mail(to: @user.email, subject: "Project Manager - Ticket  ##{@task.id} has Been Filed")
     end 
 

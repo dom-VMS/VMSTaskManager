@@ -8,7 +8,7 @@
                 <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <%= form_with(model: @task, url: {action: "update_ticket"}) do |form| %>
+            <%= form_with(model: @task, url: {action: "ticket_review"}) do |form| %>
             <div class="modal-body">
                 <h4>Why is this task is being declined?</h4>
                 <p>
@@ -19,8 +19,7 @@
                     <%= form.label :attachments, 'File attachments' %>
                     <%= form.file_field :attachments, multiple: true %>
                 </p>
-                <% commenter = current_user.full_name %>
-                <%= form.hidden_field 'commenter', :value => commenter %>
+                <%= form.hidden_field 'commenter_id', :value => current_user.id %>
                 <%= form.hidden_field 'isApproved', :value => false %>
                 <%= form.hidden_field 'id', :value => @task.id %>
             </div>   

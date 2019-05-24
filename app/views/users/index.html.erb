@@ -1,6 +1,6 @@
 <div class="container-fluid">
     <div class="row content">
-        <div class="col-sm-1 bg-light"></div>
+        <div class="col-sm-1 bg-light"><!--Grey Column--></div>
         <div class="col-sm-10">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
@@ -16,7 +16,7 @@
                         <%= link_to fa_icon('user-plus', text:'Add User'), new_user_path,  class: 'btn btn-primary'%>
                     </div>
                     <div class="col-6">
-                        <%= form_tag(users_path, method: :get, class: 'form-inline float-right') do %>
+                        <%= form_tag(users_path, method: :get, class: 'form-inline float-right', html: { autocomplete: "off" }) do %>
                             <%= text_field_tag(:search, params[:search], class: 'form-control float-right', placeholder: 'Search for User') %>
                             <%= submit_tag ("Search"), class: 'btn btn-primary float-right'%>
                         <% end %>
@@ -63,6 +63,6 @@
                 </table>
             </div>
         </div>
-        <div class="col-sm-1 bg-light"></div>
+        <div class="col-sm-1 bg-light"><!--Grey Column--></div>
     </div>
 </div>

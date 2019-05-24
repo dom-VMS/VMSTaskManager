@@ -1,0 +1,10 @@
+<h5>
+    Project Roles
+    <%= link_to fa_icon('plus-circle'), new_task_type_task_type_option_path(@task_type) %>
+</h5>
+<% @task_type_options.each do |role| %>
+    <p>
+        <%= link_to role.name, task_type_task_type_option_path(@task_type, role) %>
+    </p>
+<% end %>
+<%= "No roles for this project." if @task_type_options.empty?%>

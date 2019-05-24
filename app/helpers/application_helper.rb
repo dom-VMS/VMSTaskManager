@@ -8,4 +8,9 @@ module ApplicationHelper
             when 'alert' then return "warning"
         end
     end
+
+    def svg(name)
+        image_tag "#{name}.svg", alt: "Varland Metal Service", size: '50'
+    end
+
 end

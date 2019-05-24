@@ -1,11 +1,9 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  task: one
-  comment: one
-  file: MyString
+  title: MyString
+  description: MyText
 
 two:
-  task: two
-  comment: two
-  file: MyString
+  title: MyString
+  description: MyText

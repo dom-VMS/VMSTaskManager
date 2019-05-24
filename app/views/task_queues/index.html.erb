@@ -1,25 +1,30 @@
-<nav aria-label="breadcrumb">
-    <ol class="breadcrumb" style="margin-bottom: 0px;">
-        <li class="breadcrumb-item"><%= link_to 'Home', home_path %></li>
-        <li class="breadcrumb-item"><%= link_to "Projects", task_types_path%></li>
-        <li class="breadcrumb-item"><%= link_to @task_type.name, task_type_path(@task_type)%></li>
-        <li class="breadcrumb-item active" aria-current="page"><%= sanitize @user.f_name %>'s Queue</li>
-    </ol>
-</nav>
+<!--Content-->
 <div class="container-fluid">
     <div class="row content">
-        <div class="col-sm-1 bg-light"></div>
-        <div class="container-fluid col-sm-10">
+        <div class="col-sm-1 bg-light", style="height: 100%"><!--Grey Column--></div>
+        <div class="col-sm-10 center">
+            <!--Breadcrumbs-->
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><%= link_to 'Home', home_path %></li>
+                    <li class="breadcrumb-item"><%= link_to "Projects", task_types_path%></li>
+                    <li class="breadcrumb-item"><%= link_to @task_type.name, task_type_path(@task_type)%></li>
+                    <li class="breadcrumb-item active" aria-current="page"><%= sanitize @user.f_name %>'s Queue</li>
+                </ol>
+            </nav>
+
+            <!--Name & Information-->
             <div class="container-fluid">
                 <h1><%=@user.full_name%>'s Queue</h1>
-                <h2><strong>Project:</strong> <%= @task_type.name%></h2>
+                <h2><strong>Project:</strong> <%= @task_type.name%></h2><br>
                 <% if @task_type_option.isAdmin%><i>Drag and drop tasks to re-order their position. Refresh the page when you are done.</i><br><%end%>
                 <i>Tasks must be assigned to a user in order for them to be assigned in a queue.</i>
-                <br><br>
+                <br><br><br>
             </div>
+
+            <!--Display queue and permit user to adjust-->
             <div class='container-fluid' id='user-queue'>
                 <div class="list-group col-sm-12 col-md-12 col-lg-10 col-xl-10 sortable ">
-                <% unless @queue.empty?%>
                     <% (@queue).each_with_sortable_id do |queue, sortable_id|%>
                         <% task = Task.find_by_id(queue.task_id)%>
                         <li class="list-group-item d-flex justify-content-between"  id="<%= sortable_id %>">
@@ -37,9 +42,12 @@
                             </div>
                         </li> 
                     <% end %>
-                <% end %>
+                    <%= "#{@user.f_name} does not currently have any tasks queued for #{@task_type.name}." if @queue.empty?%>
+                    <br>
                 </div>
-                <% if @task_type_option.isAdmin%>
+
+                <!--Add task to queue-->
+                <% if @task_type_option&.isAdmin%>
                 <div class="list-group col-sm-12 col-md-12 col-lg-10 col-xl-10 ">
                     <li class="list-group-item list-group-item-action list-group-item-light text-center">
                         <button type="button" class="btn btn-light" data-toggle="modal" data-target="#addToQueueModal">
@@ -52,17 +60,15 @@
                 <% end %>
             </div>
         </div>
-        <div class="col-sm-1 bg-light"></div>
+
+        <div class="col-sm-1 bg-light", style="height: 100%"><!--Grey Column--></div>
     </div>
 </div>
-<% if @task_type_option.isAdmin%>
+<% if @task_type_option&.isAdmin%>
     <script>
         $(function() {
+            // Allows for Drag & Drop 
             $('.sortable').railsSortable();
-        });
-        $(document).on('dragstart', function() {
-            detectTap = true; //detects all touch events
-            alert("A Touch!!");
         });
     </script>
 <% end %>

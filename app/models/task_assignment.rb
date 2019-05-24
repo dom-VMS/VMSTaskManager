@@ -1,41 +1,28 @@
 class TaskAssignment < ApplicationRecord
   include ActiveModel::Dirty
   
+  ## Active Record Callbacks
   before_update :remove_task_from_queue
   before_destroy :remove_task_from_queue
 
+  ## Active Record Associations 
   belongs_to :task, optional: true
   belongs_to :assigned_to, class_name: "User", optional: true, foreign_key: 'assigned_to_id'
   belongs_to :assigned_by, class_name: "User", optional: true, foreign_key: 'assigned_by_id'
 
-  def self.get_assignee(task)
-    assignee = []
-    (task.task_assignments).each do |ta|
-      if (ta.assigned_to).present?
-        assignee.push(ta.assigned_to.full_name) 
-      else 
-        return ""
+  ## Active Record Validations
+  validate :assignee_must_be_in_project
+
+  # Validates that the user assigned to a task is a member of the project (or related project)
+  def assignee_must_be_in_project
+    assignee = User.find_by_id(assigned_to_id)
+    task = Task.find_by_id(task_id)
+    unless assignee.nil? || task.nil?
+      task_type = task.task_type
+      unless TaskTypeOption.get_task_type_specific_options(assignee, task_type).present?
+        errors.add(:assigned_to, "must belong to this project before being assigned to this task.")
       end
     end
-    
-    return assignee
-  end
-
-  def self.get_assigned_user(task)
-    TaskAssignment.where(task_id: task.id) 
-  end
-
-  def self.get_assigner(task)
-    assigner = []
-    (task.task_assignments).each do |ta|
-      if (ta.assigned_by).present?
-        assigner.push(ta.assigned_by.full_name) 
-      else 
-        return ""
-      end
-    end
-    
-    return assigner
   end
 
   # Removes a task belonging in a user's queue if the user is not longer assigned.

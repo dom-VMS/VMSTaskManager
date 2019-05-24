@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_04_01_140409) do
+ActiveRecord::Schema.define(version: 2019_05_21_150108) do
 
   create_table "activities", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "trackable_type"
@@ -32,23 +32,14 @@ ActiveRecord::Schema.define(version: 2019_04_01_140409) do
   end
 
   create_table "comments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.string "commenter"
     t.text "body"
     t.bigint "task_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.json "attachments"
+    t.bigint "commenter_id"
+    t.index ["commenter_id"], name: "index_comments_on_commenter_id"
     t.index ["task_id"], name: "index_comments_on_task_id"
-  end
-
-  create_table "file_attachments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.bigint "task_id"
-    t.bigint "comment_id"
-    t.string "file"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["comment_id"], name: "index_file_attachments_on_comment_id"
-    t.index ["task_id"], name: "index_file_attachments_on_task_id"
   end
 
   create_table "logged_labors", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -58,27 +49,30 @@ ActiveRecord::Schema.define(version: 2019_04_01_140409) do
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "labor_date"
     t.index ["task_id"], name: "index_logged_labors_on_task_id"
     t.index ["user_id"], name: "index_logged_labors_on_user_id"
   end
 
-  create_table "reoccuring_event_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "reoccuring_task_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "title"
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "reoccuring_events", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.integer "freq_days"
-    t.date "last_date"
-    t.date "next_date"
+  create_table "reoccuring_tasks", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "reoccuring_task_type_id"
     t.bigint "task_id"
-    t.bigint "reoccuring_event_type_id"
+    t.integer "freq_days"
+    t.datetime "last_date"
+    t.datetime "next_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["reoccuring_event_type_id"], name: "index_reoccuring_events_on_reoccuring_event_type_id"
-    t.index ["task_id"], name: "index_reoccuring_events_on_task_id"
+    t.integer "freq_weeks"
+    t.integer "freq_months"
+    t.index ["reoccuring_task_type_id"], name: "index_reoccuring_tasks_on_reoccuring_task_type_id"
+    t.index ["task_id"], name: "index_reoccuring_tasks_on_task_id"
   end
 
   create_table "task_assignments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -128,6 +122,8 @@ ActiveRecord::Schema.define(version: 2019_04_01_140409) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "parent_id"
+    t.bigint "created_by_id"
+    t.index ["created_by_id"], name: "index_task_types_on_created_by_id"
     t.index ["parent_id"], name: "index_task_types_on_parent_id"
   end
 
@@ -143,12 +139,17 @@ ActiveRecord::Schema.define(version: 2019_04_01_140409) do
     t.boolean "isApproved"
     t.boolean "isVerified"
     t.bigint "created_by_id"
-    t.bigint "reoccuring_event_id"
     t.json "attachments"
     t.datetime "due_date"
+    t.boolean "verification_required"
+    t.boolean "logged_labor_required"
+    t.bigint "completed_by_id"
+    t.bigint "verified_by_id"
+    t.datetime "completed_date"
+    t.index ["completed_by_id"], name: "index_tasks_on_completed_by_id"
     t.index ["created_by_id"], name: "index_tasks_on_created_by_id"
-    t.index ["reoccuring_event_id"], name: "index_tasks_on_reoccuring_event_id"
     t.index ["task_type_id"], name: "index_tasks_on_task_type_id"
+    t.index ["verified_by_id"], name: "index_tasks_on_verified_by_id"
   end
 
   create_table "user_groups", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -169,15 +170,15 @@ ActiveRecord::Schema.define(version: 2019_04_01_140409) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "password_digest"
+    t.string "remember_digest"
   end
 
   add_foreign_key "comments", "tasks"
-  add_foreign_key "file_attachments", "comments"
-  add_foreign_key "file_attachments", "tasks"
+  add_foreign_key "comments", "users", column: "commenter_id"
   add_foreign_key "logged_labors", "tasks"
   add_foreign_key "logged_labors", "users"
-  add_foreign_key "reoccuring_events", "reoccuring_event_types"
-  add_foreign_key "reoccuring_events", "tasks"
+  add_foreign_key "reoccuring_tasks", "reoccuring_task_types"
+  add_foreign_key "reoccuring_tasks", "tasks"
   add_foreign_key "task_assignments", "tasks"
   add_foreign_key "task_assignments", "users", column: "assigned_by_id"
   add_foreign_key "task_assignments", "users", column: "assigned_to_id"
@@ -186,6 +187,8 @@ ActiveRecord::Schema.define(version: 2019_04_01_140409) do
   add_foreign_key "task_queues", "users"
   add_foreign_key "task_type_options", "task_types"
   add_foreign_key "task_types", "task_types", column: "parent_id"
-  add_foreign_key "tasks", "reoccuring_events"
+  add_foreign_key "task_types", "users", column: "created_by_id"
+  add_foreign_key "tasks", "users", column: "completed_by_id"
   add_foreign_key "tasks", "users", column: "created_by_id"
+  add_foreign_key "tasks", "users", column: "verified_by_id"
 end

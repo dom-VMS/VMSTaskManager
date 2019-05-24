@@ -1,9 +1,12 @@
 class TaskQueue < ApplicationRecord
+  ## RailsSortable Set-up
   include RailsSortable::Model
   set_sortable :position
 
+  ## Active Record Callback
   after_destroy :reposition_queue
   
+  ## Active Record Associations
   belongs_to :task
   belongs_to :user
   belongs_to :task_type
@@ -17,12 +20,15 @@ class TaskQueue < ApplicationRecord
       end
     end
   end
-
-  def self.retrieve_tasks(user, task_type)
-    tasks = []
-    queue = user.task_queues.where(task_type_id: task_type).order(:position)
-    queue.each do |item|
-      tasks.push(Task.find_by_id(item.task_id))
+  
+  # When a task is verified as complete, this funciton is called to remove the given task from any queue with it present.
+  def self.remove_comepleted_task_from_queue(task)
+    queue_items = TaskQueue.where(task_id: task.id)
+    unless queue_items.nil?
+      queue_items.each do |queue_item|
+        queue_item.destroy
+      end
     end
   end
+
 end

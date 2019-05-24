@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class FileAttachmentsControllerTest < ActionDispatch::IntegrationTest
+class ReoccuringTaskTypeTest < ActiveSupport::TestCase
   # test "the truth" do
   #   assert true
   # end
